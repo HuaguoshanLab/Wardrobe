@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+@import './shell.css';
+@import './pages.css';
+@import './responsive.css';

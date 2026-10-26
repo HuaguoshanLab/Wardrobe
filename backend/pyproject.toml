@@ -1,0 +1,55 @@
+[project]
+name = "wardrobe-backend"
+version = "0.1.0"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "pydantic>=2,<3",
+  "pydantic-settings>=2,<3",
+  "sqlalchemy>=2.0,<2.1",
+  "psycopg[binary,pool]>=3,<4",
+  "alembic>=1.15,<2",
+  "langgraph>=1,<2",
+  "langgraph-checkpoint-postgres>=3,<4",
+  "httpx>=0.28,<1",
+  "sse-starlette>=3,<4",
+  "pillow>=11,<13",
+  "pillow-heif>=1,<2",
+  "openpyxl>=3.1,<4",
+  "defusedxml>=0.7,<1",
+  "python-multipart>=0.0.20,<1",
+  "rembg[cpu]>=2,<3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<10",
+    "pytest-asyncio>=1,<2",
+    "respx>=0.22,<1",
+    "ruff>=0.12,<1",
+    "mypy>=1.15,<2",
+    "types-openpyxl>=3.1.5.20261017",
+    "types-defusedxml>=0.7.0.20260504",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+files = ["app"]
+
+[[tool.mypy.overrides]]
+module = ["rembg", "rembg.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["integration: requires a dedicated PostgreSQL database"]

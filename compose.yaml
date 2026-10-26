@@ -1,0 +1,105 @@
+name: wardrobe
+
+x-backend: &backend
+  image: wardrobe-backend:local
+  environment: &backend-env
+    WARDROBE_DATABASE_URL: postgresql+psycopg://wardrobe:${POSTGRES_PASSWORD:-wardrobe_local_dev}@db:5432/wardrobe
+    WARDROBE_PROVIDER_MODE: ${PROVIDER_MODE:-fake}
+    LANGGRAPH_STRICT_MSGPACK: "true"
+    WARDROBE_MEDIA_ROOT: /data/media
+    WARDROBE_CUTOUT_ENABLED: ${CUTOUT_ENABLED:-true}
+  volumes:
+    - media_data:/data/media
+  init: true
+
+services:
+  db:
+    image: postgres:18.4-alpine
+    environment:
+      POSTGRES_USER: wardrobe
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wardrobe_local_dev}
+      POSTGRES_DB: wardrobe
+    ports:
+      - "127.0.0.1:${DB_PORT:-55438}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wardrobe -d wardrobe"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    <<: *backend
+    command: ["python", "-m", "app.initialize"]
+    depends_on:
+      db: {condition: service_healthy}
+    restart: "no"
+
+  api:
+    <<: *backend
+    build:
+      context: ./backend
+      target: base
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  worker:
+    <<: *backend
+    command: ["python", "-m", "app.jobs.worker"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    stop_grace_period: 25s
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    ports:
+      - "${WEB_PORT:-8088}:80"
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  test-db:
+    image: postgres:18.4-alpine
+    profiles: [test]
+    environment:
+      POSTGRES_USER: wardrobe
+      POSTGRES_PASSWORD: wardrobe_test
+      POSTGRES_DB: wardrobe_test
+    tmpfs: [/var/lib/postgresql]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wardrobe -d wardrobe_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  test:
+    profiles: [test]
+    build:
+      context: ./backend
+      target: test
+    environment:
+      WARDROBE_DATABASE_URL: postgresql+psycopg://wardrobe:wardrobe_test@test-db:5432/wardrobe_test
+      WARDROBE_PROVIDER_MODE: fake
+      WARDROBE_TEST_DATABASE: "1"
+      WARDROBE_MEDIA_ROOT: /tmp/wardrobe-test-media
+      LANGGRAPH_STRICT_MSGPACK: "true"
+    depends_on:
+      test-db: {condition: service_healthy}
+
+volumes:
+  postgres_data:
+  media_data:
