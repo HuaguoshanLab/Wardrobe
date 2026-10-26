@@ -1,6 +1,6 @@
 from alembic import context
 
-from app.db import wardrobe  # noqa: F401 -- register P2 tables in Alembic metadata
+from app.db import profile, wardrobe  # noqa: F401 -- register P2 tables in Alembic metadata
 from app.db.models import Base
 from app.db.session import get_engine
 

@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request, Response
 
-from app.api import imports, jobs, system, wardrobe
+from app.api import imports, jobs, profile, system, wardrobe
 from app.core.errors import install_error_handlers
 from app.core.upload_limit import UploadLimit
 from app.schemas.common import ErrorEnvelope
@@ -34,3 +34,5 @@ app.include_router(system.router, prefix="/api/v1", tags=["system"])
 app.include_router(jobs.router, prefix="/api/v1", tags=["diagnostics"])
 app.include_router(wardrobe.router, prefix="/api/v1", tags=["wardrobe"])
 app.include_router(imports.router, prefix="/api/v1", tags=["imports"])
+
+app.include_router(profile.router, prefix="/api/v1", tags=["profile-weather"])

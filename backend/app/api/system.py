@@ -22,7 +22,7 @@ def ready(request: Request) -> Envelope[Health]:
             revision = db.scalar(text("SELECT version_num FROM alembic_version"))
             checkpoints = db.scalar(text("SELECT to_regclass('checkpoints.checkpoints')"))
             state = db.get(SystemState, 1)
-            if revision != "ea067667e0f3" or checkpoints is None or state is None:
+            if revision != "0003_weather_profile" or checkpoints is None or state is None:
                 raise ValueError("initialization incomplete")
     except Exception as exc:
         raise AppError("NOT_READY", "数据库或迁移尚未就绪", 503) from exc
@@ -40,7 +40,7 @@ def capabilities(request: Request) -> Envelope[Capabilities]:
         data=Capabilities(
             provider_mode=mode,
             model="fake" if mode == "fake" else "unconfigured",
-            weather="unimplemented",
+            weather="configured" if get_settings().weather_configured else "unconfigured",
             cutout="local_u2netp" if get_settings().cutout_enabled else "disabled",
             maintenance=False,
             data_epoch=epoch,

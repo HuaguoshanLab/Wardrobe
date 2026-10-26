@@ -1,6 +1,6 @@
 # 跨端契约设计
 
-版本：0.4。P1 通用协议及 P2 衣橱、媒体、标签、导入和模板接口已实现，实际字段见 [OpenAPI](../backend/openapi.json)，操作边界见 [P2](P2.md)。下文搭配、天气、备份仍为设计基线。2026-10-26 审查修正见 [REVIEW](REVIEW.md)。
+版本：0.5。P1 通用协议、P2 衣橱/导入及 P3 偏好/天气接口已实现，实际字段见 [OpenAPI](../backend/openapi.json)，操作边界见 [P2](P2.md)。P3 实际语义见 [P3](P3.md)；下文搭配、备份仍为设计基线。2026-10-26 审查修正见 [REVIEW](REVIEW.md)。
 
 相关文档：[产品](PRODUCT.md)、[架构](../ARCHITECTURE.md)、[决策](DECISIONS.md)。
 
@@ -122,12 +122,12 @@ P2 Garment 响应不暴露 owner_id/deleted_at，补充 image_url、has_cutout�
 
 - `requirements` 包含可选的 `occasion_codes`、`style_codes`、`season_codes`、`custom_tag_ids`、`notes` 和 `weather_override`；按钮和聊天最终都归一化到经过校验的结构。请求明确条件优先于长期偏好，未知值不能偷偷变成确定条件。
 - 基础品类、季节、场合、风格及属性取值使用同一份带版本的词表生成 API 和模板；P2 词表由 backend/app/domain/taxonomy.py 维护。无法识别的受控值报行级错误，不能静默丢弃或降级成自定义标签；自定义标签规范化去重。
-- 偏好以明确类型维护风格、版型、冷热倾向、颜色偏好及补充说明，P3 在实现前固定字段和取值；不能用任意 JSON 直接塞进提示词替代协议。
+- 偏好以明确类型维护风格、版型、冷热倾向、颜色偏好及补充说明，P3 已固定字段和取值，见第 8 节；不能用任意 JSON 直接塞进提示词替代协议。
 - `GET /capabilities` 返回模型/天气/去背景的配置与可用状态（允许 unknown）、维护状态和 `data_epoch`；查询不触发模型，不暴露凭据。Fake 模式必须显式配置且对用户可见，不能因真实服务失败自动切换。
 
 ## 3. HTTP 接口清单
 
-以下路由为待实现约定，允许在实现前合理调整并同步两端，不允许前后端分别私改。
+以下为完整接口规划，P1–P3 已落地部分以 OpenAPI 和第 8 节为准；搭配/历史/备份接口仍待实现。允许在实现前合理调整并同步两端，不允许前后端分别私改。
 
 | 方法与路径 | 含义 | 主要规则 |
 |---|---|---|
@@ -254,7 +254,7 @@ data: {"schema_version":1,"job_id":"00000000-0000-4000-8000-000000000002","seq":
 - SSE 打开前的错误使用普通 HTTP/JSON（过期游标用 410）；连接打开后的错误用事件表达。浏览器进入后台后恢复先 GET Job，再决定是否订阅，不因连接正常关闭重跑任务。
 - 网络分片、UTF-8 字符分片、多行 data 和 JSON 完整性需要测试。代理不得缓冲整个流后一次性输出。
 
-## 6. Excel 模板 v1（待实现验证）
+## 6. Excel 模板 v1（P2 已实现，真实客户端样例待验）
 
 - 文件类型仅 `.xlsx`；数据工作表名 `garments`；元信息工作表 `meta` 保存 `template_version=1`。
 - 数据表第 1 行固定列名：`图片`、`品类`、`名称`、`颜色`、`季节`、`场合`、`风格`、`材质`、`厚度`、`保暖程度`、`自定义标签`、`状态`。
@@ -287,5 +287,13 @@ data: {"schema_version":1,"job_id":"00000000-0000-4000-8000-000000000002","seq":
 P1 落实通用 Pydantic schema、OpenAPI 与最小前端类型生成链路；各业务阶段在实现功能前补齐对应请求/响应 schema。后续以可执行 schema 验证字段，本文维护业务语义和示例。生成类型不得手改。
 
 P2：照片 multipart 字段 files（可重复），Excel 字段 file；上传返回 import_batch_id/job_id/status。确认体为 rows 数组（row_id、expected_version），逐行返回 confirmed/already_confirmed/invalid/version_conflict。草稿 PATCH 可携带 skip=true；重试体 step=conversion/analysis/cutout。媒体 variant=original/cutout/source，source 为原件下载。衣橱筛选参数 q/category/season/occasion/availability/tag_id，limit 1–100、默认 20，created_at/id 倒序，next_cursor 为末项 UUID。
+
+P3：偏好 PATCH 为 `{expected_version, preferences}`，preferences 内未出现字段保持原值，null/[] 显式清空。风格/颜色用基础词表；fit=fitted/regular/loose 或 null，thermal=cold_sensitive/heat_sensitive/neutral 或 null。喜欢/避开颜色及 notes 独立保存。位置 PATCH 为 `{expected_version, city}`，city=null 清空。两者必传 Idempotency-Key 并返回各自 version。
+
+城市查询 `GET /weather/cities?q=名称或经度,纬度`；`GET /weather/provinces` 返回手填城市可选大陆省级地区。City 含 id/name/adm1/adm2/latitude/longitude/source。手填 source=manual、id/坐标为 null；qweather 对象必须与服务端搜索目录匹配。
+
+`GET /weather?city_id=...` 返回 city/current/daily/errors；实况与日预报分别包含 source/kind/valid_for/fetched_at/expires_at/stale/attribution 和对应字段。全无数据返回 503；部分可用或过期参考返回 200，errors 明示失败，stale 不能参与自动生成。v1 实况不提供观测时间时 observed_at=null，不能伪造。
+
+`POST /conditions/preview` 接收 Requirements，返回 requirements/effective_preferences/preference_version，只校验/合并，不建 Job 或会话。style_codes=null 继承最新偏好，[] 明确不限制；weather_override 包含 temperature_c/condition，0℃合法。P3 不将此预览当作真实生成授权或天气快照；P4 生成事务仍需校验日期、时效及标签存在性。
 
 任何破坏性改动需要一起更新两端、Fake Provider、测试、Excel/备份版本及文档。契约变更不能隐式改变 [PRODUCT](PRODUCT.md) 中的用户需求；若涉及范围变化，先与用户明确。

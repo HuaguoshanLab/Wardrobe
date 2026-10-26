@@ -1,6 +1,6 @@
 # 架构设计
 
-版本：0.4。更新日期：2026-10-26。P1 基础工程与 P2 衣橱/导入已实现，天气/搭配/历史/备份仍为设计。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
+版本：0.5。更新日期：2026-10-26。P1/P2/P3 已实现，搭配/历史/备份仍为设计；真实和风账号待验。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
 
 产品行为见 [PRODUCT](docs/PRODUCT.md)，字段和协议见 [CONTRACTS](docs/CONTRACTS.md)，实施状态见 [DEVELOPMENT](docs/DEVELOPMENT.md)。本文是技术栈和模块边界的主要维护位置。
 
@@ -75,7 +75,7 @@ flowchart LR
 
 ## 3. 数据模型
 
-下表是完整业务逻辑模型。P1 仅创建 system_state、jobs、job_events 及检查点设施；Profile 的稳定 owner/data_epoch 暂由 system_state 承载。其余实体在业务阶段迁移落地，不得据下表声称已经建表。
+下表是完整业务逻辑模型。P1 仅创建 system_state、jobs、job_events 及检查点设施；Profile 的稳定 owner/data_epoch 暂由 system_state 承载。P2 已创建衣橱/媒体/导入表，P3 已创建 profiles/weather_cities/weather_cache。profiles 只保存偏好/默认城市及各自版本；current_session_id 尚未实现，owner/data_epoch/demo_seeded_at 仍由 system_state 持有。其余实体在业务阶段迁移落地，不得据下表声称已经建表。
 
 | 实体 | 关键内容 | 约束 |
 |---|---|---|
@@ -198,7 +198,7 @@ P1 已提供 scripts/check_structure.py 检查手写文件规模及静态导入�
 
 ### 文档逐步拆分
 
-当前文档规模不需要立即拆成大量小文件。增长到独立主题难以定位或触发根 AGENTS 的审查阈值时，按下表迁移；以下目录尚未创建。
+当前文档规模不需要立即拆成大量小文件。增长到独立主题难以定位或触发根 AGENTS 的审查阈值时，按下表迁移；docs/history/ 和 docs/adr/ 已从 P3 开始使用，其余目录按需创建。
 
 | 入口文件 | 长期保留的内容 | 详细内容迁往 |
 |---|---|---|

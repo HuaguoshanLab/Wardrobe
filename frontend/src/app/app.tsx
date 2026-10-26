@@ -1,16 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { NavLink, Outlet, createBrowserRouter, Link } from 'react-router'
-import {
-  ArrowUpRight,
-  CalendarDays,
-  Heart,
-  LayoutGrid,
-  Settings2,
-  Shirt,
-  Sparkles,
-} from 'lucide-react'
+import { ArrowUpRight, CalendarDays, Heart, Settings2, Shirt, Sparkles } from 'lucide-react'
 import './wardrobe.css'
+import '../features/profile/profile.css'
+import { LocationPanel, PreferencesPanel } from '../features/profile'
 import { getCapabilities } from '../features/system/api'
 const Diagnostics = lazy(() =>
   import('../features/system/diagnostics').then((module) => ({ default: module.Diagnostics })),
@@ -69,7 +63,7 @@ function Shell() {
         </nav>
         <div className="sidebar-note">
           <span className="status-dot" />
-          个人衣橱 · 本地运行<small>P2 / 衣橱与录入</small>
+          个人衣橱 · 本地运行<small>P3 / 天气与偏好</small>
         </div>
       </aside>
       <div className="content-shell">
@@ -88,64 +82,6 @@ function Shell() {
         </footer>
       </div>
     </div>
-  )
-}
-
-function Home() {
-  return (
-    <>
-      <div className="page-heading">
-        <div>
-          <span className="eyebrow">YOUR EVERYDAY EDIT</span>
-          <h1>今日穿搭</h1>
-          <p>从你的衣橱出发，找到适合今天的组合。</p>
-        </div>
-        <span className="badge">衣橱已开放</span>
-      </div>
-      <section className="welcome-panel">
-        <div>
-          <span className="eyebrow">A LITTLE MORE INTENTIONAL</span>
-          <h2>
-            把衣橱整理好，
-            <br />
-            把日常穿得更自在。
-          </h2>
-          <p>先从整理衣橱开始。上传单品照片或导入 Excel，逐件确认，留下你的日常选择。</p>
-          <Link className="text-link" to="/wardrobe">
-            整理我的衣橱 <ArrowUpRight size={17} />
-          </Link>
-        </div>
-        <div className="wardrobe-illustration" aria-hidden="true">
-          <span className="rail" />
-          <Shirt strokeWidth={0.6} />
-          <span className="illustration-caption">LESS GUESSING, MORE YOU.</span>
-        </div>
-      </section>
-      <div className="section-heading">
-        <h2>从衣橱开始</h2>
-        <span>按阶段逐步开放</span>
-      </div>
-      <div className="step-grid">
-        {[
-          ['01', '录入你的衣服', '照片批量上传或 Excel 导入，审核后放入衣橱。', 'P2 · 已开放'],
-          ['02', '告诉我今天的安排', '结合城市天气、场合和你的穿衣偏好。', 'P3 · 待开发'],
-          ['03', '挑选合适的搭配', '最多三套，保留喜欢的单品，再调整其他部分。', 'P4 · 待开发'],
-        ].map(([n, title, text, phase]) => (
-          <article className="step-card" key={n}>
-            <span className="step-number">{n}</span>
-            <h3>{title}</h3>
-            <p>{text}</p>
-            <span className="phase">{phase}</span>
-          </article>
-        ))}
-      </div>
-      <div className="honest-note">
-        <LayoutGrid size={18} />
-        <p>
-          衣橱录入已开放；天气与搭配将在后续阶段加入。当前识别为明确标记的模拟结果，请人工核对。
-        </p>
-      </div>
-    </>
   )
 }
 
@@ -169,7 +105,13 @@ function Settings() {
         <article className="panel">
           <small>天气与图片处理</small>
           <h3>本地图片处理</h3>
-          <p>支持 HEIC 转换与去背景，原文件保留。和风天气尚未接入。</p>
+          <p>
+            支持 HEIC 转换与去背景，原文件保留。天气服务：
+            {capability.data?.weather === 'configured'
+              ? '已配置（调用结果见首页）'
+              : '未配置，可手动填写'}
+            。
+          </p>
         </article>
       </div>
       {capability.isError && (
@@ -177,6 +119,8 @@ function Settings() {
           {capability.error.message}
         </p>
       )}
+      <PreferencesPanel />
+      <LocationPanel />
       <Suspense fallback={<p>正在载入诊断工具…</p>}>
         <Diagnostics />
       </Suspense>
@@ -216,7 +160,10 @@ export const router = createBrowserRouter([
       </div>
     ),
     children: [
-      { index: true, Component: Home },
+      {
+        index: true,
+        lazy: async () => ({ Component: (await import('../features/profile/home')).HomePage }),
+      },
       { path: 'settings', Component: Settings },
       {
         path: 'wardrobe/:id',

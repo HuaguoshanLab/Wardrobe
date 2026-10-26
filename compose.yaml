@@ -8,6 +8,9 @@ x-backend: &backend
     LANGGRAPH_STRICT_MSGPACK: "true"
     WARDROBE_MEDIA_ROOT: /data/media
     WARDROBE_CUTOUT_ENABLED: ${CUTOUT_ENABLED:-true}
+    WARDROBE_QWEATHER_HOST: ${QWEATHER_HOST:-}
+    WARDROBE_QWEATHER_API_KEY: ${QWEATHER_API_KEY:-}
+    WARDROBE_QWEATHER_TOKEN: ${QWEATHER_TOKEN:-}
   volumes:
     - media_data:/data/media
   init: true

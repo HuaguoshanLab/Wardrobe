@@ -2,7 +2,7 @@
 
 记录自己的衣服、鞋和配饰，根据天气、场合及个人偏好生成最多三套搭配，并通过按钮或聊天调整。
 
-> 当前状态：P2 衣橱与两种导入入口已实现。支持图片转换、本地去背景、逐行审核、编辑筛选和删除。属性识别仍为显式 Fake 或人工填写；真实千问、天气、搭配及备份未实现。外部样例验收边界见 [P2](docs/P2.md)。
+> 当前状态：P3 天气与偏好已实现，保留 P2 衣橱与导入。设置页维护偏好/默认城市，首页查看天气与保存条件。属性识别仍为显式 Fake 或人工填写；真实千问、搭配及备份未实现。和风适配已实现但未作真实账号联调，详见 [P3](docs/P3.md)；P2 外部样例边界见 [P2](docs/P2.md)。
 
 ## 已确定的产品
 
@@ -30,6 +30,7 @@
 | [docs/REVIEW.md](docs/REVIEW.md) | 文档审查结果、需求覆盖及实现前验证门槛 |
 | [docs/P1.md](docs/P1.md) | 基础工程交付、队列决策、运行边界与验证证据 |
 | [docs/P2.md](docs/P2.md) | 衣橱/导入实现、媒体存储、重试边界与未验证项 |
+| [docs/P3.md](docs/P3.md) | 偏好、默认城市、天气配置与条件草稿边界 |
 | [frontend/README.md](frontend/README.md) | 前端职责、计划结构与运行状态 |
 | [backend/README.md](backend/README.md) | 后端职责、计划结构与运行状态 |
 
@@ -47,7 +48,9 @@ Wardrobe/
 │   ├── DECISIONS.md
 │   ├── REVIEW.md
 │   ├── P1.md
-│   └── P2.md
+│   ├── P2.md / P3.md
+│   ├── history/              # 独立开发记录
+│   └── adr/                  # 独立决策明细
 ├── compose.yaml
 ├── .env.example
 ├── scripts/                 # 结构、文档及 HTTP 故障验证
@@ -100,9 +103,9 @@ docker compose --profile test run --build --rm test
 
 该命令只访问独立的 `wardrobe_test` 数据库，使用临时内存盘，不清理应用数据。前端测试及本地热更新命令见 [前端 README](frontend/README.md)，后端开发命令见 [后端 README](backend/README.md)。
 
-真实服务接入时再配置百炼地域、API Host、模型凭据及和风天气凭据。当前未实现真实适配器，不需要填写密钥。设置 `PROVIDER_MODE=disabled` 后诊断提交返回未配置错误，照片仍可转换并手工审核，不自动切回 Fake。`CUTOUT_ENABLED=false` 可禁用去背景，原图仍可使用。
+和风天气配置见 [P3](docs/P3.md)：在后端设置 QWEATHER_HOST 和 API Key 或 Bearer JWT；留空可使用手动城市/天气。当前未配置真实凭据，不能声称和风已联调。真实千问适配尚未实现，其地域、模型凭据在 P4 接入时配置。设置 `PROVIDER_MODE=disabled` 后诊断提交返回未配置错误，照片仍可转换并手工审核，不自动切回 Fake。`CUTOUT_ENABLED=false` 可禁用去背景，原图仍可使用。
 
-手机通过电脑局域网 HTTP 访问时可能无法定位；P3 将提供手动城市流程，当前尚无定位/天气操作。电脑 localhost 或未来可信 HTTPS 环境可尝试定位。真实天气与云端 AI 接入后仍需网络，本地部署不代表可以离线使用这些服务。
+手机通过电脑局域网 HTTP 访问时可能无法定位；设置页可直接手动填写城市。电脑 localhost 或可信 HTTPS 环境点击“使用当前位置”可尝试定位；失败仍可手动选择。首页条件当前是浏览器草稿，不代表已生成搭配，跨设备会话在 P4 实现。真实天气与云端 AI 接入后仍需网络，本地部署不代表可以离线使用这些服务。
 
 ## AI 接续开发
 

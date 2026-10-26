@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 
@@ -17,6 +17,17 @@ class Settings(BaseSettings):
     event_retention_days: int = Field(default=7, ge=1)
     media_root: Path = Path("../data/media")
     cutout_enabled: bool = True
+
+    qweather_host: str = Field(default="", pattern=r"^$|^[a-zA-Z0-9-]+\.qweatherapi\.com$")
+    qweather_api_key: SecretStr = SecretStr("")
+    qweather_token: SecretStr = SecretStr("")
+
+    @property
+    def weather_configured(self) -> bool:
+        return bool(
+            self.qweather_host
+            and (self.qweather_api_key.get_secret_value() or self.qweather_token.get_secret_value())
+        )
 
     @property
     def psycopg_url(self) -> str:

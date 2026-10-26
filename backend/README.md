@@ -1,6 +1,6 @@
 # 后端
 
-已有 P1 任务账本/独立 worker/诊断图/Checkpointer，以及 P2 衣橱、媒体、标签、两种导入、逐行确认和步骤重试。真实模型、天气和搭配未实现。工作规则见 [AGENTS](AGENTS.md)，实现边界见 [P2](../docs/P2.md)。
+已有 P1 任务账本/独立 worker/诊断图/Checkpointer，以及 P2 衣橱、媒体、标签、两种导入、逐行确认和步骤重试。P3 偏好、位置、和风适配与缓存已实现；真实模型与搭配未实现，和风真实账号未联调。工作规则见 [AGENTS](AGENTS.md)，实现边界见 [P2](../docs/P2.md)。
 
 ## 运行环境
 
@@ -40,7 +40,7 @@ uv run alembic check
 
 initialize 顺序执行 Alembic upgrade head、Checkpointer setup 和一次性示例播种，可重复执行。业务迁移位于 migrations/，检查点使用独立 checkpoints schema。不要在 API/worker 普通启动时执行 setup 或 create_all。
 
-新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 ea067667e0f3，P2 在 P1 基础上新增媒体/衣服/标签/批次/行/回执。
+新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0003_weather_profile，追加 profiles/weather_cities/weather_cache；P2 媒体/衣服/标签/批次/行/回执保留。
 
 ## 验证
 
@@ -82,4 +82,6 @@ backend/.venv/bin/python scripts/smoke.py
 - WARDROBE_LEASE_SECONDS 默认 30；WARDROBE_POLL_SECONDS 默认 0.5；WARDROBE_EVENT_RETENTION_DAYS 默认 7。需按上下文调整并保持测试。
 - Docker 开启 LANGGRAPH_STRICT_MSGPACK=true；检查点只保存基础类型和 ID，不保存秘密或运行对象。
 
-维护态、天气及真实百炼适配尚未实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。完整备份恢复属于 P5，当前不提供假备份命令。
+P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qweather.py。配置 WARDROBE_QWEATHER_HOST、WARDROBE_QWEATHER_API_KEY 或 WARDROBE_QWEATHER_TOKEN，详见 [P3](../docs/P3.md)。无凭据只提供手动流程，不自动 Fake 天气。
+
+维护态及真实百炼适配尚未实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。完整备份恢复属于 P5，当前不提供假备份命令。
