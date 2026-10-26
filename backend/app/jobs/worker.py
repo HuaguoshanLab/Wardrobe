@@ -6,6 +6,7 @@ from uuid import UUID
 
 from app.agent.checkpoints import checkpointer
 from app.agent.diagnostic import DiagnosticState, build_graph
+from app.agent.outfits import OutfitState, build_outfit_graph
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.jobs.imports import execute_import
@@ -31,6 +32,23 @@ def run_job(job_id: UUID, token: UUID) -> None:
     thread = threading.Thread(target=keep_alive, daemon=True)
     thread.start()
     try:
+        if read_job(job_id).kind in {"outfit_generate", "outfit_adjust"}:
+            from app.db.session import session_factory
+            from app.services.jobs import get_job
+
+            with session_factory()() as db:
+                job = get_job(db, job_id)
+                if job.status == "succeeded":
+                    return
+                session_id = str(job.input_snapshot["session_id"])
+            with checkpointer() as saver:
+                outfit_graph = build_outfit_graph(saver)
+                outfit_state: OutfitState = {"job_id": str(job_id), "lease_token": str(token)}
+                outfit_graph.invoke(
+                    outfit_state,
+                    {"configurable": {"thread_id": f"outfit:{session_id}"}, "recursion_limit": 12},
+                )
+            return
         if read_job(job_id).kind != "diagnostic":
             complete(job_id, token, execute_import(job_id, token))
             return

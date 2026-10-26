@@ -22,16 +22,33 @@ const draftSchema = z.object({
   temperature: z.string(),
   condition: z.string(),
 })
-function loadDraft(key: string) {
+function loadDraft(key: string, submitted?: Requirements) {
   try {
     return draftSchema.parse(JSON.parse(localStorage.getItem(key) ?? 'null'))
   } catch {
-    return { requirements: empty, manual: false, temperature: '', condition: '' }
+    return {
+      requirements: submitted ?? empty,
+      manual: !!submitted?.weather_override,
+      temperature: submitted?.weather_override
+        ? String(submitted.weather_override.temperature_c)
+        : '',
+      condition: submitted?.weather_override?.condition ?? '',
+    }
   }
 }
 
-export function ConditionsPanel({ storageKey }: { storageKey: string }) {
-  const [initial] = useState(() => loadDraft(storageKey))
+export function ConditionsPanel({
+  storageKey,
+  onGenerate,
+  busy = false,
+  submitted,
+}: {
+  storageKey: string
+  onGenerate?: (requirements: Requirements) => void
+  busy?: boolean
+  submitted?: Requirements
+}) {
+  const [initial] = useState(() => loadDraft(storageKey, submitted))
   const form = useForm<Requirements>({ defaultValues: initial.requirements })
   const [manual, setManual] = useState(initial.manual)
   const [temperature, setTemperature] = useState(initial.temperature)
@@ -53,7 +70,7 @@ export function ConditionsPanel({ storageKey }: { storageKey: string }) {
   const missingTags = tags.isSuccess
     ? values.custom_tag_ids.filter((id) => !tags.data.some((tag) => tag.id === id))
     : []
-  function save(data: Requirements) {
+  function save(data: Requirements, generate = false) {
     const candidate = {
       ...data,
       weather_override: manual
@@ -70,7 +87,8 @@ export function ConditionsPanel({ storageKey }: { storageKey: string }) {
       storageKey,
       JSON.stringify({ requirements: parsed.data, manual, temperature, condition }),
     )
-    preview.mutate(parsed.data)
+    if (generate && onGenerate) onGenerate(parsed.data)
+    else preview.mutate(parsed.data)
   }
   return (
     <section className="panel profile-panel">
@@ -79,9 +97,9 @@ export function ConditionsPanel({ storageKey }: { storageKey: string }) {
       <form
         className="attribute-form"
         onChange={() => preview.reset()}
-        onSubmit={form.handleSubmit(save)}
+        onSubmit={form.handleSubmit((data) => save(data))}
       >
-        <fieldset className="plain-fieldset" disabled={preview.isPending}>
+        <fieldset className="plain-fieldset" disabled={preview.isPending || busy}>
           <Choices
             label="场合"
             options={taxonomy.data?.fields.occasion_codes ?? {}}
@@ -182,6 +200,11 @@ export function ConditionsPanel({ storageKey }: { storageKey: string }) {
               </label>
             </div>
           )}
+          {onGenerate && (
+            <Button type="button" onClick={form.handleSubmit((data) => save(data, true))}>
+              生成搭配
+            </Button>
+          )}
           <Button type="submit">{preview.isPending ? '正在核对…' : '保存并核对条件'}</Button>
         </fieldset>
       </form>
@@ -206,10 +229,7 @@ export function ConditionsPanel({ storageKey }: { storageKey: string }) {
               {preview.data.requirements.weather_override.condition}
             </p>
           )}
-          <p>
-            当前保存的是条件草稿。生成搭配及跨设备会话恢复将在 P4
-            开放；生成时需重新检查天气时效和最新偏好。
-          </p>
+          <p>当前核对的是条件草稿；点击生成后提交到会话，并重新检查天气时效和最新偏好。</p>
         </div>
       )}
     </section>

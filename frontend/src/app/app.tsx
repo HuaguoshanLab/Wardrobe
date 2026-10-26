@@ -63,7 +63,7 @@ function Shell() {
         </nav>
         <div className="sidebar-note">
           <span className="status-dot" />
-          个人衣橱 · 本地运行<small>P3 / 天气与偏好</small>
+          个人衣橱 · 本地运行<small>P4 / 搭配与调整</small>
         </div>
       </aside>
       <div className="content-shell">
@@ -99,8 +99,20 @@ function Settings() {
       <div className="service-grid">
         <article className="panel">
           <small>模型服务</small>
-          <h3>{capability.data?.provider_mode === 'fake' ? 'Fake Provider' : '尚未启用'}</h3>
-          <p>明确的模拟环境，不请求千问。</p>
+          <h3>
+            {capability.data?.provider_mode === 'fake'
+              ? 'Fake Provider'
+              : capability.data?.model === 'configured'
+                ? '千问搭配服务已配置'
+                : '模型未配置'}
+          </h3>
+          <p>
+            {capability.data?.provider_mode === 'fake'
+              ? '明确的模拟环境，不请求千问。'
+              : capability.data?.model === 'configured'
+                ? '点击生成或调整时调用千问；实际可用性以任务结果为准。照片属性识别仍需手动填写。'
+                : '可继续管理衣橱；生成前需配置模型或明确启用 Fake。'}
+          </p>
         </article>
         <article className="panel">
           <small>天气与图片处理</small>
@@ -162,6 +174,10 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        lazy: async () => ({ Component: (await import('../features/profile/home')).HomePage }),
+      },
+      {
+        path: 'outfits/:sessionId',
         lazy: async () => ({ Component: (await import('../features/profile/home')).HomePage }),
       },
       { path: 'settings', Component: Settings },

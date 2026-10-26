@@ -1,6 +1,6 @@
 # 跨端契约设计
 
-版本：0.5。P1 通用协议、P2 衣橱/导入及 P3 偏好/天气接口已实现，实际字段见 [OpenAPI](../backend/openapi.json)，操作边界见 [P2](P2.md)。P3 实际语义见 [P3](P3.md)；下文搭配、备份仍为设计基线。2026-10-26 审查修正见 [REVIEW](REVIEW.md)。
+版本：0.6。P1 通用协议、P2 衣橱/导入、P3 偏好/天气及 P4 搭配接口已实现，实际字段见 [OpenAPI](../backend/openapi.json)，操作边界见 [P2](P2.md)。P3 实际语义见 [P3](P3.md)；P4 落地细节见 [P4](P4.md)，历史管理/收藏/日历/备份仍为设计基线。2026-10-26 审查修正见 [REVIEW](REVIEW.md)。
 
 相关文档：[产品](PRODUCT.md)、[架构](../ARCHITECTURE.md)、[决策](DECISIONS.md)。
 
@@ -127,7 +127,7 @@ P2 Garment 响应不暴露 owner_id/deleted_at，补充 image_url、has_cutout�
 
 ## 3. HTTP 接口清单
 
-以下为完整接口规划，P1–P3 已落地部分以 OpenAPI 和第 8 节为准；搭配/历史/备份接口仍待实现。允许在实现前合理调整并同步两端，不允许前后端分别私改。
+以下为完整接口规划，P1–P4 已落地部分以 OpenAPI 和第 8 节为准；历史管理/收藏/日历/备份接口仍待实现。允许在实现前合理调整并同步两端，不允许前后端分别私改。
 
 | 方法与路径 | 含义 | 主要规则 |
 |---|---|---|
@@ -295,5 +295,7 @@ P3：偏好 PATCH 为 `{expected_version, preferences}`，preferences 内未出�
 `GET /weather?city_id=...` 返回 city/current/daily/errors；实况与日预报分别包含 source/kind/valid_for/fetched_at/expires_at/stale/attribution 和对应字段。全无数据返回 503；部分可用或过期参考返回 200，errors 明示失败，stale 不能参与自动生成。v1 实况不提供观测时间时 observed_at=null，不能伪造。
 
 `POST /conditions/preview` 接收 Requirements，返回 requirements/effective_preferences/preference_version，只校验/合并，不建 Job 或会话。style_codes=null 继承最新偏好，[] 明确不限制；weather_override 包含 temperature_c/condition，0℃合法。P3 不将此预览当作真实生成授权或天气快照；P4 生成事务仍需校验日期、时效及标签存在性。
+
+P4 会话、搭配、图片快照和消息接口已落地，字段与操作边界统一见 [P4](P4.md) 和 OpenAPI；保留本文件的幂等、任务及调整约束。
 
 任何破坏性改动需要一起更新两端、Fake Provider、测试、Excel/备份版本及文档。契约变更不能隐式改变 [PRODUCT](PRODUCT.md) 中的用户需求；若涉及范围变化，先与用户明确。

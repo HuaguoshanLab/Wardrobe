@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import Field, JsonValue
 
 from app.schemas.common import ErrorDetail, Schema
+from app.schemas.outfits import OutfitResult
 
 JobStatus = Literal[
     "queued", "running", "cancel_requested", "succeeded", "failed", "interrupted", "cancelled"
@@ -40,6 +41,8 @@ class JobView(Schema):
     id: UUID
     kind: Literal[
         "diagnostic",
+        "outfit_generate",
+        "outfit_adjust",
         "import_photos",
         "import_excel",
         "media_convert",
@@ -47,7 +50,7 @@ class JobView(Schema):
         "garment_recognize",
     ]
     status: JobStatus
-    result: DiagnosticResult | ImportResult | MediaResult | None
+    result: DiagnosticResult | ImportResult | MediaResult | OutfitResult | None
     error: ErrorDetail | None
     retry_of_job_id: UUID | None
     last_seq: int

@@ -90,6 +90,11 @@ def create_job(payload: DiagnosticInput, key: str, retry_of: UUID | None = None)
 def retry_job(job_id: UUID, key: str) -> JobView:
     with session_factory()() as db:
         original = get_job(db, job_id)
+        if original.kind in {"outfit_generate", "outfit_adjust"}:
+            from app.services.outfits.submit import retry_outfit
+
+            accepted = retry_outfit(job_id, key)
+            return read_job(accepted.job_id)
         if original.kind != "diagnostic":
             raise AppError(
                 "USE_ROW_RETRY", "请在导入审核中重试对应行；Excel 整文件失败请修正后重新导入"

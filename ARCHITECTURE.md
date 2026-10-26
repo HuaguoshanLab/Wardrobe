@@ -1,6 +1,6 @@
 # 架构设计
 
-版本：0.5。更新日期：2026-10-26。P1/P2/P3 已实现，搭配/历史/备份仍为设计；真实和风账号待验。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
+版本：0.6。更新日期：2026-10-26。P1–P4 已实现，历史管理/收藏/日历/备份仍为设计；真实和风及千问账号待验。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
 
 产品行为见 [PRODUCT](docs/PRODUCT.md)，字段和协议见 [CONTRACTS](docs/CONTRACTS.md)，实施状态见 [DEVELOPMENT](docs/DEVELOPMENT.md)。本文是技术栈和模块边界的主要维护位置。
 
@@ -75,7 +75,7 @@ flowchart LR
 
 ## 3. 数据模型
 
-下表是完整业务逻辑模型。P1 仅创建 system_state、jobs、job_events 及检查点设施；Profile 的稳定 owner/data_epoch 暂由 system_state 承载。P2 已创建衣橱/媒体/导入表，P3 已创建 profiles/weather_cities/weather_cache。profiles 只保存偏好/默认城市及各自版本；current_session_id 尚未实现，owner/data_epoch/demo_seeded_at 仍由 system_state 持有。其余实体在业务阶段迁移落地，不得据下表声称已经建表。
+下表是完整业务逻辑模型。P1 仅创建 system_state、jobs、job_events 及检查点设施；Profile 的稳定 owner/data_epoch 暂由 system_state 承载。P2 已创建衣橱/媒体/导入表，P3 已创建 profiles/weather_cities/weather_cache。P4 已创建 outfit_sessions/outfit_revisions/outfit_messages/outfit_images/outfit_model_calls，profiles 保存 current_session_id；owner/data_epoch/demo_seeded_at 仍由 system_state 持有。其余实体在业务阶段迁移落地，不得据下表声称已经建表。
 
 | 实体 | 关键内容 | 约束 |
 |---|---|---|
@@ -149,7 +149,7 @@ Excel → 模板/嵌入图/字段解析 ─┐
 5. 恢复连接查询相同 Job，不新建生成。事件过期则读取任务结果快照。
 6. 进程退出后的失联运行需检测；外部请求结果未知时标记 interrupted，而不是声称 exactly-once 并自动重发。
 
-任务预算、事件保留、取消竞争和幂等语义以 [CONTRACTS](docs/CONTRACTS.md) 为准。P1 直接以 Job 表作为持久队列，创建事务提交即可被 worker 经租约领取，没有第二个 broker/outbox 双写；完成 D-09 验证。后续若切换外部队列，须增加可靠 outbox 等投递机制。不得引入已被替换的 SQLite 作为第二套业务存储。
+任务预算、事件保留、取消竞争和幂等语义以 [CONTRACTS](docs/CONTRACTS.md) 为准。P4 的持久调用记录、原子结果提交、图片快照与限制见 [P4](docs/P4.md)。P1 直接以 Job 表作为持久队列，创建事务提交即可被 worker 经租约领取，没有第二个 broker/outbox 双写；完成 D-09 验证。后续若切换外部队列，须增加可靠 outbox 等投递机制。不得引入已被替换的 SQLite 作为第二套业务存储。
 
 ## 7. 备份与恢复
 

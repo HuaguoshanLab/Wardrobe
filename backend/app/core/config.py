@@ -11,12 +11,22 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="WARDROBE_", extra="ignore")
 
     database_url: str = "postgresql+psycopg://wardrobe:wardrobe_local_dev@localhost:55438/wardrobe"
-    provider_mode: Literal["disabled", "fake"] = "disabled"
+    provider_mode: Literal["disabled", "fake", "qwen"] = "disabled"
     lease_seconds: int = Field(default=30, ge=5, le=300)
     poll_seconds: float = Field(default=0.5, ge=0.1, le=10)
     event_retention_days: int = Field(default=7, ge=1)
     media_root: Path = Path("../data/media")
     cutout_enabled: bool = True
+
+    qwen_api_key: SecretStr = SecretStr("")
+    qwen_base_url: str = Field(
+        default="", pattern=r"^$|^https://[a-zA-Z0-9.-]+/(?:compatible-mode/v1)/?$"
+    )
+    qwen_model: Literal["qwen3-vl-plus"] = "qwen3-vl-plus"
+
+    @property
+    def qwen_configured(self) -> bool:
+        return bool(self.qwen_base_url and self.qwen_api_key.get_secret_value())
 
     qweather_host: str = Field(default="", pattern=r"^$|^[a-zA-Z0-9-]+\.qweatherapi\.com$")
     qweather_api_key: SecretStr = SecretStr("")

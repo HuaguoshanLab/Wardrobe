@@ -1,0 +1,42 @@
+.outfit-panel {
+  margin-top: 24px;
+}
+.outfit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.outfit-card {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #fbfaf7;
+  overflow-wrap: anywhere;
+}
+.outfit-items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.outfit-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.outfit-item img {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #f0ede7;
+}
+.outfit-card li {
+  margin: 5px 0;
+  font-size: 13px;
+}
+.outfit-panel details {
+  margin-top: 16px;
+}
