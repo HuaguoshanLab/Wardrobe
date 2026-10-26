@@ -103,7 +103,7 @@ export function OutfitsPanel({ controller: c }: { controller: OutfitController }
                 </p>
                 <div className="outfit-items">
                   {revision.items.map((item) => (
-                    <div key={item.item_id} className="outfit-item">
+                    <div key={item.item_id} data-item-id={item.item_id} className="outfit-item">
                       {item.source === 'wardrobe' ? (
                         <>
                           {item.image_url && (
@@ -160,6 +160,7 @@ export function OutfitsPanel({ controller: c }: { controller: OutfitController }
                   ))}
                 </div>
                 <p>{revision.reason}</p>
+                <Link to={`/collections/${revision.id}`}>收藏、记录穿着与快照详情</Link>
                 {!!revision.unmet_requirements.length && (
                   <details open>
                     <summary>未满足条件与不确定性</summary>

@@ -11,7 +11,7 @@ RUN python -c "from rembg import new_session; new_session('u2netp', providers=['
 COPY app ./app
 COPY alembic.ini ./
 COPY migrations ./migrations
-RUN chmod -R a+rX /opt/rembg && useradd --uid 10001 --create-home wardrobe && mkdir -p /data/media && chown wardrobe /data/media
+RUN chmod -R a+rX /opt/rembg && useradd --uid 10001 --create-home wardrobe && mkdir -p /data/media /data/control && chown wardrobe /data/media /data/control
 USER wardrobe
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 

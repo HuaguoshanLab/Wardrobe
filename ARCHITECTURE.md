@@ -1,6 +1,6 @@
 # 架构设计
 
-版本：0.6。更新日期：2026-10-26。P1–P4 已实现，历史管理/收藏/日历/备份仍为设计；真实和风及千问账号待验。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
+版本：0.7。更新日期：2026-10-26。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实和风及千问账号待验。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
 
 产品行为见 [PRODUCT](docs/PRODUCT.md)，字段和协议见 [CONTRACTS](docs/CONTRACTS.md)，实施状态见 [DEVELOPMENT](docs/DEVELOPMENT.md)。本文是技术栈和模块边界的主要维护位置。
 
@@ -75,7 +75,7 @@ flowchart LR
 
 ## 3. 数据模型
 
-下表是完整业务逻辑模型。P1 仅创建 system_state、jobs、job_events 及检查点设施；Profile 的稳定 owner/data_epoch 暂由 system_state 承载。P2 已创建衣橱/媒体/导入表，P3 已创建 profiles/weather_cities/weather_cache。P4 已创建 outfit_sessions/outfit_revisions/outfit_messages/outfit_images/outfit_model_calls，profiles 保存 current_session_id；owner/data_epoch/demo_seeded_at 仍由 system_state 持有。其余实体在业务阶段迁移落地，不得据下表声称已经建表。
+下表是完整业务逻辑模型。P1 仅创建 system_state、jobs、job_events 及检查点设施；Profile 的稳定 owner/data_epoch 暂由 system_state 承载。P2 已创建衣橱/媒体/导入表，P3 已创建 profiles/weather_cities/weather_cache。P4 已创建 outfit_sessions/outfit_revisions/outfit_messages/outfit_images/outfit_model_calls，profiles 保存 current_session_id；owner/data_epoch/demo_seeded_at 仍由 system_state 持有。P5 追加 favorites/wear_records 与历史可见性元信息；备份恢复控制记录位于独立 control_data 卷。
 
 | 实体 | 关键内容 | 约束 |
 |---|---|---|
@@ -164,9 +164,11 @@ Excel → 模板/嵌入图/字段解析 ─┐
 5. 用户确认令牌绑定备份哈希、目标数据世代和失效时间；实际覆盖前重新校验，并建立当前数据库与文件的恢复点。
 6. 暂停 API 业务写入、worker 和 Checkpointer 连接后切换数据库与图片；失败回滚到成对的恢复点，成功校验后才恢复服务。
 
+实现：独立 controller 和共享控制卷 flock 形成全局维护屏障；恢复先保留原媒体并写入新媒体，再在一个事务中恢复两个 schema 的行数据及新世代，失败由 PostgreSQL 回滚，原媒体不受损。详细格式、接口与边界见 [P5](docs/P5.md)。
+
 恢复控制 ID、确认状态和进度必须放在不会被目标数据库覆盖的持久控制记录中（工程默认使用专用控制目录及原子文件），以便重启后查询同一 restore_id。`backup_restore` 的 Job 是该控制状态的 API 映射，不能只靠即将被覆盖的业务 Job 表保存进度。恢复会增加 `data_epoch`；客户端丢弃旧缓存、未提交幂等操作和事件游标后重新加载。
 
-备份中的 queued/running/cancel_requested 任务全部转为 interrupted，废弃旧租约和待投递记录，不自动重放。会话只有在用户明确继续时才重新验证衣服并恢复。维护中读取可显示旧状态但标明 maintenance；写入返回 503 `MAINTENANCE_MODE`，恢复控制接口例外。此流程需 P5 故障注入验证，文档并不代表已具备原子跨数据库/文件系统事务。
+备份中的 queued/running/cancel_requested 任务全部转为 interrupted，废弃旧租约和待投递记录，不自动重放。会话只有在用户明确继续时才重新验证衣服并恢复。维护中读取可显示旧状态但标明 maintenance；写入返回 503 `MAINTENANCE_MODE`，恢复控制接口例外。P5 使用数据格式备份、隔离验证库、不可变媒体预写及单一数据库事务切换；进程故障验证和限制见 [P5](docs/P5.md)，不宣称数据库/文件系统是同一个原子事务。
 
 ## 8. 与外部服务的边界
 

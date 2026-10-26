@@ -7,6 +7,7 @@ x-backend: &backend
     WARDROBE_PROVIDER_MODE: ${PROVIDER_MODE:-fake}
     LANGGRAPH_STRICT_MSGPACK: "true"
     WARDROBE_MEDIA_ROOT: /data/media
+    WARDROBE_CONTROL_ROOT: /data/control
     WARDROBE_CUTOUT_ENABLED: ${CUTOUT_ENABLED:-true}
     WARDROBE_QWEN_BASE_URL: ${QWEN_BASE_URL:-}
     WARDROBE_QWEN_API_KEY: ${QWEN_API_KEY:-}
@@ -15,6 +16,7 @@ x-backend: &backend
     WARDROBE_QWEATHER_TOKEN: ${QWEATHER_TOKEN:-}
   volumes:
     - media_data:/data/media
+    - control_data:/data/control
   init: true
 
 services:
@@ -64,6 +66,14 @@ services:
     stop_grace_period: 25s
     restart: unless-stopped
 
+  controller:
+    <<: *backend
+    command: ["python", "-m", "app.backup.worker"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    stop_grace_period: 25s
+    restart: unless-stopped
+
   web:
     build: ./frontend
     ports:
@@ -101,6 +111,7 @@ services:
       WARDROBE_PROVIDER_MODE: fake
       WARDROBE_TEST_DATABASE: "1"
       WARDROBE_MEDIA_ROOT: /tmp/wardrobe-test-media
+      WARDROBE_CONTROL_ROOT: /tmp/wardrobe-test-control
       LANGGRAPH_STRICT_MSGPACK: "true"
     depends_on:
       test-db: {condition: service_healthy}
@@ -108,3 +119,4 @@ services:
 volumes:
   postgres_data:
   media_data:
+  control_data:

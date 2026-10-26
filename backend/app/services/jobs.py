@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+from app.backup import control
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.db.models import Job, JobEvent, SystemState, utcnow
@@ -31,6 +32,8 @@ def get_job(db: Session, job_id: UUID, *, lock: bool = False) -> Job:
 
 
 def read_job(job_id: UUID) -> JobView:
+    if record := control.read(job_id):
+        return control.job(record)
     with session_factory()() as db:
         return JobView.model_validate(get_job(db, job_id))
 
@@ -88,6 +91,8 @@ def create_job(payload: DiagnosticInput, key: str, retry_of: UUID | None = None)
 
 
 def retry_job(job_id: UUID, key: str) -> JobView:
+    if control.read(job_id):
+        raise AppError("CONTROL_RETRY_UNSUPPORTED", "维护任务请重新创建备份或重新验证恢复")
     with session_factory()() as db:
         original = get_job(db, job_id)
         if original.kind in {"outfit_generate", "outfit_adjust"}:
@@ -104,6 +109,8 @@ def retry_job(job_id: UUID, key: str) -> JobView:
 
 
 def cancel_job(job_id: UUID) -> JobView:
+    if control.read(job_id):
+        raise AppError("CONTROL_CANCEL_UNSUPPORTED", "维护切换不能中途取消，请等待终态")
     with session_factory().begin() as db:
         job = get_job(db, job_id, lock=True)
         if job.status == "queued":
@@ -117,6 +124,12 @@ def cancel_job(job_id: UUID) -> JobView:
 
 
 def read_events(job_id: UUID, after: int) -> tuple[list[EventView], bool]:
+    if record := control.read(job_id):
+        control.job(record)  # Validation is not a restore Job until explicitly applied.
+        if after > len(record.events):
+            raise AppError("INVALID_EVENT_CURSOR", "事件游标超出任务范围", 422)
+        events = record.events[after : after + 100]
+        return events, record.status in TERMINAL and after + len(events) == len(record.events)
     with session_factory()() as db:
         job = get_job(db, job_id)
         if after > job.last_seq:

@@ -4,6 +4,8 @@ from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
+from app.core.config import get_settings
+
 
 class UploadLimit:
     """Bound multipart bodies before Starlette spools files, including chunked requests."""
@@ -15,18 +17,23 @@ class UploadLimit:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
+        maximum = (
+            get_settings().backup_max_bytes + 1024**2
+            if scope.get("path") == "/api/v1/restores/validate"
+            else self.maximum
+        )
         headers = dict(scope["headers"])
         try:
             length = int(headers.get(b"content-length", b"0"))
         except ValueError:
-            length = self.maximum + 1
-        if length > self.maximum:
+            length = maximum + 1
+        if length > maximum:
             await JSONResponse(
                 {
                     "request_id": str(uuid4()),
                     "error": {
                         "code": "UPLOAD_LIMIT",
-                        "message": "上传请求超过 210 MiB",
+                        "message": f"上传请求超过 {maximum // 1024**2} MiB",
                         "details": [],
                     },
                 },
@@ -39,7 +46,7 @@ class UploadLimit:
             nonlocal size
             message = await receive()
             size += len(message.get("body", b""))
-            if size > self.maximum:
+            if size > maximum:
                 raise HTTPException(413, "Upload limit")
             return message
 

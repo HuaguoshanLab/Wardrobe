@@ -82,15 +82,15 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
     const selected = page
       .locator('.outfit-card')
       .filter({ has: page.getByRole('heading', { name: /已选方案/ }) })
-    const outerwear = selected.locator('.outfit-item').filter({ hasText: 'P4-outerwear' })
+    const outerwearItem = base.items.find((i: { slot: string }) => i.slot === 'outerwear')
+    const outerwear = selected.locator(`[data-item-id="${outerwearItem.item_id}"]`)
     await outerwear.getByLabel('锁定此单品').click()
     await expect(outerwear.getByLabel('锁定此单品')).toBeChecked()
     await expect.poll(async () => (await session()).locked_garment_ids.length).toBe(1)
     const target = base.items.find((i: { slot: string }) => i.slot === 'bottom')
     const kept = base.items.filter((i: { item_id: string }) => i.item_id !== target.item_id)
     await selected
-      .locator('.outfit-item')
-      .filter({ hasText: 'P4-bottom' })
+      .locator(`[data-item-id="${target.item_id}"]`)
       .getByRole('button', { name: '只替换此项' })
       .click()
     await expect.poll(async () => (await session()).selected_revision_id).not.toBe(base.id)

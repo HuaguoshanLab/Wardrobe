@@ -2,7 +2,7 @@
 
 记录自己的衣服、鞋和配饰，根据天气、场合及个人偏好生成最多三套搭配，并通过按钮或聊天调整。
 
-> 当前状态：P4 搭配闭环已实现，保留 P1–P3 功能。首页可显式生成、选择、锁定、局部替换和聊天调整，并恢复会话/任务。默认 Fake；真实千问适配已实现但未联调，照片识别仍为 Fake/手工。历史列表、收藏、日历和备份在 P5；详见 [P4](docs/P4.md)。
+> 当前状态：P1–P5 已实现，包含衣橱/导入、天气偏好、搭配调整、历史收藏、实际穿着记录及备份恢复。默认 Fake；真实千问/和风账号和手机真机仍待验，照片识别仍为 Fake/手工。备份运行限制见 [P5](docs/P5.md)。
 
 ## 已确定的产品
 
@@ -32,6 +32,7 @@
 | [docs/P2.md](docs/P2.md) | 衣橱/导入实现、媒体存储、重试边界与未验证项 |
 | [docs/P3.md](docs/P3.md) | 偏好、默认城市、天气配置与条件草稿边界 |
 | [docs/P4.md](docs/P4.md) | 搭配会话、Agent、不可变结果及千问配置 |
+| [docs/P5.md](docs/P5.md) | 历史、收藏、穿着、备份恢复与维护运行限制 |
 | [frontend/README.md](frontend/README.md) | 前端职责、计划结构与运行状态 |
 | [backend/README.md](backend/README.md) | 后端职责、计划结构与运行状态 |
 
@@ -69,7 +70,7 @@ Wardrobe/
     └── Dockerfile
 ```
 
-数据库使用 `wardrobe_postgres_data`，图片及导入原件使用 `wardrobe_media_data` Docker 卷。目录树中的并列项用于概览，实际为独立文件/目录。
+数据库使用 `wardrobe_postgres_data`，图片及导入原件使用 `wardrobe_media_data`，备份及恢复控制使用 `wardrobe_control_data` Docker 卷。目录树中的并列项用于概览，实际为独立文件/目录。
 
 ## 技术与运行
 
@@ -86,7 +87,7 @@ docker compose ps
 
 默认无需 `.env`。要修改端口或本地配置，首次复制 `.env.example` 为 `.env`（不要覆盖已有文件），再修改；Web 默认 `8088`，PostgreSQL 仅监听本机 `55438`。默认数据库密码只用于本机开发；若改密码，URL 中需使用可安全嵌入的值，已有数据库卷的密码不会随环境变量自动修改。
 
-Compose 自动按数据库健康 → 单次迁移/Checkpointer 初始化 → API/worker → Web 顺序启动。手动重新执行初始化：
+Compose 自动按数据库健康 → 单次迁移/Checkpointer 初始化 → API/worker/controller → Web 顺序启动。手动重新执行初始化：
 
 ```sh
 docker compose run --rm migrate
@@ -94,7 +95,7 @@ docker compose logs --tail=100 api worker
 docker compose stop
 ```
 
-`stop` 保留数据，重新执行启动命令即可恢复。`docker compose down` 删除容器但保留命名卷；不要加 `-v`，那会删除数据库和图片。完整业务备份恢复属于 P5，目前没有可用备份入口。
+`stop` 保留数据，重新执行启动命令即可恢复。`docker compose down` 删除容器但保留命名卷；不要加 `-v`，那会删除数据库和图片。设置页提供完整备份下载和上传验证/确认恢复；先阅读 [P5](docs/P5.md) 的限额、维护态和版本兼容说明。
 
 验证命令：
 

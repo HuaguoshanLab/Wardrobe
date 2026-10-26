@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import Field, JsonValue
 
+from app.schemas.backups import BackupResult
 from app.schemas.common import ErrorDetail, Schema
 from app.schemas.outfits import OutfitResult
 
@@ -41,6 +42,8 @@ class JobView(Schema):
     id: UUID
     kind: Literal[
         "diagnostic",
+        "backup_export",
+        "backup_restore",
         "outfit_generate",
         "outfit_adjust",
         "import_photos",
@@ -50,7 +53,7 @@ class JobView(Schema):
         "garment_recognize",
     ]
     status: JobStatus
-    result: DiagnosticResult | ImportResult | MediaResult | OutfitResult | None
+    result: DiagnosticResult | ImportResult | MediaResult | OutfitResult | BackupResult | None
     error: ErrorDetail | None
     retry_of_job_id: UUID | None
     last_seq: int

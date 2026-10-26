@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     event_retention_days: int = Field(default=7, ge=1)
     media_root: Path = Path("../data/media")
     cutout_enabled: bool = True
+    control_root: Path = Path("../data/control")
+    backup_max_bytes: int = Field(default=2 * 1024**3, ge=1024**2)
 
     qwen_api_key: SecretStr = SecretStr("")
     qwen_base_url: str = Field(

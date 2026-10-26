@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, text
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
@@ -111,6 +111,7 @@ def create_session(payload: SessionCreate, key: str) -> SessionView:
         digest, old = receipt(db, "outfit-session", key, payload.model_dump(mode="json"))
         if old:
             return SessionView.model_validate(old.response)
+        db.execute(text("SELECT pg_advisory_xact_lock(51001)"))
         pref = profile(db, lock=True)
         check_tags(db, payload.requirements)
         base = get_revision(db, payload.base_revision_id) if payload.base_revision_id else None

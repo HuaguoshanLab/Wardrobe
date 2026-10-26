@@ -27,6 +27,8 @@ class OutfitRevision(Base):
     __table_args__ = (UniqueConstraint("run_id", "position"),)
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     session_id: Mapped[UUID] = mapped_column(ForeignKey("outfit_sessions.id"))
+    hidden_from_history_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    history_version: Mapped[int] = mapped_column(default=1, server_default="1")
     parent_revision_id: Mapped[UUID | None] = mapped_column(ForeignKey("outfit_revisions.id"))
     run_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id"))
     position: Mapped[int]

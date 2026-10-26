@@ -6,6 +6,7 @@ import './wardrobe.css'
 import '../features/profile/profile.css'
 import { LocationPanel, PreferencesPanel } from '../features/profile'
 import { getCapabilities } from '../features/system/api'
+import { BackupPanel } from '../features/backups'
 const Diagnostics = lazy(() =>
   import('../features/system/diagnostics').then((module) => ({ default: module.Diagnostics })),
 )
@@ -63,7 +64,7 @@ function Shell() {
         </nav>
         <div className="sidebar-note">
           <span className="status-dot" />
-          个人衣橱 · 本地运行<small>P4 / 搭配与调整</small>
+          个人衣橱 · 本地运行<small>P5 / 历史与数据保护</small>
         </div>
       </aside>
       <div className="content-shell">
@@ -74,6 +75,11 @@ function Shell() {
             {capability.isSuccess ? '服务已连接' : capability.isError ? '服务连接失败' : '正在连接'}
           </span>
         </header>
+        {capability.data?.maintenance && (
+          <p role="status" className="notice">
+            数据维护中，暂时不能修改或生成；已有任务会等待安全结束。
+          </p>
+        )}
         <main key={epoch}>
           <Outlet />
         </main>
@@ -133,6 +139,7 @@ function Settings() {
       )}
       <PreferencesPanel />
       <LocationPanel />
+      <BackupPanel />
       <Suspense fallback={<p>正在载入诊断工具…</p>}>
         <Diagnostics />
       </Suspense>
@@ -199,11 +206,21 @@ export const router = createBrowserRouter([
       },
       {
         path: 'collections',
-        element: <Planned title="历史与收藏" description="留下每一次喜欢的搭配。P5 待开发。" />,
+        lazy: async () => ({
+          Component: (await import('../features/collections/pages')).CollectionsPage,
+        }),
       },
       {
         path: 'calendar',
-        element: <Planned title="穿搭日历" description="记录实际穿过的搭配。P5 待开发。" />,
+        lazy: async () => ({
+          Component: (await import('../features/collections/pages')).CalendarPage,
+        }),
+      },
+      {
+        path: 'collections/:revisionId',
+        lazy: async () => ({
+          Component: (await import('../features/collections/revision')).RevisionPage,
+        }),
       },
       { path: '*', element: <Planned title="页面不存在" description="请通过导航进入已有页面。" /> },
     ],

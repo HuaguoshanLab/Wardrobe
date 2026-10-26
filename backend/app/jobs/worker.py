@@ -9,6 +9,7 @@ from app.agent.diagnostic import DiagnosticState, build_graph
 from app.agent.outfits import OutfitState, build_outfit_graph
 from app.core.config import get_settings
 from app.core.errors import AppError
+from app.core.maintenance import shared
 from app.jobs.imports import execute_import
 from app.jobs.queue import claim, complete, heartbeat, sweep
 from app.schemas.jobs import DiagnosticResult
@@ -86,12 +87,17 @@ def main() -> None:
     signal.signal(signal.SIGINT, shutdown)
     while not stop.is_set():
         try:
-            sweep()
-            item = claim()
-            if item:
-                run_job(*item)
-            else:
+            with shared():
+                sweep()
+                item = claim()
+                if item:
+                    run_job(*item)
+            if not item:
                 stop.wait(get_settings().poll_seconds)
+        except AppError as exc:
+            if exc.code != "MAINTENANCE_MODE":
+                log.error("Worker error: %s", exc.code)
+            stop.wait(get_settings().poll_seconds)
         except Exception:
             log.error("Worker database unavailable; retrying poll without rerunning a claimed job")
             stop.wait(2)

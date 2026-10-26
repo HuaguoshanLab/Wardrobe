@@ -40,7 +40,7 @@ uv run alembic check
 
 initialize 顺序执行 Alembic upgrade head、Checkpointer setup 和一次性示例播种，可重复执行。业务迁移位于 migrations/，检查点使用独立 checkpoints schema。不要在 API/worker 普通启动时执行 setup 或 create_all。
 
-新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0004_outfits，P4 追加会话/结果/图片快照/调用记录，见 P4；P2 媒体/衣服/标签/批次/行/回执保留。
+新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0005_collections，P5 追加收藏/穿着及历史可见性；既有迁移、快照和调用记录保留。
 
 ## 验证
 
@@ -84,4 +84,8 @@ backend/.venv/bin/python scripts/smoke.py
 
 P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qweather.py。配置 WARDROBE_QWEATHER_HOST、WARDROBE_QWEATHER_API_KEY 或 WARDROBE_QWEATHER_TOKEN，详见 [P3](../docs/P3.md)。无凭据只提供手动流程，不自动 Fake 天气。
 
-真实百炼搭配适配已实现；配置与重试边界见 P4。照片识别仍为 Fake/人工；维护态尚未实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。完整备份恢复属于 P5，当前不提供假备份命令。
+真实百炼搭配适配已实现；配置与重试边界见 P4。照片识别仍为 Fake/人工；P5 维护态及独立 controller 已实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。P5 历史、收藏、穿着记录及备份恢复已实现，格式和运行限制见 [P5](../docs/P5.md)。
+
+## P5 控制器
+
+本机开发另开终端运行 `uv run python -m app.backup.worker`。API、worker、controller 必须共享 WARDROBE_CONTROL_ROOT、媒体根和数据库；Compose 已挂载 control_data。备份控制记录独立于业务库，验证需要 CREATEDB 权限。不可把生产库当恢复测试目标；隔离命令及证据见 [P5 记录](../docs/history/2026-10-26-p5.md)。

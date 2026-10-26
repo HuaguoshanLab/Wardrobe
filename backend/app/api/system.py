@@ -3,6 +3,7 @@ from sqlalchemy import select, text
 
 from app.core.config import get_settings
 from app.core.errors import AppError, request_id
+from app.core.maintenance import active
 from app.db.models import SystemState
 from app.db.session import session_factory
 from app.schemas.common import Capabilities, Envelope, Health
@@ -22,7 +23,7 @@ def ready(request: Request) -> Envelope[Health]:
             revision = db.scalar(text("SELECT version_num FROM alembic_version"))
             checkpoints = db.scalar(text("SELECT to_regclass('checkpoints.checkpoints')"))
             state = db.get(SystemState, 1)
-            if revision != "0004_outfits" or checkpoints is None or state is None:
+            if revision != "0005_collections" or checkpoints is None or state is None:
                 raise ValueError("initialization incomplete")
     except Exception as exc:
         raise AppError("NOT_READY", "数据库或迁移尚未就绪", 503) from exc
@@ -46,7 +47,7 @@ def capabilities(request: Request) -> Envelope[Capabilities]:
             else "unconfigured",
             weather="configured" if get_settings().weather_configured else "unconfigured",
             cutout="local_u2netp" if get_settings().cutout_enabled else "disabled",
-            maintenance=False,
+            maintenance=active(),
             data_epoch=epoch,
         ),
         request_id=request_id(request),

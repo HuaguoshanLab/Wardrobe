@@ -3,8 +3,9 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request, Response
 
-from app.api import imports, jobs, outfits, profile, system, wardrobe
+from app.api import backups, collections, imports, jobs, outfits, profile, system, wardrobe
 from app.core.errors import install_error_handlers
+from app.core.maintenance_http import MaintenanceBarrier
 from app.core.upload_limit import UploadLimit
 from app.schemas.common import ErrorEnvelope
 
@@ -18,6 +19,7 @@ app = FastAPI(
 )
 install_error_handlers(app)
 app.add_middleware(UploadLimit)
+app.add_middleware(MaintenanceBarrier)
 
 
 @app.middleware("http")
@@ -38,3 +40,7 @@ app.include_router(imports.router, prefix="/api/v1", tags=["imports"])
 app.include_router(profile.router, prefix="/api/v1", tags=["profile-weather"])
 
 app.include_router(outfits.router, prefix="/api/v1", tags=["outfits"])
+
+app.include_router(collections.router, prefix="/api/v1", tags=["collections"])
+
+app.include_router(backups.router, prefix="/api/v1", tags=["backup-restore"])
