@@ -71,7 +71,7 @@ def validate_proposals(
         if frozenset(ids) in seen:
             continue
         seen.add(frozenset(ids))
-        unmet = list(proposal.unmet_requirements)
+        unmet: list[str] = []  # Model prose is not evidence of a failed condition.
         for field, wanted in [
             ("occasion_codes", context.requirements.occasion_codes),
             ("seasons", context.requirements.season_codes),

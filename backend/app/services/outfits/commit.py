@@ -8,7 +8,9 @@ from app.db.models import utcnow
 from app.db.outfits import OutfitImage, OutfitMessage, OutfitRevision
 from app.db.session import session_factory
 from app.db.wardrobe import Garment
+from app.domain.outfit_explanations import EXPLANATION_VERSION, explain, summary
 from app.domain.outfits import validate_proposals
+from app.domain.taxonomy import TAXONOMY
 from app.jobs.queue import check_lease
 from app.schemas.outfits import Intent, ItemSnapshot, ModelOutfits, OutfitContext, OutfitResult
 from app.schemas.wardrobe import Attributes
@@ -130,7 +132,7 @@ def commit_result(job_id: UUID, token: UUID) -> None:
                         item_id=uuid4(),
                         slot=suggestion.category,
                         source="suggestion",
-                        description=suggestion.description,
+                        description=f"未拥有建议：可考虑补充{TAXONOMY['category'][suggestion.category]}，具体属性待确认。",
                     )
                 )
             revision = OutfitRevision(
@@ -142,7 +144,7 @@ def commit_result(job_id: UUID, token: UUID) -> None:
                 if job.kind == "outfit_adjust"
                 else None,
                 items=[i.model_dump(mode="json") for i in items],
-                reason=proposal.reason,
+                reason=explain(items, proposal.aesthetic_codes),
                 unmet_requirements=proposal.unmet_requirements,
                 weather_snapshot=context.weather,
                 request_snapshot={
@@ -154,6 +156,7 @@ def commit_result(job_id: UUID, token: UUID) -> None:
                     "intent": intent.model_dump(mode="json") if intent else None,
                     "prompt_version": job.input_snapshot["prompt_version"],
                     "model": job.input_snapshot["model"],
+                    "explanation_version": EXPLANATION_VERSION,
                 },
                 provider_mode=str(job.input_snapshot["provider_mode"]),
             )
@@ -169,14 +172,19 @@ def commit_result(job_id: UUID, token: UUID) -> None:
                 row.latest_revision_ids = list(map(str, revisions))
             row.selected_revision_id = revisions[0]
         unmet = list(dict.fromkeys(m for p in output.outfits for m in p.unmet_requirements))
+        message = summary(
+            len(revisions),
+            empty_wardrobe=not context.candidates,
+            clarify=bool(intent and intent.scope == "clarify"),
+        )
         result = OutfitResult(
             session_id=row.id,
             revision_ids=revisions,
             outcome="needs_clarification"
             if intent and intent.scope == "clarify"
             else ("no_match" if not revisions else "partial" if unmet else "complete"),
-            unmet_requirements=unmet or ([output.message] if not revisions else []),
-            question=intent.question if intent and intent.scope == "clarify" else None,
+            unmet_requirements=unmet or ([message] if not revisions else []),
+            question=message if intent and intent.scope == "clarify" else None,
         )
         row.version += 1
         db.add(
@@ -184,7 +192,7 @@ def commit_result(job_id: UUID, token: UUID) -> None:
                 session_id=row.id,
                 job_id=job.id,
                 role="assistant",
-                content=result.question or output.message,
+                content=message,
                 revision_ids=list(map(str, revisions)),
             )
         )
