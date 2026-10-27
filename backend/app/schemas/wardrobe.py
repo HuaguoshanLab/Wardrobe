@@ -76,6 +76,7 @@ class RowView(Schema):
     conversion_status: str
     analysis_status: str
     cutout_status: str
+    analysis_notes: list[str]
     analysis_source: str | None
     confirmed_garment_id: UUID | None
 

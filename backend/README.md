@@ -17,13 +17,13 @@ docker compose up -d db
 ```sh
 uv sync --locked
 uv run python -m app.initialize
-WARDROBE_PROVIDER_MODE=fake uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+WARDROBE_PROVIDER_MODE=fake WARDROBE_RECOGNITION_MODE=fake uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 另一终端同样在 backend 目录启动 worker：
 
 ```sh
-WARDROBE_PROVIDER_MODE=fake uv run python -m app.jobs.worker
+WARDROBE_PROVIDER_MODE=fake WARDROBE_RECOGNITION_MODE=fake uv run python -m app.jobs.worker
 ```
 
 开发期间若已运行 Compose worker，先执行 docker compose stop worker，避免两个 worker 共享测试观察结果；队列仍支持安全的多消费者领取。修改数据库端口/凭据后用 WARDROBE_DATABASE_URL 显式传入 SQLAlchemy psycopg URL，不把真实值写入版本库。
@@ -40,7 +40,7 @@ uv run alembic check
 
 initialize 顺序执行 Alembic upgrade head、Checkpointer setup 和一次性示例播种，可重复执行。业务迁移位于 migrations/，检查点使用独立 checkpoints schema。不要在 API/worker 普通启动时执行 setup 或 create_all。
 
-新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0005_collections，P5 追加收藏/穿着及历史可见性；既有迁移、快照和调用记录保留。
+新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0006_recognition，P6 追加识别账本和不确定性提示；既有迁移、快照和调用记录保留。
 
 ## 验证
 
@@ -84,7 +84,7 @@ backend/.venv/bin/python scripts/smoke.py
 
 P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qweather.py。配置 WARDROBE_QWEATHER_HOST、WARDROBE_QWEATHER_API_KEY 或 WARDROBE_QWEATHER_TOKEN，详见 [P3](../docs/P3.md)。无凭据只提供手动流程，不自动 Fake 天气。
 
-真实百炼搭配适配已实现；配置与重试边界见 P4。照片识别仍为 Fake/人工；P5 维护态及独立 controller 已实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。P5 历史、收藏、穿着记录及备份恢复已实现，格式和运行限制见 [P5](../docs/P5.md)。
+真实百炼搭配适配已实现；配置与重试边界见 P4。真实照片识别适配已实现，独立配置 WARDROBE_RECOGNITION_MODE，默认 disabled；详见 [P6 识别](../docs/P6-recognition.md)；P5 维护态及独立 controller 已实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。P5 历史、收藏、穿着记录及备份恢复已实现，格式和运行限制见 [P5](../docs/P5.md)。
 
 ## P5 控制器
 

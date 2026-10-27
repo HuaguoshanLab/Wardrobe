@@ -87,6 +87,7 @@ def view_row(db: Session, row: ImportRow) -> RowView:
         analysis_status=steps["analysis"],
         cutout_status=steps["cutout"],
         analysis_source=row.analysis_source,
+        analysis_notes=row.analysis_notes,
         confirmed_garment_id=row.confirmed_garment_id,
     )
 

@@ -31,6 +31,7 @@ class Health(Schema):
 class Capabilities(Schema):
     provider_mode: str
     model: str
+    recognition: str
     weather: str
     cutout: str
     maintenance: bool

@@ -71,6 +71,7 @@ class ImportRow(Base):
     conversion_status: Mapped[str] = mapped_column(default="queued")
     analysis_status: Mapped[str] = mapped_column(default="not_requested")
     cutout_status: Mapped[str] = mapped_column(default="queued")
+    analysis_notes: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
     analysis_source: Mapped[str | None]
     confirmed_garment_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("garments.id"), unique=True

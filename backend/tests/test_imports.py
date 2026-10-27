@@ -205,7 +205,7 @@ def test_late_recognition_cannot_overwrite_concurrent_manual_edit(clean_db, monk
     row = batch(accepted["import_batch_id"])["rows"][0]
     run_step(job_id, token, UUID(row["id"]), "conversion")
 
-    def late_result(_):
+    def late_result(_, settings):
         current = batch(accepted["import_batch_id"])["rows"][0]
         response = client.patch(
             f"/api/v1/imports/{accepted['import_batch_id']}/rows/{row['id']}",
@@ -215,9 +215,13 @@ def test_late_recognition_cannot_overwrite_concurrent_manual_edit(clean_db, monk
             },
         )
         assert response.status_code == 200
-        return {"category": "top", "name": "late guess"}, "fake"
+        from app.schemas.recognition import RecognitionResult
 
-    monkeypatch.setattr("app.jobs.imports.recognize", late_result)
+        return RecognitionResult.model_validate(
+            {"attributes": {"category": "top", "name": "late guess"}}
+        )
+
+    monkeypatch.setattr("app.services.recognition.recognize", late_result)
     run_step(job_id, token, UUID(row["id"]), "analysis")
     current = batch(accepted["import_batch_id"])["rows"][0]
     assert current["draft"]["category"] == "shoes" and current["draft"]["name"] is None
@@ -276,10 +280,10 @@ def test_garment_edit_filters_tags_and_version_conflict(clean_db):
 def test_failed_recognition_allows_manual_confirmation(clean_db, monkeypatch):
     from app.core.errors import AppError
 
-    def fail(_):
+    def fail(_, settings):
         raise AppError("PROVIDER_NOT_CONFIGURED", "请手动填写品类", 503)
 
-    monkeypatch.setattr("app.jobs.imports.recognize", fail)
+    monkeypatch.setattr("app.services.recognition.recognize", fail)
     accepted = upload_photos()
     run_job(*claim())
     current = batch(accepted["import_batch_id"])

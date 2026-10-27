@@ -19,6 +19,7 @@ export const rowSchema = z.object({
   conversion_status: z.string(),
   analysis_status: z.string(),
   cutout_status: z.string(),
+  analysis_notes: z.array(z.string()),
   analysis_source: z.string().nullable(),
   confirmed_garment_id: z.uuid().nullable(),
 })

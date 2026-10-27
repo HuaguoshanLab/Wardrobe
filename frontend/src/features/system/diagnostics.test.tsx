@@ -15,6 +15,7 @@ const server = setupServer(
       envelope({
         provider_mode: 'fake',
         model: 'fake',
+        recognition: 'fake',
         weather: 'unimplemented',
         cutout: 'unimplemented',
         maintenance: false,

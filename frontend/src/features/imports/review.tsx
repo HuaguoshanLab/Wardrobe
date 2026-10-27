@@ -107,7 +107,8 @@ export function ReviewPage() {
       <div className="notice">
         图片和品类必填。转换成功即可手工确认；识别或去背景失败不会阻止有效行入库。
         {batch.source === 'photos' && '标注 Fake 的结果是模拟预填，请核对。'}
-        刷新页面只读取进度，不会重新识别。
+        刷新页面只读取进度，不会重新识别。AI
+        预填需要核对，材质、厚度和保暖性请手工补充；重试识别可能再次计费。
       </div>
       {batch.job_error && (
         <p className="error" role="alert">
@@ -220,7 +221,13 @@ export function ReviewPage() {
                         row.draft.category ??
                         '品类未填写'}
                       {row.analysis_source === 'fake' && <span className="badge">Fake 预填</span>}
+                      {row.analysis_source === 'qwen' && (
+                        <span className="badge">千问预填 · 待核对</span>
+                      )}
                     </p>
+                    {row.analysis_notes.map((note, index) => (
+                      <p key={index}>{note}</p>
+                    ))}
                     <small>
                       {row.draft.seasons
                         .map((s) => taxonomy.data?.fields.seasons[s] ?? s)

@@ -75,7 +75,7 @@ flowchart LR
 
 ## 3. 数据模型
 
-下表是完整业务逻辑模型。P1 仅创建 system_state、jobs、job_events 及检查点设施；Profile 的稳定 owner/data_epoch 暂由 system_state 承载。P2 已创建衣橱/媒体/导入表，P3 已创建 profiles/weather_cities/weather_cache。P4 已创建 outfit_sessions/outfit_revisions/outfit_messages/outfit_images/outfit_model_calls，profiles 保存 current_session_id；owner/data_epoch/demo_seeded_at 仍由 system_state 持有。P5 追加 favorites/wear_records 与历史可见性元信息；备份恢复控制记录位于独立 control_data 卷。
+下表是完整业务逻辑模型。P1 仅创建 system_state、jobs、job_events 及检查点设施；Profile 的稳定 owner/data_epoch 暂由 system_state 承载。P2 已创建衣橱/媒体/导入表，P3 已创建 profiles/weather_cities/weather_cache。P4 已创建 outfit_sessions/outfit_revisions/outfit_messages/outfit_images/outfit_model_calls，profiles 保存 current_session_id；owner/data_epoch/demo_seeded_at 仍由 system_state 持有。P5 追加 favorites/wear_records 与历史可见性元信息；备份恢复控制记录位于独立 control_data 卷。P6 追加 recognition_calls 识别调用账本及 import_rows.analysis_notes，配置、预算和恢复语义见 [P6 识别](docs/P6-recognition.md)。
 
 | 实体 | 关键内容 | 约束 |
 |---|---|---|

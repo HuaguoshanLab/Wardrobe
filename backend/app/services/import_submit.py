@@ -1,5 +1,6 @@
 from uuid import UUID, uuid4
 
+from pydantic import JsonValue
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
@@ -11,9 +12,10 @@ from app.schemas.wardrobe import Attributes, ImportAccepted
 from app.services.import_review import find_row
 from app.services.jobs import append_event, get_job
 from app.services.operations import owner_id, receipt, save_receipt
+from app.services.recognition import configuration
 
 
-def new_job(db: Session, kind: str, payload: dict[str, str], key: str) -> Job:
+def new_job(db: Session, kind: str, payload: dict[str, JsonValue], key: str) -> Job:
     job = Job(
         id=uuid4(),
         owner_id=owner_id(db),
@@ -21,7 +23,7 @@ def new_job(db: Session, kind: str, payload: dict[str, str], key: str) -> Job:
         idempotency_key=key,
         request_hash=key,
         kind=kind,
-        input_snapshot=payload,
+        input_snapshot={**payload, "recognition": configuration()},
     )
     db.add(job)
     db.flush()
@@ -100,6 +102,7 @@ def retry_step(batch_id: UUID, row_id: UUID, step: str, key: str) -> ImportAccep
             "cutout": "media_cutout",
         }
         job = new_job(db, kinds[step], {"row_id": str(row_id), "step": step}, str(uuid4()))
+        job.retry_of_job_id = UUID(str(old_id)) if old_id else None
         row.step_jobs = {**row.step_jobs, step: str(job.id)}
         setattr(row, f"{step}_status", "queued")
         row.version += 1

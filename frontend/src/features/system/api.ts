@@ -5,6 +5,7 @@ import { api } from '../../lib/http'
 export const capabilitiesSchema = z.object({
   provider_mode: z.string(),
   model: z.string(),
+  recognition: z.string(),
   weather: z.string(),
   cutout: z.string(),
   maintenance: z.boolean(),

@@ -920,6 +920,8 @@ export interface components {
             provider_mode: string;
             /** Model */
             model: string;
+            /** Recognition */
+            recognition: string;
             /** Weather */
             weather: string;
             /** Cutout */
@@ -1511,6 +1513,11 @@ export interface components {
             };
             /** Failed Steps */
             failed_steps: number;
+            /**
+             * Interrupted Rows
+             * @default 0
+             */
+            interrupted_rows: number;
         };
         /** ItemSnapshot */
         ItemSnapshot: {
@@ -1846,6 +1853,8 @@ export interface components {
             analysis_status: string;
             /** Cutout Status */
             cutout_status: string;
+            /** Analysis Notes */
+            analysis_notes: string[];
             /** Analysis Source */
             analysis_source: string | null;
             /** Confirmed Garment Id */

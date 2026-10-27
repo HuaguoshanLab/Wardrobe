@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg://wardrobe:wardrobe_local_dev@localhost:55438/wardrobe"
     provider_mode: Literal["disabled", "fake", "qwen"] = "disabled"
+    recognition_mode: Literal["disabled", "fake", "qwen"] = "disabled"
     lease_seconds: int = Field(default=30, ge=5, le=300)
     poll_seconds: float = Field(default=0.5, ge=0.1, le=10)
     event_retention_days: int = Field(default=7, ge=1)

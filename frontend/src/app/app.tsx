@@ -116,12 +116,20 @@ function Settings() {
             {capability.data?.provider_mode === 'fake'
               ? '明确的模拟环境，不请求千问。'
               : capability.data?.model === 'configured'
-                ? '点击生成或调整时调用千问；实际可用性以任务结果为准。照片属性识别仍需手动填写。'
+                ? '点击生成或调整时调用千问；实际可用性以任务结果为准。照片识别状态见下方。'
                 : '可继续管理衣橱；生成前需配置模型或明确启用 Fake。'}
           </p>
         </article>
         <article className="panel">
           <small>天气与图片处理</small>
+          <p>
+            照片识别：
+            {capability.data?.recognition === 'fake'
+              ? 'Fake 预填'
+              : capability.data?.recognition === 'configured'
+                ? '千问已配置，上传照片或显式重试时调用；实际可用性待任务验证'
+                : '未配置，可手工填写'}
+          </p>
           <h3>本地图片处理</h3>
           <p>
             支持 HEIC 转换与去背景，原文件保留。天气服务：

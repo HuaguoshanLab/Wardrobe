@@ -38,6 +38,7 @@ const row = rowSchema.parse({
   analysis_status: 'running',
   cutout_status: 'queued',
   analysis_source: null,
+  analysis_notes: [],
   confirmed_garment_id: null,
 })
 const envelope = (data: unknown) => ({ data, request_id: id })

@@ -11,11 +11,11 @@ from app.jobs.queue import check_lease
 from app.media.excel import parse_excel
 from app.media.images import cutout, normalize
 from app.media.storage import path_for, store_bytes
-from app.providers.recognition import recognize
 from app.schemas.wardrobe import Attributes
 from app.services.import_review import read_batch
 from app.services.jobs import append_event, get_job
 from app.services.operations import owner_id
+from app.services.recognition import recognize_row
 from app.services.wardrobe import get_or_create_tag
 
 
@@ -101,6 +101,8 @@ def run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
     result: dict[str, JsonValue] = {}
     error: str | None = None
     source: str | None = None
+    notes: list[str] = []
+    interrupted = False
     try:
         if step == "conversion":
             data, width, height = normalize(path_for(original).read_bytes())
@@ -114,9 +116,11 @@ def run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
             result = {"key": key}
         elif step == "analysis":
             assert display
-            result, source = recognize(path_for(display).read_bytes())
-            result = Attributes.model_validate(result).model_dump(mode="json", exclude_unset=True)
+            recognized, source = recognize_row(job_id, token, row_id, display)
+            result = recognized.attributes.model_dump(mode="json", exclude_unset=True)
+            notes = recognized.uncertainties
     except AppError as exc:
+        interrupted = exc.code == "CALL_RESULT_UNKNOWN"
         error = f"{exc.code}: {exc.message}"
     except Exception:
         error = f"{step.upper()}_FAILED: 处理失败，可重试或使用原图/人工填写"
@@ -130,7 +134,11 @@ def run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
         media = db.get(MediaAsset, row.image_asset_id)
         assert media
         row.errors = {k: v for k, v in row.errors.items() if k != step}
-        setattr(row, f"{step}_status", "failed" if error else "succeeded")
+        setattr(
+            row,
+            f"{step}_status",
+            "interrupted" if interrupted else "failed" if error else "succeeded",
+        )
         if error:
             row.errors = {**row.errors, step: error}
         elif step == "conversion":
@@ -145,6 +153,7 @@ def run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
                 row.draft = {**row.draft, "display_variant": "cutout"}
         elif step == "analysis":
             row.analysis_source = source
+            row.analysis_notes = notes
             if not row.confirmed_garment_id:
                 row.draft = {
                     **row.draft,
@@ -187,6 +196,7 @@ def execute_import(job_id: UUID, token: UUID) -> dict[str, JsonValue]:
                 status: sum(row.row_status == status for row in batch.rows)
                 for status in ["ready", "invalid", "confirmed", "skipped"]
             },
+            "interrupted_rows": sum(row.analysis_status == "interrupted" for row in batch.rows),
             "failed_steps": sum(
                 getattr(row, f"{step}_status") == "failed"
                 for row in batch.rows
@@ -198,6 +208,8 @@ def execute_import(job_id: UUID, token: UUID) -> dict[str, JsonValue]:
     with session_factory()() as db:
         row = db.get(ImportRow, row_id)
         assert row
+        if getattr(row, f"{step}_status") == "interrupted":
+            raise AppError("CALL_RESULT_UNKNOWN", "识别结果未知；显式重试可能再次计费")
         if getattr(row, f"{step}_status") == "failed":
             raise AppError("STEP_FAILED", str(row.errors.get(step)), 422)
         return {

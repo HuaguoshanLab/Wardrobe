@@ -5,6 +5,7 @@ x-backend: &backend
   environment: &backend-env
     WARDROBE_DATABASE_URL: postgresql+psycopg://wardrobe:${POSTGRES_PASSWORD:-wardrobe_local_dev}@db:5432/wardrobe
     WARDROBE_PROVIDER_MODE: ${PROVIDER_MODE:-fake}
+    WARDROBE_RECOGNITION_MODE: ${RECOGNITION_MODE:-fake}
     LANGGRAPH_STRICT_MSGPACK: "true"
     WARDROBE_MEDIA_ROOT: /data/media
     WARDROBE_CONTROL_ROOT: /data/control
@@ -109,6 +110,7 @@ services:
     environment:
       WARDROBE_DATABASE_URL: postgresql+psycopg://wardrobe:wardrobe_test@test-db:5432/wardrobe_test
       WARDROBE_PROVIDER_MODE: fake
+      WARDROBE_RECOGNITION_MODE: fake
       WARDROBE_TEST_DATABASE: "1"
       WARDROBE_MEDIA_ROOT: /tmp/wardrobe-test-media
       WARDROBE_CONTROL_ROOT: /tmp/wardrobe-test-control

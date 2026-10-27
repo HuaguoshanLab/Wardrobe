@@ -18,13 +18,13 @@ from sqlalchemy.engine import make_url
 
 from app.core.config import get_settings
 from app.core.errors import AppError
-from app.db import collections, outfits, profile, wardrobe  # noqa: F401
+from app.db import collections, outfits, profile, recognition, wardrobe  # noqa: F401
 from app.db.models import Base
 from app.schemas.outfits import ItemSnapshot
 
 DataSet = dict[str, list[dict[str, JsonValue]]]
 
-REVISION = "0005_collections"
+REVISION = "0006_recognition"
 CHECKPOINT_TABLES = [
     "checkpoint_migrations",
     "checkpoints",
@@ -36,7 +36,7 @@ CHECKPOINT_TABLES = [
 def compatibility() -> dict[str, str | int]:
     return {
         "format_version": 1,
-        "app_version": "0.1.0-p5",
+        "app_version": "0.1.0-p6",
         "alembic_revision": REVISION,
         "checkpoint_adapter": version("langgraph-checkpoint-postgres"),
     }
@@ -128,6 +128,11 @@ def media_keys(data: DataSet) -> set[str]:
         str(row["source_key"]) for row in data["public.import_batches"] if row["source_key"]
     )
     keys.update(str(row["storage_key"]) for row in data["public.outfit_images"])
+    for call in data["public.recognition_calls"]:
+        config = call["config"]
+        if not isinstance(config, dict) or not isinstance(config.get("display_key"), str):
+            raise AppError("INVALID_BACKUP", "识别调用图片引用无效")
+        keys.add(str(config["display_key"]))
     images = {str(row["id"]) for row in data["public.outfit_images"]}
     for revision in data["public.outfit_revisions"]:
         items = revision["items"]

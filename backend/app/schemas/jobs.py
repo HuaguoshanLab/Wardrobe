@@ -29,6 +29,7 @@ class ImportResult(Schema):
     import_batch_id: UUID
     row_counts: dict[str, int]
     failed_steps: int
+    interrupted_rows: int = 0
 
 
 class MediaResult(Schema):

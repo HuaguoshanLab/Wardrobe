@@ -86,6 +86,8 @@ def complete(
         if job.status == "cancel_requested":
             job.status = "cancelled"
         elif error is not None:
+            if result is not None:
+                job.result = result
             job.status = "interrupted" if error.get("code") == "CALL_RESULT_UNKNOWN" else "failed"
             job.error = error
             append_event(db, job, "error", error)

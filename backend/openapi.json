@@ -5646,6 +5646,10 @@
             "type": "string",
             "title": "Model"
           },
+          "recognition": {
+            "type": "string",
+            "title": "Recognition"
+          },
           "weather": {
             "type": "string",
             "title": "Weather"
@@ -5669,6 +5673,7 @@
         "required": [
           "provider_mode",
           "model",
+          "recognition",
           "weather",
           "cutout",
           "maintenance",
@@ -7033,6 +7038,11 @@
           "failed_steps": {
             "type": "integer",
             "title": "Failed Steps"
+          },
+          "interrupted_rows": {
+            "type": "integer",
+            "title": "Interrupted Rows",
+            "default": 0
           }
         },
         "additionalProperties": false,
@@ -8023,6 +8033,13 @@
             "type": "string",
             "title": "Cutout Status"
           },
+          "analysis_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Analysis Notes"
+          },
           "analysis_source": {
             "anyOf": [
               {
@@ -8065,6 +8082,7 @@
           "conversion_status",
           "analysis_status",
           "cutout_status",
+          "analysis_notes",
           "analysis_source",
           "confirmed_garment_id"
         ],

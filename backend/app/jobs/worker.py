@@ -51,7 +51,19 @@ def run_job(job_id: UUID, token: UUID) -> None:
                 )
             return
         if read_job(job_id).kind != "diagnostic":
-            complete(job_id, token, execute_import(job_id, token))
+            import_result = execute_import(job_id, token)
+            if import_result.get("interrupted_rows"):
+                complete(
+                    job_id,
+                    token,
+                    import_result,
+                    error={
+                        "code": "CALL_RESULT_UNKNOWN",
+                        "message": "部分识别请求结果未知，可继续人工审核；显式重试可能再次计费",
+                    },
+                )
+            else:
+                complete(job_id, token, import_result)
             return
         with checkpointer() as saver:
             graph = build_graph(saver)
