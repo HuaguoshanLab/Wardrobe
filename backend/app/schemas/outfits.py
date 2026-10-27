@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import Field, JsonValue, model_validator
 
+from app.domain.taxonomy import TAXONOMY
 from app.schemas.common import Schema
 from app.schemas.profile import Requirements
 
@@ -42,7 +43,11 @@ class AdjustInput(GenerateInput):
 
 
 class Suggestion(Schema):
-    category: str = Field(min_length=1, max_length=40)
+    category: str = Field(
+        min_length=1,
+        max_length=40,
+        json_schema_extra={"enum": list(TAXONOMY["category"])},
+    )
     description: str = Field(min_length=1, max_length=300)
 
 

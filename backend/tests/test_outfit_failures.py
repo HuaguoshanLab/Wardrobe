@@ -217,3 +217,36 @@ def test_stale_automatic_weather_never_reaches_model(wardrobe):
     )
     with session_factory()() as db:
         assert db.scalar(select(func.count()).select_from(ModelCall)) == 0
+
+
+def test_repair_receives_specific_suggestion_failure_without_raw_output(wardrobe):
+    job_id, token = enqueue(session())
+    prepare_context(job_id, token)
+    valid = {
+        "outfits": [
+            {
+                "garment_ids": list(map(str, wardrobe[:1] + wardrobe[2:3] + wardrobe[4:5])),
+                "reason": "按记录组合",
+            }
+        ],
+        "message": "组合",
+    }
+    invalid = {
+        "outfits": [
+            {
+                **valid["outfits"][0],
+                "suggestions": [
+                    {"category": "配色优化", "description": "任意模型文本不应进入错误指令"}
+                ],
+            }
+        ],
+        "message": "组合",
+    }
+    with patch("app.agent.outfits.model_call", side_effect=[invalid, valid]) as provider:
+        run_job(job_id, token)
+    assert provider.call_count == 2
+    correction = provider.call_args_list[1].args[-1]
+    assert "未拥有建议含非法品类或购物链接" in correction
+    assert "任意模型文本" not in correction
+    job = client.get(f"/api/v1/jobs/{job_id}").json()["data"]
+    assert job["status"] == "succeeded"

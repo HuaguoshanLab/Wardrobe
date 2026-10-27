@@ -36,6 +36,11 @@ def model_call(
             if old.state == "invalid":
                 raise AppError("INVALID_MODEL_OUTPUT", "模型响应格式无效")
             raise AppError("CALL_RESULT_UNKNOWN", "已有调用结果未知，不自动重发")
+        if (
+            job.input_snapshot["provider_mode"] == "qwen"
+            and job.input_snapshot.get("prompt_version") != qwen.PROMPT_VERSION
+        ):
+            raise AppError("PROVIDER_CONFIG_CHANGED", "搭配提示版本已变化，请显式重试")
         count = (
             db.scalar(select(func.count()).select_from(ModelCall).where(ModelCall.job_id == job_id))
             or 0

@@ -31,6 +31,10 @@ def test_qwen_json_request_and_response():
     assert body["model"] == "qwen3-vl-plus"
     assert body["response_format"] == {"type": "json_object"}
     assert body["enable_thinking"] is False
+    schema = json.loads(body["messages"][0]["content"].split("\nJSON schema: ")[1])
+    choices = schema["$defs"]["Suggestion"]["properties"]["category"]["enum"]
+    assert {"top", "bottom", "shoes"} <= set(choices)
+    assert not {"上装", "配色优化", "替代方案"} & set(choices)
     assert "test-secret" not in route.calls.last.request.url.path
 
 

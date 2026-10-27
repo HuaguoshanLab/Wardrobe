@@ -7,6 +7,7 @@ from app.core.errors import AppError
 from app.db.models import Job
 from app.db.outfits import OutfitMessage, OutfitSession
 from app.db.session import session_factory
+from app.providers.qwen import PROMPT_VERSION
 from app.schemas.jobs import JobAccepted
 from app.schemas.outfits import AdjustInput, GenerateInput
 from app.schemas.profile import Requirements
@@ -83,7 +84,7 @@ def submit(
                 else None,
                 "provider_mode": settings.provider_mode,
                 "model": settings.qwen_model,
-                "prompt_version": "outfits-v1",
+                "prompt_version": PROMPT_VERSION,
             },
             retry_of_job_id=retry_of,
             status="queued",

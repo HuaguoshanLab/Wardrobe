@@ -75,7 +75,11 @@ def generate(state: OutfitState) -> dict[str, str]:
                     raise AppError(
                         "INVALID_MODEL_OUTPUT", "模型结果仍违反约束，已停止；请调整条件后重试"
                     ) from exc
-                correction = "上次结果未通过校验，请检查真实 ID、保持项、替换目标和数量。"
+                correction = (
+                    f"上次结果未通过校验：{exc.message}。请修正该问题，仍须遵守全部约束。"
+                    if isinstance(exc, AppError)
+                    else "上次 JSON 未通过 schema 校验，请按字段类型、必填项与数量限制修正。"
+                )
     with session_factory().begin() as db:
         job = get_job(db, job_id, lock=True)
         check_lease(job, token)
