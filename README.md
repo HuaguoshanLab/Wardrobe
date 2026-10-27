@@ -2,7 +2,7 @@
 
 记录自己的衣服、鞋和配饰，根据天气、场合及个人偏好生成最多三套搭配，并通过按钮或聊天调整。
 
-> 当前状态：P1–P5 已实现；P6 真实识别/搭配、Excel 导入与和风已有小样本验收，手机使用获用户反馈通过。完整进度和未验证项见 [DEVELOPMENT](docs/DEVELOPMENT.md)，备份运行限制见 [P5](docs/P5.md)。
+> 当前状态：**第一版开发完成，进入日常使用与反馈修复阶段**。P6 工程回归已完成，剩余外部验收项保留待验证；收尾状态见 [DEVELOPMENT](docs/DEVELOPMENT.md)，明细见 [验收台账](docs/plans/P6-acceptance.md)，备份运行限制见 [P5](docs/P5.md)。
 
 ## 已确定的产品
 
@@ -111,4 +111,4 @@ docker compose --profile test run --build --rm test
 
 ## AI 接续开发
 
-先读 [AGENTS](AGENTS.md)，再从 [DEVELOPMENT](docs/DEVELOPMENT.md) 的“下一任务”继续。文档中的“已确认需求”“工程默认”“待验证”和“已实现”必须区分。切勿重新引入已经取消的 CSV 导入、默认自动生成或自动偏好学习。
+先读 [AGENTS](AGENTS.md)，再读 [DEVELOPMENT](docs/DEVELOPMENT.md) 的“下一任务”。当前等待实际使用反馈，收到具体问题后再修复，不自动继续旧验收计划或扩展功能。文档中的“已确认需求”“工程默认”“待验证”和“已实现”必须区分。切勿重新引入已经取消的 CSV 导入、默认自动生成或自动偏好学习。
