@@ -1,6 +1,6 @@
 # 后端
 
-已有 P1 任务账本/独立 worker/诊断图/Checkpointer，以及 P2 衣橱、媒体、标签、两种导入、逐行确认和步骤重试。P3 天气/偏好与 P4 搭配闭环已实现；真实搭配已有小样本验收，和风账号未验，详见 [P4](../docs/P4.md)。工作规则见 [AGENTS](AGENTS.md)，实现边界见 [P2](../docs/P2.md)。
+已有 P1 任务账本/独立 worker/诊断图/Checkpointer，以及 P2 衣橱、媒体、标签、两种导入、逐行确认和步骤重试。P3 天气/偏好与 P4 搭配闭环已实现；真实搭配已有小样本验收，和风账号已有城市/实况/预报小样本验收，详见 [P4](../docs/P4.md)。工作规则见 [AGENTS](AGENTS.md)，实现边界见 [P2](../docs/P2.md)。
 
 ## 运行环境
 
@@ -89,3 +89,5 @@ P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qwea
 ## P5 控制器
 
 本机开发另开终端运行 `uv run python -m app.backup.worker`。API、worker、controller 必须共享 WARDROBE_CONTROL_ROOT、媒体根和数据库；Compose 已挂载 control_data。备份控制记录独立于业务库，验证需要 CREATEDB 权限。不可把生产库当恢复测试目标；隔离命令及证据见 [P5 记录](../docs/history/2026-10-26-p5.md)。
+
+2026-10-27：修复和风分区子域Host校验，实际验收与缓存/失败降级边界见[和风验收](../docs/history/2026-10-27-qweather.md)。

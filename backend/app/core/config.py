@@ -31,7 +31,10 @@ class Settings(BaseSettings):
     def qwen_configured(self) -> bool:
         return bool(self.qwen_base_url and self.qwen_api_key.get_secret_value())
 
-    qweather_host: str = Field(default="", pattern=r"^$|^[a-zA-Z0-9-]+\.qweatherapi\.com$")
+    qweather_host: str = Field(
+        default="",
+        pattern=r"^$|^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)?\.qweatherapi\.com$",
+    )
     qweather_api_key: SecretStr = SecretStr("")
     qweather_token: SecretStr = SecretStr("")
 
