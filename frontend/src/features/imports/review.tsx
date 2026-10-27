@@ -6,6 +6,7 @@ import { api } from '../../lib/http'
 import { operationId } from '../../lib/id'
 import {
   getBatch,
+  batchPollInterval,
   terminal,
   statusLabel,
   confirmationSchema,
@@ -25,7 +26,7 @@ export function ReviewPage() {
   const query = useQuery({
     queryKey: ['import', id],
     queryFn: () => getBatch(id!),
-    refetchInterval: 2000,
+    refetchInterval: (query) => batchPollInterval(query.state.data),
   })
   const refresh = () => {
     void client.invalidateQueries({ queryKey: ['import', id] })

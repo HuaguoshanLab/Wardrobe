@@ -1,6 +1,6 @@
 # 后端
 
-已有 P1 任务账本/独立 worker/诊断图/Checkpointer，以及 P2 衣橱、媒体、标签、两种导入、逐行确认和步骤重试。P3 天气/偏好与 P4 搭配闭环已实现；千问及和风真实账号未联调，详见 [P4](../docs/P4.md)。工作规则见 [AGENTS](AGENTS.md)，实现边界见 [P2](../docs/P2.md)。
+已有 P1 任务账本/独立 worker/诊断图/Checkpointer，以及 P2 衣橱、媒体、标签、两种导入、逐行确认和步骤重试。P3 天气/偏好与 P4 搭配闭环已实现；真实搭配及和风账号未验，详见 [P4](../docs/P4.md)。工作规则见 [AGENTS](AGENTS.md)，实现边界见 [P2](../docs/P2.md)。
 
 ## 运行环境
 
@@ -84,7 +84,7 @@ backend/.venv/bin/python scripts/smoke.py
 
 P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qweather.py。配置 WARDROBE_QWEATHER_HOST、WARDROBE_QWEATHER_API_KEY 或 WARDROBE_QWEATHER_TOKEN，详见 [P3](../docs/P3.md)。无凭据只提供手动流程，不自动 Fake 天气。
 
-真实百炼搭配适配已实现；配置与重试边界见 P4。真实照片识别适配已实现，独立配置 WARDROBE_RECOGNITION_MODE，默认 disabled；详见 [P6 识别](../docs/P6-recognition.md)；P5 维护态及独立 controller 已实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。P5 历史、收藏、穿着记录及备份恢复已实现，格式和运行限制见 [P5](../docs/P5.md)。
+真实百炼搭配适配已实现；配置与重试边界见 P4。真实照片识别已完成 PNG 小样本账号验收，质量问题与剩余验收见开发记录；独立配置 WARDROBE_RECOGNITION_MODE，默认 disabled。模型输出词表代码约束和验收证据见 [P6 识别](../docs/P6-recognition.md)。P5 维护态及独立 controller 已实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。P5 历史、收藏、穿着记录及备份恢复已实现，格式和运行限制见 [P5](../docs/P5.md)。
 
 ## P5 控制器
 

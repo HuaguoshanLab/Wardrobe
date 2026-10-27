@@ -9,6 +9,7 @@ from PIL import Image
 
 from app.core.config import Settings
 from app.core.errors import AppError
+from app.domain.taxonomy import TAXONOMY
 from app.providers.recognition import recognize
 
 SETTINGS = Settings(
@@ -52,6 +53,12 @@ def test_vision_request_bounded_image_and_unknowns():
     image = Image.open(io.BytesIO(base64.b64decode(url.split(",")[1])))
     assert image.size == (1280, 640) and not image.getexif()
     assert "test-secret" not in json.dumps(body)
+    system = body["messages"][0]["content"]
+    schema = json.loads(system.split("\nJSON schema: ")[1].split("\n词表: ")[0])
+    properties = schema["$defs"]["RecognizedAttributes"]["properties"]
+    assert properties["category"]["enum"] == [*TAXONOMY["category"], None]
+    for field in ("color_codes", "seasons", "occasion_codes", "style_codes"):
+        assert properties[field]["items"]["enum"] == list(TAXONOMY[field])
     assert route.call_count == 1
 
 
@@ -60,6 +67,8 @@ def test_vision_request_bounded_image_and_unknowns():
     "attributes",
     [
         {"category": "made-up"},
+        {"category": "上装"},
+        {"color_codes": ["白色"]},
         {"color_codes": ["unknown-color"]},
         {"availability": "unavailable"},
         {"custom_tag_ids": ["fake-id"]},

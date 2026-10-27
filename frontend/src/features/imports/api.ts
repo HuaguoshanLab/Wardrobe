@@ -48,6 +48,17 @@ export const confirmationSchema = z.object({
   ),
 })
 export const getBatch = (id: string) => api(`/imports/${id}`, batchSchema)
+export function batchPollInterval(batch: z.infer<typeof batchSchema> | undefined): 2000 | false {
+  if (!batch) return false
+  const active = new Set(['queued', 'running', 'cancel_requested'])
+  // A row retry has its own Job; the parent batch can already be terminal.
+  return active.has(batch.job_status) ||
+    batch.rows.some((row) =>
+      [row.conversion_status, row.analysis_status, row.cutout_status].some((s) => active.has(s)),
+    )
+    ? 2000
+    : false
+}
 export const terminal = new Set(['succeeded', 'failed', 'interrupted', 'cancelled'])
 export const statusLabel: Record<string, string> = {
   queued: '排队中',

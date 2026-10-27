@@ -9,12 +9,32 @@ from app.schemas.common import Schema
 
 
 class RecognizedAttributes(Schema):
-    category: str | None = Field(default=None, max_length=40)
+    category: str | None = Field(
+        default=None,
+        max_length=40,
+        json_schema_extra={"enum": [*TAXONOMY["category"], None]},
+    )
     name: str | None = Field(default=None, max_length=100)
-    color_codes: list[str] = Field(default_factory=list, max_length=20)
-    seasons: list[str] = Field(default_factory=list, max_length=4)
-    occasion_codes: list[str] = Field(default_factory=list, max_length=20)
-    style_codes: list[str] = Field(default_factory=list, max_length=20)
+    color_codes: list[str] = Field(
+        default_factory=list,
+        max_length=20,
+        json_schema_extra={"items": {"type": "string", "enum": list(TAXONOMY["color_codes"])}},
+    )
+    seasons: list[str] = Field(
+        default_factory=list,
+        max_length=4,
+        json_schema_extra={"items": {"type": "string", "enum": list(TAXONOMY["seasons"])}},
+    )
+    occasion_codes: list[str] = Field(
+        default_factory=list,
+        max_length=20,
+        json_schema_extra={"items": {"type": "string", "enum": list(TAXONOMY["occasion_codes"])}},
+    )
+    style_codes: list[str] = Field(
+        default_factory=list,
+        max_length=20,
+        json_schema_extra={"items": {"type": "string", "enum": list(TAXONOMY["style_codes"])}},
+    )
 
     @model_validator(mode="after")
     def vocabulary(self) -> Self:
