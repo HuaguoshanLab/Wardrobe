@@ -1,0 +1,209 @@
+{
+  "name": "wardrobe-p6-regression",
+  "services": {
+    "db": {
+      "image": "postgres:18.4-alpine",
+      "environment": {
+        "POSTGRES_USER": "wardrobe",
+        "POSTGRES_PASSWORD": "isolated_regression",
+        "POSTGRES_DB": "regression_test"
+      },
+      "ports": [
+        "127.0.0.1:55441:5432"
+      ],
+      "volumes": [
+        "postgres_data:/var/lib/postgresql"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U wardrobe -d regression_test"
+        ],
+        "interval": "2s",
+        "retries": 30
+      }
+    },
+    "migrate": {
+      "image": "wardrobe-test:latest",
+      "environment": {
+        "WARDROBE_DATABASE_URL": "postgresql+psycopg://wardrobe:isolated_regression@db:5432/regression_test",
+        "WARDROBE_PROVIDER_MODE": "fake",
+        "WARDROBE_RECOGNITION_MODE": "fake",
+        "WARDROBE_MEDIA_ROOT": "/data/media",
+        "WARDROBE_CONTROL_ROOT": "/data/control",
+        "LANGGRAPH_STRICT_MSGPACK": "true"
+      },
+      "volumes": [
+        "media_data:/data/media",
+        "control_data:/data/control",
+        "../backend/app:/app/app:ro",
+        "../backend/migrations:/app/migrations:ro"
+      ],
+      "init": true,
+      "command": [
+        "python",
+        "-m",
+        "app.initialize"
+      ],
+      "depends_on": {
+        "db": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "api": {
+      "image": "wardrobe-test:latest",
+      "environment": {
+        "WARDROBE_DATABASE_URL": "postgresql+psycopg://wardrobe:isolated_regression@db:5432/regression_test",
+        "WARDROBE_PROVIDER_MODE": "fake",
+        "WARDROBE_RECOGNITION_MODE": "fake",
+        "WARDROBE_MEDIA_ROOT": "/data/media",
+        "WARDROBE_CONTROL_ROOT": "/data/control",
+        "LANGGRAPH_STRICT_MSGPACK": "true"
+      },
+      "volumes": [
+        "media_data:/data/media",
+        "control_data:/data/control",
+        "../backend/app:/app/app:ro",
+        "../backend/migrations:/app/migrations:ro"
+      ],
+      "init": true,
+      "command": [
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ],
+      "depends_on": {
+        "migrate": {
+          "condition": "service_completed_successfully"
+        }
+      },
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"
+        ],
+        "interval": "2s",
+        "retries": 30
+      }
+    },
+    "worker": {
+      "image": "wardrobe-test:latest",
+      "environment": {
+        "WARDROBE_DATABASE_URL": "postgresql+psycopg://wardrobe:isolated_regression@db:5432/regression_test",
+        "WARDROBE_PROVIDER_MODE": "fake",
+        "WARDROBE_RECOGNITION_MODE": "fake",
+        "WARDROBE_MEDIA_ROOT": "/data/media",
+        "WARDROBE_CONTROL_ROOT": "/data/control",
+        "LANGGRAPH_STRICT_MSGPACK": "true",
+        "P6_ISOLATED_REGRESSION": "1",
+        "PYTHONPATH": "/app"
+      },
+      "volumes": [
+        "media_data:/data/media",
+        "control_data:/data/control",
+        "../backend/app:/app/app:ro",
+        "../backend/migrations:/app/migrations:ro",
+        "../scripts:/acceptance:ro"
+      ],
+      "init": true,
+      "command": [
+        "python",
+        "/acceptance/regression_worker.py"
+      ],
+      "depends_on": {
+        "migrate": {
+          "condition": "service_completed_successfully"
+        }
+      }
+    },
+    "controller": {
+      "image": "wardrobe-test:latest",
+      "environment": {
+        "WARDROBE_DATABASE_URL": "postgresql+psycopg://wardrobe:isolated_regression@db:5432/regression_test",
+        "WARDROBE_PROVIDER_MODE": "fake",
+        "WARDROBE_RECOGNITION_MODE": "fake",
+        "WARDROBE_MEDIA_ROOT": "/data/media",
+        "WARDROBE_CONTROL_ROOT": "/data/control",
+        "LANGGRAPH_STRICT_MSGPACK": "true"
+      },
+      "volumes": [
+        "media_data:/data/media",
+        "control_data:/data/control",
+        "../backend/app:/app/app:ro",
+        "../backend/migrations:/app/migrations:ro"
+      ],
+      "init": true,
+      "command": [
+        "python",
+        "-m",
+        "app.backup.worker"
+      ],
+      "depends_on": {
+        "migrate": {
+          "condition": "service_completed_successfully"
+        }
+      }
+    },
+    "web": {
+      "image": "wardrobe-p6-regression-web:local",
+      "build": {
+        "context": "../frontend"
+      },
+      "ports": [
+        "127.0.0.1:8099:80"
+      ],
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy"
+        }
+      },
+      "networks": [
+        "default",
+        "ingress"
+      ]
+    },
+    "test": {
+      "image": "wardrobe-test:latest",
+      "environment": {
+        "WARDROBE_DATABASE_URL": "postgresql+psycopg://wardrobe:isolated_regression@db:5432/regression_suite_test",
+        "WARDROBE_PROVIDER_MODE": "fake",
+        "WARDROBE_RECOGNITION_MODE": "fake",
+        "WARDROBE_MEDIA_ROOT": "/tmp/regression-media",
+        "WARDROBE_CONTROL_ROOT": "/tmp/regression-control",
+        "LANGGRAPH_STRICT_MSGPACK": "true",
+        "WARDROBE_TEST_DATABASE": "1"
+      },
+      "volumes": [
+        "../backend/app:/app/app:ro",
+        "../backend/migrations:/app/migrations:ro",
+        "../backend/tests:/app/tests:ro"
+      ],
+      "init": true,
+      "profiles": [
+        "test"
+      ],
+      "depends_on": {
+        "db": {
+          "condition": "service_healthy"
+        }
+      }
+    }
+  },
+  "volumes": {
+    "postgres_data": {},
+    "media_data": {},
+    "control_data": {}
+  },
+  "networks": {
+    "default": {
+      "internal": true
+    },
+    "ingress": {}
+  }
+}

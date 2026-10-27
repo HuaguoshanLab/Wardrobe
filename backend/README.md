@@ -91,3 +91,5 @@ P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qwea
 本机开发另开终端运行 `uv run python -m app.backup.worker`。API、worker、controller 必须共享 WARDROBE_CONTROL_ROOT、媒体根和数据库；Compose 已挂载 control_data。备份控制记录独立于业务库，验证需要 CREATEDB 权限。不可把生产库当恢复测试目标；隔离命令及证据见 [P5 记录](../docs/history/2026-10-26-p5.md)。
 
 2026-10-27：修复和风分区子域Host校验，实际验收与缓存/失败降级边界见[和风验收](../docs/history/2026-10-27-qweather.md)。
+
+P6 当前版本逐项回归使用 [独立回归 Compose](../scripts/compose.regression.json) 的 `regression_suite_test` 数据库；与浏览器使用的 `regression_test` 和业务库均隔离。新增精确场景见 `tests/test_p6_acceptance.py`，运行命令及证据见[回归记录](../docs/history/2026-10-27-p6-regression.md)。Fake/模拟 HTTP 通过不代表外部服务与真机通过。

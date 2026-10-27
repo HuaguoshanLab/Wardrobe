@@ -1,6 +1,6 @@
 # 前端
 
-P3 已实现偏好、默认城市、天气展示与手动覆盖、首页条件草稿；保留 P2 衣橱/双导入和 P1 Fake 诊断。P4 正式搭配、锁定/替换/聊天和会话恢复已实现；P5 历史/收藏/日历和备份恢复已实现，真实云账号待验。技术栈见 [ARCHITECTURE](../ARCHITECTURE.md)，规则见 [AGENTS](AGENTS.md)。
+P3 已实现偏好、默认城市、天气展示与手动覆盖、首页条件草稿；保留 P2 衣橱/双导入和 P1 Fake 诊断。P4 正式搭配、锁定/替换/聊天和会话恢复已实现；P5 历史/收藏/日历和备份恢复已实现，真实云服务已有小样本证据，范围见[开发记录](../docs/DEVELOPMENT.md)。技术栈见 [ARCHITECTURE](../ARCHITECTURE.md)，规则见 [AGENTS](AGENTS.md)。
 
 ## 环境与安装
 
@@ -93,3 +93,13 @@ P3 条件草稿按北京时间日期/城市保存在本浏览器；查询不自�
 `/collections` 和 `/calendar` 提供历史、收藏及实际穿着操作；`/collections/:revisionId` 提供固定快照和复用入口。设置页可备份、下载、上传验证和明确确认覆盖。普通 E2E 只导出和验证，不覆盖运行库；覆盖流程单独用 `playwright.restore.config.ts` 在 8099 隔离栈验证，运行要求见 [P5 记录](../docs/history/2026-10-26-p5.md)。
 
 恢复控制 ID 使用独立 localStorage 命名空间保留；业务草稿、待发操作和 Query 缓存仍在 data_epoch 变化时清除。恢复上传网络失败后需重选同一文件再重发原键，服务器校验内容哈希；刷新不会自动上传或应用恢复。
+
+## 当前版本 P6 隔离回归
+
+使用 [独立 Compose](../scripts/compose.regression.json)，按[回归记录](../docs/history/2026-10-27-p6-regression.md)启动并确认卷/网络隔离后，在本目录运行：
+
+```sh
+P6_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8099 npx playwright test -c playwright.p6.config.ts
+```
+
+专用配置包含普通 E2E、运行中刷新/SSE 故障和确认覆盖恢复，覆盖桌面与 Pixel 7 Chromium。前置检查核实实际项目、卷、内部网络和 Fake 能力；`generating-isolated.scenario.ts` 通过 Docker CLI 控制专用 worker 的有界暂停，只允许该隔离栈。不要把本命令指向业务环境；不会请求真实模型。TypeScript 检查包含全部 `playwright*.ts` 配置。

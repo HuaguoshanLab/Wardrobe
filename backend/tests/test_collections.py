@@ -53,6 +53,7 @@ def test_hide_keeps_favorite_wear_snapshot_and_clears_reused_sessions():
 def test_wear_dates_dedup_versions_and_favorite_name():
     s, _ = generate(session())
     rid = s["selected_revision_id"]
+    snapshot = client.get(f"/api/v1/outfit-revisions/{rid}").json()["data"]
     key = headers()
     body = {"revision_id": rid, "worn_on": str(today() - timedelta(days=1)), "notes": "昨天"}
     first = client.post("/api/v1/wear-records", headers=key, json=body).json()["data"]
@@ -92,7 +93,7 @@ def test_wear_dates_dedup_versions_and_favorite_name():
         == "命名"
     )
     assert client.delete(path, headers=headers() | {"If-Match": "2"}).status_code == 200
-    assert client.get(f"/api/v1/outfit-revisions/{rid}").status_code == 200
+    assert client.get(f"/api/v1/outfit-revisions/{rid}").json()["data"] == snapshot
 
 
 def test_history_busy_and_pagination():

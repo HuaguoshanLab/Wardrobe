@@ -106,8 +106,19 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
     await expect.poll(async () => (await session()).selected_revision_id).not.toBe(updated.id)
     saved = await session()
     expect(saved.locked_garment_ids).toHaveLength(1)
+    const chatted = saved.revisions.find((r: { id: string }) => r.id === saved.selected_revision_id)
+    expect(chatted.items).toContainEqual(outerwearItem)
     const other = await browser.newContext()
     const otherPage = await other.newPage()
+    let otherWrites = 0
+    otherPage.on('request', (req) => {
+      if (!['GET', 'HEAD'].includes(req.method())) otherWrites++
+    })
+    const restoredResponse = otherPage.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/api/v1/outfit-sessions/${saved.id}`) &&
+        response.request().method() === 'GET',
+    )
     await otherPage.goto(
       (process.env.E2E_BASE_URL ?? 'http://localhost:8088') + `/outfits/${saved.id}`,
     )
@@ -115,6 +126,12 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
     expect(await otherPage.locator('input[type=checkbox]:checked').count()).toBeGreaterThanOrEqual(
       1,
     )
+    const restored = (await (await restoredResponse).json()).data
+    expect(restored.selected_revision_id).toBe(saved.selected_revision_id)
+    expect(restored.locked_garment_ids).toEqual(saved.locked_garment_ids)
+    expect(restored.requirements).toEqual(saved.requirements)
+    expect(restored.current_job_id).toBe(saved.current_job_id)
+    expect(otherWrites).toBe(0)
     await other.close()
     expect(modelPosts).toBe(3)
     expect(errors).toEqual([])
