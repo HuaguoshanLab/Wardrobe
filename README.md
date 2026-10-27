@@ -2,7 +2,7 @@
 
 记录自己的衣服、鞋和配饰，根据天气、场合及个人偏好生成最多三套搭配，并通过按钮或聊天调整。
 
-> 当前状态：P1–P5 已实现，包含衣橱/导入、天气偏好、搭配调整、历史收藏、实际穿着记录及备份恢复。默认 Fake；真实照片识别已有小样本验收，真实搭配已完成一次生成/替换验收，解释质量仍有问题，见[验收记录](docs/history/2026-10-27-qwen-outfits.md)；和风账号和手机真机仍待验，配置与边界见 [P6 识别](docs/P6-recognition.md)。备份运行限制见 [P5](docs/P5.md)。
+> 当前状态：P1–P5 已实现；P6 真实识别/搭配、Excel 导入与和风已有小样本验收，手机使用获用户反馈通过。完整进度和未验证项见 [DEVELOPMENT](docs/DEVELOPMENT.md)，备份运行限制见 [P5](docs/P5.md)。
 
 ## 已确定的产品
 
@@ -105,7 +105,7 @@ docker compose --profile test run --build --rm test
 
 该命令只访问独立的 `wardrobe_test` 数据库，使用临时内存盘，不清理应用数据。前端测试及本地热更新命令见 [前端 README](frontend/README.md)，后端开发命令见 [后端 README](backend/README.md)。
 
-和风天气配置见 [P3](docs/P3.md)：在后端设置 QWEATHER_HOST 和 API Key 或 Bearer JWT；留空可使用手动城市/天气。当前未配置真实凭据，不能声称和风已联调。真实千问搭配配置见 [P4](docs/P4.md)，须提供账户地域对应地址和凭据。设置 `PROVIDER_MODE=disabled` 后诊断提交返回未配置错误，照片仍可转换并手工审核，不自动切回 Fake。`CUTOUT_ENABLED=false` 可禁用去背景，原图仍可使用。
+和风天气配置见 [P3](docs/P3.md)：在后端设置 QWEATHER_HOST 和 API Key 或 Bearer JWT；留空可使用手动城市/天气。真实账号联调证据见 [和风验收](docs/history/2026-10-27-qweather.md)。真实千问搭配配置见 [P4](docs/P4.md)，须提供账户地域对应地址和凭据。设置 `PROVIDER_MODE=disabled` 后诊断提交返回未配置错误，照片仍可转换并手工审核，不自动切回 Fake。`CUTOUT_ENABLED=false` 可禁用去背景，原图仍可使用。
 
 手机通过电脑局域网 HTTP 访问时可能无法定位；设置页可直接手动填写城市。电脑 localhost 或可信 HTTPS 环境点击“使用当前位置”可尝试定位；失败仍可手动选择。首页“保存并核对条件”仅保存浏览器草稿；点击生成后，已提交条件及搭配会话可跨浏览器恢复。真实天气与云端 AI 接入后仍需网络，本地部署不代表可以离线使用这些服务。
 

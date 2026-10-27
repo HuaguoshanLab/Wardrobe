@@ -1,0 +1,64 @@
+{
+  "name": "wardrobe-p6-capacity",
+  "services": {
+    "db": {
+      "image": "postgres:18.4-alpine",
+      "environment": {
+        "POSTGRES_USER": "wardrobe",
+        "POSTGRES_PASSWORD": "isolated_capacity",
+        "POSTGRES_DB": "capacity_test"
+      },
+      "ports": [
+        "127.0.0.1:55440:5432"
+      ],
+      "volumes": [
+        "postgres_data:/var/lib/postgresql"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U wardrobe -d capacity_test"
+        ],
+        "interval": "2s",
+        "retries": 30
+      }
+    },
+    "runner": {
+      "image": "wardrobe-test:latest",
+      "command": [
+        "sleep",
+        "infinity"
+      ],
+      "mem_limit": "3g",
+      "environment": {
+        "WARDROBE_DATABASE_URL": "postgresql+psycopg://wardrobe:isolated_capacity@db:5432/capacity_test",
+        "WARDROBE_PROVIDER_MODE": "fake",
+        "WARDROBE_RECOGNITION_MODE": "fake",
+        "WARDROBE_TEST_DATABASE": "1",
+        "WARDROBE_MEDIA_ROOT": "/data/media",
+        "WARDROBE_CONTROL_ROOT": "/data/control",
+        "LANGGRAPH_STRICT_MSGPACK": "true",
+        "P6_CAPACITY_ISOLATED": "1"
+      },
+      "volumes": [
+        "media_data:/data/media",
+        "control_data:/data/control",
+        "../backend/app:/app/app:ro",
+        "../backend/tests:/app/tests:ro",
+        "../backend/migrations:/app/migrations:ro",
+        "../scripts:/acceptance:ro",
+        "../data/acceptance/p6-capacity:/evidence"
+      ],
+      "depends_on": {
+        "db": {
+          "condition": "service_healthy"
+        }
+      }
+    }
+  },
+  "volumes": {
+    "postgres_data": {},
+    "media_data": {},
+    "control_data": {}
+  }
+}

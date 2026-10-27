@@ -1,6 +1,6 @@
 # 架构设计
 
-版本：0.7。更新日期：2026-10-26。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实搭配与照片识别已有小样本验收，和风账号待验；当前证据见 [DEVELOPMENT](docs/DEVELOPMENT.md)。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
+版本：0.7。更新日期：2026-10-26。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实搭配、照片识别与和风账号已有小样本验收；当前证据见 [DEVELOPMENT](docs/DEVELOPMENT.md)。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
 
 产品行为见 [PRODUCT](docs/PRODUCT.md)，字段和协议见 [CONTRACTS](docs/CONTRACTS.md)，实施状态见 [DEVELOPMENT](docs/DEVELOPMENT.md)。本文是技术栈和模块边界的主要维护位置。
 
