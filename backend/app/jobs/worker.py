@@ -12,12 +12,15 @@ from app.core.errors import AppError
 from app.core.maintenance import shared
 from app.jobs.imports import execute_import
 from app.jobs.queue import claim, complete, heartbeat, sweep
+from app.jobs.telemetry import trace_job
+from app.observability.runtime import shutdown as shutdown_observability
 from app.schemas.jobs import DiagnosticResult
 from app.services.jobs import read_job
 
 log = logging.getLogger(__name__)
 
 
+@trace_job
 def run_job(job_id: UUID, token: UUID) -> None:
     stop = threading.Event()
 
@@ -113,6 +116,7 @@ def main() -> None:
         except Exception:
             log.error("Worker database unavailable; retrying poll without rerunning a claimed job")
             stop.wait(2)
+    shutdown_observability()
 
 
 if __name__ == "__main__":

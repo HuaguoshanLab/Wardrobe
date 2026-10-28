@@ -21,6 +21,15 @@ class Settings(BaseSettings):
     control_root: Path = Path("../data/control")
     backup_max_bytes: int = Field(default=2 * 1024**3, ge=1024**2)
 
+    langfuse_enabled: bool = False
+    langfuse_base_url: str = ""
+    langfuse_public_key: str = ""
+    langfuse_secret_key: SecretStr = SecretStr("")
+    langfuse_environment: str = "local"
+    langfuse_capture_text: bool = False
+    langfuse_price_profile: str = "disabled"
+    langfuse_cny_per_usd: float | None = Field(default=None, gt=0, allow_inf_nan=False)
+
     qwen_api_key: SecretStr = SecretStr("")
     qwen_base_url: str = Field(
         default="", pattern=r"^$|^https://[a-zA-Z0-9.-]+/(?:compatible-mode/v1)/?$"

@@ -61,6 +61,11 @@ services:
 
   worker:
     <<: *backend
+    env_file:
+      - path: .env.langfuse-worker
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: ["python", "-m", "app.jobs.worker"]
     depends_on:
       migrate: {condition: service_completed_successfully}

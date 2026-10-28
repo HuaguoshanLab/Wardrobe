@@ -31,3 +31,28 @@ def clean_db(database: None) -> Iterator[None]:
             )
         )
     yield
+
+
+@pytest.fixture
+def telemetry(monkeypatch):
+    from uuid import uuid4
+
+    from langfuse import Langfuse
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+
+    from app.observability import runtime
+
+    exporter = InMemorySpanExporter()
+    sdk = Langfuse(
+        public_key="pk-lf-test-" + uuid4().hex,
+        secret_key="test-only",
+        base_url="http://localhost:1",
+        environment="test",
+        tracer_provider=TracerProvider(shutdown_on_exit=False),
+        span_exporter=exporter,
+        flush_at=1,
+    )
+    monkeypatch.setattr(runtime, "client", lambda: sdk)
+    yield sdk, exporter
+    sdk.shutdown()

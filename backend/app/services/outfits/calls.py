@@ -8,6 +8,7 @@ from app.db.models import utcnow
 from app.db.outfits import ModelCall
 from app.db.session import session_factory
 from app.jobs.queue import check_lease
+from app.observability.runtime import observation
 from app.providers import qwen
 from app.providers.outfit_fake import fake_intent, fake_outfits
 from app.schemas.outfits import Intent, OutfitContext
@@ -32,6 +33,8 @@ def model_call(
         old = db.get(ModelCall, (job_id, step, attempt))
         if old:
             if old.response is not None:
+                with observation("model.response_reused", fields={"step": step, "reused": True}):
+                    pass
                 return old.response
             if old.state == "invalid":
                 raise AppError("INVALID_MODEL_OUTPUT", "模型响应格式无效")
@@ -61,20 +64,24 @@ def model_call(
         )
     try:
         if mode == "fake":
-            result = (
-                fake_intent(context, message) if step == "intent" else fake_outfits(context, intent)
-            ).model_dump(mode="json")
+            with observation("model.fake", fields={"provider_mode": "fake", "step": step}):
+                result = (
+                    fake_intent(context, message)
+                    if step == "intent"
+                    else fake_outfits(context, intent)
+                ).model_dump(mode="json")
         else:
-            result = qwen.invoke(
-                {
-                    "context": context.model_dump(mode="json"),
-                    "message": message,
-                    "intent": intent.model_dump(mode="json") if intent else None,
-                    "correction": correction,
-                },
-                step,
-                remaining,
-            )
+            with observation("model.attempt", fields={"step": step, "attempt": attempt}):
+                result = qwen.invoke(
+                    {
+                        "context": context.model_dump(mode="json"),
+                        "message": message,
+                        "intent": intent.model_dump(mode="json") if intent else None,
+                        "correction": correction,
+                    },
+                    step,
+                    remaining,
+                )
     except AppError as exc:
         if exc.code == "INVALID_MODEL_OUTPUT":
             with session_factory().begin() as db:

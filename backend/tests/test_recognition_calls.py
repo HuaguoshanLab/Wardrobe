@@ -1,3 +1,4 @@
+import json
 from uuid import UUID, uuid4
 
 import pytest
@@ -259,3 +260,36 @@ def test_backup_preserves_recognition_ledger_and_notes(clean_db, tmp_path, monke
     actual = database.load_data(restored)
     assert actual["public.recognition_calls"] == data["public.recognition_calls"]
     assert rows(accepted)[0]["analysis_notes"] == ["材质未知"]
+
+
+def test_observability_replay_and_partial_failure(clean_db, monkeypatch, telemetry):
+    from app.observability.runtime import observation
+
+    sdk, exporter = telemetry
+    accepted, job_id, token, row_id = prepared()
+    sdk.flush()
+    exporter.clear()
+    with observation("test-import", job_id=str(job_id)):
+        run_step(job_id, token, row_id, "analysis")
+        run_step(job_id, token, row_id, "analysis")
+    sdk.flush()
+    spans = exporter.get_finished_spans()
+    assert sum(s.name == "recognition.fake" for s in spans) == 1
+    assert sum(s.name == "recognition.response_reused" for s in spans) == 1
+    assert len({s.context.trace_id for s in spans}) == 1
+    run_job(job_id, token)  # Finish the prior batch before claiming another.
+    sdk.flush()
+    exporter.clear()
+    upload(2)
+
+    def failed(*_):
+        raise AppError("CALL_RESULT_UNKNOWN", "private text must not be captured")
+
+    monkeypatch.setattr("app.services.recognition.recognize", failed)
+    run_job(*claim())
+    sdk.flush()
+    spans = exporter.get_finished_spans()
+    root = next(s for s in spans if s.name == "wardrobe.job")
+    assert json.loads(root.attributes["langfuse.observation.metadata.status"]) == "interrupted"
+    assert root.attributes["langfuse.observation.level"] == "ERROR"
+    assert all("private text" not in str(s.attributes) for s in spans)

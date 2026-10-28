@@ -30,6 +30,7 @@
 | 数据访问 | SQLAlchemy 2.x、Psycopg 3 | 业务事务及 PostgreSQL 连接 |
 | 数据库/迁移 | PostgreSQL、Alembic | 业务持久化和结构升级 |
 | Agent | LangGraph StateGraph | 单 Agent 工作流 |
+| 观测 | Langfuse（可选，独立本地部署） | worker 显式埋点；用量、错误与步骤追踪，见 [LANGFUSE](docs/LANGFUSE.md) |
 | 检查点 | PostgreSQL Checkpointer | 单会话图状态持久化 |
 | 模型 | 百炼官方 API、`qwen3-vl-plus` | 识别与搭配分别配置；同模型起步 |
 | 长期偏好 | PostgreSQL 普通业务表 | 用户明确维护；不使用 Mem0 |
@@ -72,6 +73,7 @@ flowchart LR
 - 前端与 `/api/v1` 同源，避免硬编码局域网地址；P1 使用 Nginx 代理，关闭 SSE 缓冲并动态解析 API 容器地址。
 - 当前 HTTP 局域网阶段不强制定位成功；可请求定位则请求，失败或不支持则选择城市。可信 HTTPS 后续配置。
 - 当前单人版本按可信电脑/家庭局域网使用设计；不是具有账号隔离的公开互联网服务。若部署目标改变，补充后端认证后再开放。
+- Langfuse 使用独立 Compose 项目及数据卷，通过 worker 异步接收观测；其故障不参与业务就绪判定、事务或恢复。原调用账本保持业务事实来源，详见 [D-33](docs/adr/D-33-langfuse.md)。
 
 ## 3. 数据模型
 

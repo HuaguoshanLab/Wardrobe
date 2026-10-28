@@ -1,0 +1,150 @@
+name: wardrobe-langfuse
+
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: "10m", max-file: "3"}
+
+x-env: &env
+  NEXTAUTH_URL: http://localhost:3006
+  DATABASE_URL: postgresql://langfuse:${LF_POSTGRES_PASSWORD:?run setup_langfuse.py}@postgres:5432/langfuse
+  SALT: ${LF_SALT:?run setup_langfuse.py}
+  ENCRYPTION_KEY: ${LF_ENCRYPTION_KEY:?run setup_langfuse.py}
+  TELEMETRY_ENABLED: "false"
+  LANGFUSE_IN_APP_AGENT_ENABLED: "false"
+  CLICKHOUSE_MIGRATION_URL: clickhouse://clickhouse:9000
+  CLICKHOUSE_URL: http://clickhouse:8123
+  CLICKHOUSE_USER: langfuse
+  CLICKHOUSE_PASSWORD: ${LF_CLICKHOUSE_PASSWORD:?run setup_langfuse.py}
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: auto
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: langfuse
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${LF_MINIO_PASSWORD:?run setup_langfuse.py}
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: langfuse
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${LF_MINIO_PASSWORD:?run setup_langfuse.py}
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+  LANGFUSE_S3_BATCH_EXPORT_ENABLED: "false"
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_AUTH: ${LF_REDIS_PASSWORD:?run setup_langfuse.py}
+
+x-dependencies: &dependencies
+  postgres: {condition: service_healthy}
+  redis: {condition: service_healthy}
+  clickhouse: {condition: service_healthy}
+  minio: {condition: service_healthy}
+
+services:
+  langfuse-web:
+    <<: *common
+    image: docker.langfuse.com/langfuse/langfuse:4.71.0@sha256:480b07885c0dc2ad8f542826d66986050ce58c630a1a7830eea15c373ffce5bd
+    depends_on: *dependencies
+    ports: ["127.0.0.1:3006:3000"]
+    mem_limit: 1536m
+    environment:
+      <<: *env
+      HOSTNAME: 0.0.0.0
+      NEXTAUTH_SECRET: ${LF_NEXTAUTH_SECRET:?run setup_langfuse.py}
+      LANGFUSE_INIT_ORG_ID: wardrobe-local
+      LANGFUSE_INIT_ORG_NAME: Wardrobe
+      LANGFUSE_INIT_PROJECT_ID: wardrobe-local
+      LANGFUSE_INIT_PROJECT_NAME: Wardrobe Local
+      LANGFUSE_INIT_PROJECT_RETENTION: "30"
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:?run setup_langfuse.py}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY:?run setup_langfuse.py}
+      LANGFUSE_INIT_USER_EMAIL: ${LF_ADMIN_EMAIL:-admin@wardrobe.local}
+      LANGFUSE_INIT_USER_NAME: Wardrobe Admin
+      LANGFUSE_INIT_USER_PASSWORD: ${LF_ADMIN_PASSWORD:?run setup_langfuse.py}
+      AUTH_DISABLE_SIGNUP: "true"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/public/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  langfuse-worker:
+    <<: *common
+    image: langfuse/langfuse-worker:4.71.0@sha256:68c9020b8352d49ad80d768981b21bd465edfcb7de602e76d9b13949bfa85e0e
+    depends_on: *dependencies
+    mem_limit: 1024m
+    environment: *env
+
+  postgres:
+    <<: *common
+    image: postgres:17@sha256:31ba9c94a03ada9988f2bb493a22a75eef3a185884533e5cdbcd498ea835b08f
+    mem_limit: 512m
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: ${LF_POSTGRES_PASSWORD:?run setup_langfuse.py}
+      POSTGRES_DB: langfuse
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U langfuse"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    <<: *common
+    image: redis:7@sha256:b6b6e3dc0c0952737748e55d5d885272840c7e42ba41ab1d5489f693419882f5
+    mem_limit: 256m
+    command: ["redis-server", "--requirepass", "${LF_REDIS_PASSWORD:?run setup_langfuse.py}", "--maxmemory", "192mb", "--maxmemory-policy", "noeviction", "--appendonly", "yes"]
+    environment:
+      REDISCLI_AUTH: ${LF_REDIS_PASSWORD:?run setup_langfuse.py}
+    volumes: ["redis_data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  clickhouse:
+    <<: *common
+    image: clickhouse/clickhouse-server:25.12@sha256:8a790dd3468db22b1d4e7b18a176f378ff5ff6053b9c48dd4ea1fa71a24c5ba6
+    user: "101:101"
+    mem_limit: 2048m
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: langfuse
+      CLICKHOUSE_PASSWORD: ${LF_CLICKHOUSE_PASSWORD:?run setup_langfuse.py}
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    <<: *common
+    image: cgr.dev/chainguard/minio@sha256:e70b2b1e74d79457f808710483bd726ff364529ca30736eaa15a6ab547d3a5a7
+    mem_limit: 512m
+    entrypoint: sh
+    command: -c 'mkdir -p /data/langfuse && minio server --address ":9000" /data'
+    environment:
+      MINIO_ROOT_USER: langfuse
+      MINIO_ROOT_PASSWORD: ${LF_MINIO_PASSWORD:?run setup_langfuse.py}
+    volumes: ["minio_data:/data"]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  postgres_data:
+  redis_data:
+  clickhouse_data:
+  clickhouse_logs:
+  minio_data:

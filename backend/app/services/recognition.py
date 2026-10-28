@@ -12,6 +12,7 @@ from app.db.session import session_factory
 from app.db.wardrobe import ImportRow
 from app.jobs.queue import check_lease
 from app.media.storage import path_for
+from app.observability.runtime import current, observation
 from app.providers.recognition import PROMPT_VERSION, recognize
 from app.schemas.recognition import RecognitionResult
 from app.services.jobs import get_job
@@ -36,11 +37,14 @@ def recognize_row(
         check_lease(job, token)
         row = db.scalar(select(ImportRow).where(ImportRow.id == row_id).with_for_update())
         assert row is not None
+        current().update(fields={"batch_id": str(row.batch_id), "row_id": str(row_id)})
         if row.skipped or row.confirmed_garment_id:
             raise AppError("ROW_FINALIZED", "审核行已确认或移除")
         old = db.get(RecognitionCall, (job_id, row_id))
         if old:
             if old.response is not None:
+                with observation("recognition.response_reused", fields={"reused": True}):
+                    pass
                 return RecognitionResult.model_validate(old.response), str(old.config["mode"])
             if old.state == "failed":
                 raise AppError(

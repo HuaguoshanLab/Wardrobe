@@ -1,3 +1,4 @@
+import json
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from io import BytesIO
@@ -283,3 +284,30 @@ def test_concurrent_generations_only_one_active(wardrobe):
 
     with ThreadPoolExecutor(max_workers=2) as pool:
         assert sorted(pool.map(send, range(2))) == [202, 409]
+
+
+def test_observability_job_tree_and_refresh_do_not_repeat_calls(wardrobe, telemetry):
+    sdk, exporter = telemetry
+    saved, job = generate(session())
+    sdk.flush()
+    before = exporter.get_finished_spans()
+    names = [span.name for span in before]
+    assert {
+        "wardrobe.job",
+        "worker.execute",
+        "outfit.prepare",
+        "outfit.generate",
+        "outfit.validate",
+        "outfit.commit",
+        "model.fake",
+    } <= set(names)
+    root = next(span for span in before if span.name == "wardrobe.job")
+    assert json.loads(root.attributes["langfuse.observation.metadata.status"]) == "succeeded"
+    assert len({span.context.trace_id for span in before}) == 1
+    for _ in range(3):
+        current()
+        client.get("/api/v1/jobs/" + job["id"])
+    sdk.flush()
+    assert len(exporter.get_finished_spans()) == len(before)
+    assert all(span.attributes["langfuse.observation.type"] != "generation" for span in before)
+    assert saved["revisions"]

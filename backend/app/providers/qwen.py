@@ -8,6 +8,7 @@ from pydantic import JsonValue
 
 from app.core.config import get_settings
 from app.core.errors import AppError
+from app.observability.runtime import current, model_response, observation
 from app.providers.outfit_evidence import explanation_evidence
 from app.schemas.outfits import Intent, ModelOutfits
 
@@ -54,8 +55,9 @@ async def _request(body: dict[str, JsonValue]) -> dict[str, JsonValue]:
             json=body,
         )
         response.raise_for_status()
-        raw = response.json()
         try:
+            raw = response.json()
+            model_response(raw, settings)
             content = raw["choices"][0]["message"]["content"]
             parsed = json.loads(content)
             if not isinstance(parsed, dict):
@@ -89,13 +91,23 @@ def invoke(context: dict[str, JsonValue], step: str, timeout: float) -> dict[str
             },
         ],
     }
-    try:
-        return asyncio.run(asyncio.wait_for(_request(body), timeout=min(timeout, 120)))
-    except (httpx.TransportError, TimeoutError) as exc:
-        raise AppError(
-            "CALL_RESULT_UNKNOWN", "模型请求结果未知，已中断；显式重试可能再次计费"
-        ) from exc
-    except httpx.HTTPStatusError as exc:
-        raise AppError(
-            "MODEL_UNAVAILABLE", "百炼请求失败，请检查配置、额度和服务状态", 503
-        ) from exc
+    with observation(
+        "qwen." + step,
+        generation=True,
+        model=settings.qwen_model,
+        version=PROMPT_VERSION,
+        fields={"provider_mode": "qwen", "prompt_version": PROMPT_VERSION, "step": step},
+    ):
+        if settings.langfuse_capture_text:
+            # Explicit text only; never the entire request or headers.
+            current().update(input_text=str(context.get("message") or ""))
+        try:
+            return asyncio.run(asyncio.wait_for(_request(body), timeout=min(timeout, 120)))
+        except (httpx.TransportError, TimeoutError) as exc:
+            raise AppError(
+                "CALL_RESULT_UNKNOWN", "模型请求结果未知，已中断；显式重试可能再次计费"
+            ) from exc
+        except httpx.HTTPStatusError as exc:
+            raise AppError(
+                "MODEL_UNAVAILABLE", "百炼请求失败，请检查配置、额度和服务状态", 503
+            ) from exc

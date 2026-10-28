@@ -86,6 +86,10 @@ P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qwea
 
 真实百炼搭配适配已实现，outfits-v4 使用后端事实说明与受限审美建议，保留旧任务提示版本检查；配置、验证限制与重试边界见 P4。真实照片识别已完成 PNG 小样本账号验收，质量问题与剩余验收见开发记录；独立配置 WARDROBE_RECOGNITION_MODE，默认 disabled。模型输出词表代码约束和验收证据见 [P6 识别](../docs/P6-recognition.md)。P5 维护态及独立 controller 已实现。去背景已为本地真实处理；Fake 仅用于诊断/属性识别。队列说明见 [P1](../docs/P1.md)，P2 锁定的媒体依赖与失败边界见 [P2](../docs/P2.md)。P5 历史、收藏、穿着记录及备份恢复已实现，格式和运行限制见 [P5](../docs/P5.md)。
 
+## Langfuse 观测
+
+可选 SDK 与 worker 埋点已加入，搭配/识别请求直接通过 HTTPX，模型观测由适配器显式记录。关闭时保持原业务流程；配置、独立部署和费用口径见 [LANGFUSE](../docs/LANGFUSE.md)，部署和验证证据见 [本轮记录](../docs/history/2026-10-28-langfuse.md)。
+
 ## P5 控制器
 
 本机开发另开终端运行 `uv run python -m app.backup.worker`。API、worker、controller 必须共享 WARDROBE_CONTROL_ROOT、媒体根和数据库；Compose 已挂载 control_data。备份控制记录独立于业务库，验证需要 CREATEDB 权限。不可把生产库当恢复测试目标；隔离命令及证据见 [P5 记录](../docs/history/2026-10-26-p5.md)。

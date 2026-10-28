@@ -11,6 +11,7 @@ from app.jobs.queue import check_lease
 from app.media.excel import parse_excel
 from app.media.images import cutout, normalize
 from app.media.storage import path_for, store_bytes
+from app.observability.runtime import current, observation
 from app.schemas.wardrobe import Attributes
 from app.services.import_review import read_batch
 from app.services.jobs import append_event, get_job
@@ -77,12 +78,18 @@ def parse_batch(job_id: UUID, token: UUID, batch_id: UUID) -> None:
 
 
 def run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
+    with observation("import." + step, fields={"row_id": str(row_id), "step": step}):
+        _run_step(job_id, token, row_id, step)
+
+
+def _run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
     with session_factory().begin() as db:
         job = get_job(db, job_id, lock=True)
         check_lease(job, token)
         row = db.scalar(select(ImportRow).where(ImportRow.id == row_id).with_for_update())
         assert row
         if row.skipped or row.confirmed_garment_id and step == "analysis":
+            current().update(fields={"status": "cancelled"}, level="WARNING")
             setattr(row, f"{step}_status", "cancelled")
             return
         if not row.image_asset_id:
@@ -90,6 +97,7 @@ def run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
         media = db.get(MediaAsset, row.image_asset_id)
         assert media
         if step != "conversion" and not media.display_key:
+            current().update(level="ERROR", code="DISPLAY_MISSING")
             setattr(row, f"{step}_status", "failed")
             row.errors = {**row.errors, step: "请先修复图片转换"}
             return
@@ -120,9 +128,11 @@ def run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
             result = recognized.attributes.model_dump(mode="json", exclude_unset=True)
             notes = recognized.uncertainties
     except AppError as exc:
+        current().update(level="ERROR", code=exc.code)
         interrupted = exc.code == "CALL_RESULT_UNKNOWN"
         error = f"{exc.code}: {exc.message}"
     except Exception:
+        current().update(level="ERROR", code="IMPORT_STEP_FAILED")
         error = f"{step.upper()}_FAILED: 处理失败，可重试或使用原图/人工填写"
     with session_factory().begin() as db:
         check_lease(get_job(db, job_id, lock=True), token)
@@ -155,6 +165,14 @@ def run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
             row.analysis_source = source
             row.analysis_notes = notes
             if not row.confirmed_garment_id:
+                current().update(
+                    fields={
+                        "protected_fields": len(row.touched_fields),
+                        "applied_fields": sum(
+                            k not in row.touched_fields and not row.draft.get(k) for k in result
+                        ),
+                    }
+                )
                 row.draft = {
                     **row.draft,
                     **{

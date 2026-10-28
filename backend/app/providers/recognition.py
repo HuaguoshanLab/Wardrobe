@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.domain.taxonomy import TAXONOMY
+from app.observability.runtime import model_response, observation
 from app.schemas.recognition import RecognitionResult
 
 PROMPT_VERSION = "garment-vision-v2"
@@ -75,7 +76,9 @@ async def _request(settings: Settings, image: str) -> RecognitionResult:
         )
         response.raise_for_status()
         try:
-            content = response.json()["choices"][0]["message"]["content"]
+            raw = response.json()
+            model_response(raw, settings)
+            content = raw["choices"][0]["message"]["content"]
             return RecognitionResult.model_validate_json(content, strict=True)
         except (KeyError, IndexError, TypeError, ValueError, ValidationError) as exc:
             raise AppError(
@@ -85,17 +88,25 @@ async def _request(settings: Settings, image: str) -> RecognitionResult:
 
 def recognize(display: bytes, settings: Settings) -> RecognitionResult:
     if settings.recognition_mode == "fake":
-        return RecognitionResult.model_validate({"attributes": {"category": "top"}})
+        with observation("recognition.fake", fields={"provider_mode": "fake"}):
+            return RecognitionResult.model_validate({"attributes": {"category": "top"}})
     if settings.recognition_mode != "qwen" or not settings.qwen_configured:
         raise AppError("PROVIDER_NOT_CONFIGURED", "识别服务未配置，请手动填写品类", 503)
     image = vision_image(display)
-    try:
-        return asyncio.run(asyncio.wait_for(_request(settings, image), timeout=120))
-    except (httpx.TransportError, TimeoutError) as exc:
-        raise AppError(
-            "CALL_RESULT_UNKNOWN", "识别请求结果未知；显式重试可能再次计费，可手动填写"
-        ) from exc
-    except httpx.HTTPStatusError as exc:
-        raise AppError(
-            "MODEL_UNAVAILABLE", "识别服务请求失败，请检查配置、额度和服务状态", 503
-        ) from exc
+    with observation(
+        "qwen.recognition",
+        generation=True,
+        model=settings.qwen_model,
+        version=PROMPT_VERSION,
+        fields={"provider_mode": "qwen", "prompt_version": PROMPT_VERSION, "image_count": 1},
+    ):
+        try:
+            return asyncio.run(asyncio.wait_for(_request(settings, image), timeout=120))
+        except (httpx.TransportError, TimeoutError) as exc:
+            raise AppError(
+                "CALL_RESULT_UNKNOWN", "识别请求结果未知；显式重试可能再次计费，可手动填写"
+            ) from exc
+        except httpx.HTTPStatusError as exc:
+            raise AppError(
+                "MODEL_UNAVAILABLE", "识别服务请求失败，请检查配置、额度和服务状态", 503
+            ) from exc

@@ -10,6 +10,7 @@ from app.core.errors import AppError
 from app.db.session import session_factory
 from app.domain.outfits import target_constraints, validate_proposals
 from app.jobs.queue import check_lease
+from app.observability.runtime import current, observation, step
 from app.schemas.outfits import Intent, ModelOutfits, OutfitContext
 from app.services.jobs import get_job
 from app.services.outfits.calls import model_call
@@ -22,18 +23,22 @@ class OutfitState(TypedDict):
     lease_token: str
 
 
+@step("outfit.prepare")
 def prepare(state: OutfitState) -> dict[str, str]:
     prepare_context(UUID(state["job_id"]), UUID(state["lease_token"]))
     return {}
 
 
+@step("outfit.generate")
 def generate(state: OutfitState) -> dict[str, str]:
     job_id, token = UUID(state["job_id"]), UUID(state["lease_token"])
     with session_factory()() as db:
         job = get_job(db, job_id)
         if job.status == "succeeded" or job.provider_response is not None:
+            current().update(fields={"reused": True})
             return {}
         context = OutfitContext.model_validate(job.input_snapshot["context"])
+        current().update(fields={"candidate_count": len(context.candidates)})
         data = job.input_snapshot
         kind = job.kind
     intent: Intent | None = None
@@ -66,7 +71,8 @@ def generate(state: OutfitState) -> dict[str, str]:
         for attempt in range(2):
             try:
                 raw = model_call(job_id, token, "outfits", attempt, context, intent, correction)
-                output = validate_proposals(ModelOutfits.model_validate(raw), context, intent)
+                with observation("outfit.validate", fields={"attempt": attempt}):
+                    output = validate_proposals(ModelOutfits.model_validate(raw), context, intent)
                 break
             except (ValidationError, AppError) as exc:
                 if isinstance(exc, AppError) and exc.code != "INVALID_MODEL_OUTPUT":
@@ -90,6 +96,7 @@ def generate(state: OutfitState) -> dict[str, str]:
     return {}
 
 
+@step("outfit.commit")
 def commit(state: OutfitState) -> dict[str, str]:
     commit_result(UUID(state["job_id"]), UUID(state["lease_token"]))
     return {}
