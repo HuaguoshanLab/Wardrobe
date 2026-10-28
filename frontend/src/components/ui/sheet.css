@@ -45,10 +45,13 @@
   border-bottom: 1px solid var(--border);
 }
 .sheet-heading h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
   margin: 12px 0;
   font-size: 22px;
 }
 .sheet-close {
+  flex-shrink: 0;
   display: grid;
   place-items: center;
   min-width: 44px;

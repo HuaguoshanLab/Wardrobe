@@ -134,8 +134,18 @@ export function OutfitLookbook({
                 <div className="stage-weather">
                   <span className="weather-film" aria-hidden="true" />
                   <span>生成时</span>
-                  <strong>{formatTemperature(revision.weather_snapshot.temperature_c)}</strong>
-                  <span>{String(revision.weather_snapshot.condition ?? '天气未知')}</span>
+                  <strong
+                    className={
+                      typeof revision.weather_snapshot.temperature_c === 'number'
+                        ? undefined
+                        : 'weather-temperature-unknown'
+                    }
+                  >
+                    {formatTemperature(revision.weather_snapshot.temperature_c)}
+                  </strong>
+                  <span className="weather-condition" title="完整天气见搭配说明">
+                    {String(revision.weather_snapshot.condition ?? '天气未知')}
+                  </span>
                 </div>
                 <div className="stage-garments">
                   {pieces.map((item) => (

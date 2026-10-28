@@ -27,13 +27,20 @@ async function weatherFits(page: Page) {
     return [...el.querySelectorAll(':scope > span:not(.weather-film), :scope > strong')].map(
       (child) => {
         const text = child.getBoundingClientRect()
-        return { top: text.top - box.top, bottom: text.bottom - box.bottom }
+        return {
+          top: text.top - box.top,
+          bottom: text.bottom - box.bottom,
+          left: text.left - box.left,
+          right: text.right - box.right,
+        }
       },
     )
   })
   for (const bound of bounds) {
     expect.soft(bound.top, 'weather text overflows above bubble').toBeGreaterThanOrEqual(-1)
     expect.soft(bound.bottom, 'weather text overflows below bubble').toBeLessThanOrEqual(1)
+    expect.soft(bound.left, 'weather text overflows left of bubble').toBeGreaterThanOrEqual(-1)
+    expect.soft(bound.right, 'weather text overflows right of bubble').toBeLessThanOrEqual(1)
   }
 }
 
@@ -88,23 +95,20 @@ test('null and HTTP 404 pictures have an explicit fallback in today and records'
   const audit = await mockAudit(page, rev)
   await page.goto('/')
   await expect(page.locator('.lookbook-piece').first()).toContainText('图片暂不可用')
-  await expect(page.locator('.lookbook-piece').nth(1).locator('img')).toBeVisible()
-  await expect
-    .poll(() =>
-      page
-        .locator('.lookbook-piece')
-        .nth(1)
-        .locator('img')
-        .evaluate((img: HTMLImageElement) => img.complete),
-    )
-    .toBe(true)
   await expect
     .soft(
       page.locator('.lookbook-piece').nth(1),
       'HTTP 404 image must show fallback, not a broken image',
     )
     .toContainText(/图片.*不可用/)
+  await expect(page.locator('.lookbook-piece img')).toHaveCount(1)
   await page.screenshot({ path: info.outputPath('today-missing.png') })
+  for (const index of [0, 1]) {
+    await page.locator('.piece-photo').nth(index).click()
+    await expect(page.getByRole('dialog')).toContainText('图片暂不可用')
+    await expect(page.getByRole('dialog').locator('img')).toHaveCount(0)
+    await page.getByRole('button', { name: '关闭面板' }).click()
+  }
   await page.goto('/collections?view=history')
   await expect(page.locator('.record-image-empty')).toHaveCount(2)
   await page.locator('.record-card-link').click()
@@ -154,6 +158,10 @@ test('long weather text remains circular and does not touch garments', async ({ 
   expect.soft(box.x + box.width).toBeLessThanOrEqual(photo.x)
   await noOverflow(page)
   await page.screenshot({ path: info.outputPath('long-weather.png') })
+  await page.getByRole('button', { name: '搭配说明', exact: true }).click()
+  await expect(page.getByRole('dialog')).toContainText(String(rev.weather_snapshot.condition))
+  await expect(page.getByRole('dialog')).toContainText('-90℃')
+  await noOverflow(page)
   expect(audit.writes).toEqual([])
   expect(audit.errors).toEqual([])
 })
@@ -202,6 +210,13 @@ test('unbroken 100-character garment name does not hide dialog controls', async 
   await page.goto('/')
   await page.locator('.piece-photo').click()
   await noOverflow(page)
+  await expect(page.getByRole('dialog').getByRole('heading')).toHaveText('A'.repeat(100))
+  const close = await page
+    .getByRole('dialog')
+    .getByRole('button', { name: '关闭面板' })
+    .boundingBox()
+  expect(close?.width).toBeGreaterThanOrEqual(44)
+  expect(close?.height).toBeGreaterThanOrEqual(44)
   await page.screenshot({ path: info.outputPath('unbroken-title.png'), animations: 'disabled' })
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)

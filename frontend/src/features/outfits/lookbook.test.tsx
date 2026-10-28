@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, expect, it } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router'
@@ -116,6 +116,22 @@ it('empty sessions provide a real preparation link and do not generate automatic
     'href',
     '/outfits/prepare',
   )
+  expect(patches).toEqual([])
+})
+
+it('failed detail images show a fallback in both views without affecting another outfit', async () => {
+  const user = userEvent.setup()
+  mount()
+  await user.click(await screen.findByRole('button', { name: '查看上衣 1' }))
+  const dialog = within(screen.getByRole('dialog'))
+  fireEvent.error(dialog.getByAltText('上衣 1详情'))
+  expect(dialog.getByText('图片暂不可用')).toBeVisible()
+  expect(screen.queryByAltText('上衣 1详情')).not.toBeInTheDocument()
+  expect(dialog.getByRole('button', { name: '只换这件' })).toBeEnabled()
+  await user.click(dialog.getByRole('button', { name: '关闭面板' }))
+  expect(screen.getByRole('button', { name: '查看上衣 1' })).toHaveTextContent('图片暂不可用')
+  await user.click(screen.getByRole('button', { name: '方案 02' }))
+  expect(screen.getByAltText('上衣 2')).toBeVisible()
   expect(patches).toEqual([])
 })
 

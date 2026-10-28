@@ -30,6 +30,8 @@ export function LookbookPiece({
   selected: boolean
 }) {
   const [open, setOpen] = useState(false)
+  const [failedImage, setFailedImage] = useState<string | null>(null)
+  const imageAvailable = !!item.image_url && failedImage !== item.image_url
   const name = String(item.attributes.name || categories[item.slot] || item.slot)
   const locked =
     selected && !!item.garment_id && !!c.session?.locked_garment_ids.includes(item.garment_id)
@@ -42,8 +44,13 @@ export function LookbookPiece({
         onOpenChange={setOpen}
         trigger={
           <button className="piece-photo" aria-label={`查看${name}`}>
-            {item.image_url ? (
-              <img src={item.image_url} alt={name} draggable={false} />
+            {imageAvailable ? (
+              <img
+                src={item.image_url!}
+                alt={name}
+                draggable={false}
+                onError={() => setFailedImage(item.image_url)}
+              />
             ) : (
               <span>图片暂不可用</span>
             )}
@@ -55,8 +62,15 @@ export function LookbookPiece({
           </button>
         }
       >
-        {item.image_url && (
-          <img className="sheet-piece-image" src={item.image_url} alt={`${name}详情`} />
+        {imageAvailable ? (
+          <img
+            className="sheet-piece-image"
+            src={item.image_url!}
+            alt={`${name}详情`}
+            onError={() => setFailedImage(item.image_url)}
+          />
+        ) : (
+          <p className="notice">图片暂不可用</p>
         )}
         <p className="muted">{categories[item.slot] || item.slot} · 搭配保存时的单品</p>
         <PieceAttributes attributes={item.attributes} />
