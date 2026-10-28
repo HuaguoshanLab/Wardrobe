@@ -69,6 +69,7 @@ function mount(component: React.ReactNode) {
 it('manual zero and explicit empty style survive reload without posting', async () => {
   const user = userEvent.setup()
   const view = mount(<ConditionsPanel storageKey="wardrobe.test.conditions" />)
+  await user.click(screen.getByText(/^更多条件/))
   await user.selectOptions(screen.getByLabelText('风格来源'), 'override')
   await user.selectOptions(screen.getByLabelText('天气来源'), 'manual')
   await user.type(screen.getByLabelText('手动温度（℃）'), '0')
@@ -220,4 +221,18 @@ it('explicitly discards a recovered save and loads the latest server preferences
   await waitFor(() => expect(screen.getByLabelText('偏好补充')).toHaveValue('最新偏好'))
   expect(screen.queryByRole('button', { name: '重发原保存操作' })).not.toBeInTheDocument()
   expect(localStorage.getItem('wardrobe.save./profile/preferences')).toBeNull()
+})
+
+it('invalid manual weather reopens collapsed fields without submitting', async () => {
+  const user = userEvent.setup()
+  mount(<ConditionsPanel storageKey="invalid-manual-weather" />)
+  await user.click(screen.getByText(/^更多条件/))
+  await user.selectOptions(screen.getByLabelText('天气来源'), 'manual')
+  await user.click(screen.getByText(/^更多条件/))
+  expect(screen.getByLabelText('手动温度（℃）')).not.toBeVisible()
+  await user.click(screen.getByRole('button', { name: '保存并核对条件' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('请输入 -90 至 60℃')
+  expect(screen.getByLabelText('手动温度（℃）')).toBeVisible()
+  expect(screen.getByLabelText('手动温度（℃）')).toHaveFocus()
+  expect(requests).toHaveLength(0)
 })

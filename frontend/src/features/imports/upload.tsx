@@ -1,3 +1,5 @@
+import { PageHeader } from '../../components/ui/page-header'
+import { Images, FileSpreadsheet } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -58,17 +60,20 @@ export function ImportPage() {
     setFiles(next)
   }
   return (
-    <>
-      <Link to="/wardrobe" className="text-link">
-        ← 返回衣橱
-      </Link>
-      <div className="page-heading">
-        <div>
-          <span className="eyebrow">MAKE ROOM FOR YOUR STYLE</span>
-          <h1>录入衣服</h1>
-          <p>先预览、再确认。只有你确认的单品才会进入衣橱。</p>
-        </div>
-      </div>
+    <div className="subpage">
+      <PageHeader title="录入衣服" backTo="/wardrobe" backLabel="返回衣橱" />
+      <p className="muted">先预览、再确认。只有你确认的单品才会进入衣橱。</p>
+      <ol className="import-progress" aria-label="录入步骤">
+        <li aria-current="step">
+          <b>1</b>选择文件
+        </li>
+        <li>
+          <b>2</b>检查与修改
+        </li>
+        <li>
+          <b>3</b>确认入库
+        </li>
+      </ol>
       <div className="import-choices">
         {(['photos', 'excel'] as const).map((value) => (
           <button
@@ -83,6 +88,11 @@ export function ImportPage() {
               mutation.reset()
             }}
           >
+            {value === 'photos' ? (
+              <Images size={28} aria-hidden="true" />
+            ) : (
+              <FileSpreadsheet size={28} aria-hidden="true" />
+            )}
             <strong>{value === 'photos' ? '批量上传照片' : '导入 Excel'}</strong>
             <span>
               {value === 'photos'
@@ -174,6 +184,6 @@ export function ImportPage() {
           </Link>
         </p>
       )}
-    </>
+    </div>
   )
 }

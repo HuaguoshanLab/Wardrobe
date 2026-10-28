@@ -1,0 +1,252 @@
+.wardrobe-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 160px);
+  min-height: 340px;
+}
+.wardrobe-page > .page-heading {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.wardrobe-page .page-heading p,
+.wardrobe-page .eyebrow {
+  display: none;
+}
+.wardrobe-page .page-heading h1 {
+  margin: 0;
+}
+.wardrobe-controls {
+  flex-shrink: 0;
+}
+.wardrobe-search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.wardrobe-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+  padding-left: 14px;
+  color: var(--muted);
+}
+.wardrobe-search input {
+  min-width: 0;
+  width: 100%;
+  background: transparent;
+  border: 0;
+}
+.wardrobe-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 46px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--primary);
+  background: white;
+}
+.wardrobe-more span {
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  min-width: 22px;
+  font-size: 12px;
+}
+.season-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 12px 4px;
+  scrollbar-width: none;
+}
+.season-tabs button {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--muted);
+  background: transparent;
+}
+.season-tabs button[aria-pressed='true'] {
+  background: var(--soft);
+  border-color: #9aaa92;
+  color: var(--primary);
+  font-weight: 600;
+}
+.wardrobe-browser {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid var(--border);
+}
+.category-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 8px 16px 0;
+  scrollbar-width: none;
+}
+.category-rail button {
+  position: relative;
+  flex-shrink: 0;
+  min-height: 52px;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 8px;
+  color: var(--muted);
+  background: transparent;
+  overflow-wrap: anywhere;
+}
+.category-rail button[aria-pressed='true'] {
+  color: var(--primary);
+  background: #e6eddf;
+  font-weight: 600;
+}
+.category-rail button[aria-pressed='true']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+.wardrobe-results {
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 8px 24px 20px;
+  scrollbar-width: none;
+  scroll-padding-block: 8px 24px;
+}
+.wardrobe-results .wardrobe-summary {
+  min-height: 58px;
+  gap: 8px;
+}
+.wardrobe-results .wardrobe-summary .button {
+  font-size: 12px;
+  padding: 8px;
+}
+.wardrobe-results .garment-grid {
+  gap: 14px;
+}
+.wardrobe-results .tag-panel {
+  margin-top: 20px;
+}
+.wardrobe-extra-filters {
+  display: grid;
+  gap: 16px;
+  padding-top: 12px;
+}
+.wardrobe-extra-filters label {
+  display: grid;
+  gap: 8px;
+}
+.wardrobe-extra-filters select {
+  width: 100%;
+}
+@media (max-width: 1100px) {
+  .wardrobe-results .garment-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .wardrobe-page {
+    height: calc(100dvh - 110px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-height: 250px;
+  }
+  .wardrobe-page .page-heading {
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .wardrobe-page h1 {
+    font-size: 26px;
+  }
+  .wardrobe-page .page-heading .button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .wardrobe-browser {
+    grid-template-columns: 68px minmax(0, 1fr);
+  }
+  .category-rail {
+    padding-right: 4px;
+    gap: 2px;
+  }
+  .category-rail button {
+    font-size: 13px;
+    min-height: 48px;
+    padding: 12px 4px;
+  }
+  .wardrobe-results {
+    padding: 0 0 20px 10px;
+  }
+  .wardrobe-results .garment-grid {
+    gap: 8px;
+  }
+  .wardrobe-results .garment-card {
+    border-radius: 10px;
+  }
+  .wardrobe-results .garment-card > div {
+    padding: 8px;
+  }
+  .wardrobe-results .garment-card h3 {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .wardrobe-results .garment-card img {
+    aspect-ratio: 3 / 4;
+  }
+  .wardrobe-results .garment-card .availability {
+    padding: 2px 4px;
+  }
+  .wardrobe-results .garment-card > div > span {
+    font-size: 12px;
+  }
+  .wardrobe-results .wardrobe-summary {
+    font-size: 12px;
+  }
+  .season-tabs {
+    gap: 4px;
+    padding-block: 8px;
+  }
+  .season-tabs button {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+  .wardrobe-results .planned {
+    padding: 18px 12px;
+  }
+  .wardrobe-results .planned h2 {
+    font-size: 18px;
+  }
+  .wardrobe-results .tag-panel {
+    padding: 12px;
+    font-size: 13px;
+  }
+  .wardrobe-results .actions {
+    flex-wrap: wrap;
+  }
+}
+
+.category-rail::-webkit-scrollbar,
+.wardrobe-results::-webkit-scrollbar,
+.season-tabs::-webkit-scrollbar {
+  display: none;
+}

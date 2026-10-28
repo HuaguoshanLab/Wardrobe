@@ -1,6 +1,6 @@
 # 前端
 
-P3 已实现偏好、默认城市、天气展示与手动覆盖、首页条件草稿；保留 P2 衣橱/双导入和 P1 Fake 诊断。P4 正式搭配、锁定/替换/聊天和会话恢复已实现；P5 历史/收藏/日历和备份恢复已实现，真实云服务已有小样本证据，范围见[开发记录](../docs/DEVELOPMENT.md)。技术栈见 [ARCHITECTURE](../ARCHITECTURE.md)，规则见 [AGENTS](AGENTS.md)。
+P3 已实现偏好、默认城市、天气展示与手动覆盖、条件子页草稿；保留 P2 衣橱/双导入和 P1 Fake 诊断。P4 正式搭配、锁定/替换/聊天和会话恢复已实现；P5 历史/收藏/日历和备份恢复已实现，真实云服务已有小样本证据，范围见[开发记录](../docs/DEVELOPMENT.md)。技术栈见 [ARCHITECTURE](../ARCHITECTURE.md)，规则见 [AGENTS](AGENTS.md)。
 
 ## 环境与安装
 
@@ -38,7 +38,7 @@ e2e/                      # 对实际 Compose 服务执行的浏览器测试
 tools/openapi/            # 隔离类型生成器依赖的 npm workspace
 ```
 
-其他业务 feature 在对应阶段建立，不预先创建空模块。单个页面不承担完整网络协议；当前诊断页面、hook、API、SSE 已分开。样式按 shell/pages/responsive 分文件。
+其他业务 feature 在对应阶段建立，不预先创建空模块。单个页面不承担完整网络协议；当前诊断页面、hook、API、SSE 已分开。样式按 shell/pages/responsive 与 wardrobe/imports 分职责维护；界面设计与本地 UI/UX Pro Max 来源见 [界面设计](../docs/design/UI.md)。
 
 ## 验证命令
 
@@ -103,3 +103,17 @@ P6_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8099 npx playwright test 
 ```
 
 专用配置包含普通 E2E、运行中刷新/SSE 故障和确认覆盖恢复，覆盖桌面与 Pixel 7 Chromium。前置检查核实实际项目、卷、内部网络和 Fake 能力；`generating-isolated.scenario.ts` 通过 Docker CLI 控制专用 worker 的有界暂停，只允许该隔离栈。不要把本命令指向业务环境；不会请求真实模型。TypeScript 检查包含全部 `playwright*.ts` 配置。
+
+## 只读界面回归
+
+针对已运行的本地服务，可执行（在本目录，Node 24）：
+
+```sh
+E2E_BASE_URL=http://localhost:8088 npx playwright test -c playwright.ui.config.ts
+```
+
+该套件阻止 API 写请求，验证条件展开、导航、衣橱筛选恢复和多尺寸布局。衣橱需有至少一件可穿单品供详情返回测试。截图输出到忽略目录 `data/acceptance/ui-refresh/browser-results`。它不替代隔离 Fake 栈里的生成/导入/恢复业务回归。
+
+## H5 穿搭页面
+
+首页和 `/outfits/:sessionId` 优先展示衣服组合；`/outfits/prepare`、`/outfits/:sessionId/prepare` 填写条件与查看天气；锁定、替换和聊天由当前页“调整这套”面板承载，旧 edit 链接重定向打开面板。进入页面或恢复面板都是只读；生成按钮获得任务响应后返回展示页。方案切换仅预览，点击“选用这套”才保存选择。页面行为以 [PRODUCT](../docs/PRODUCT.md) 为准。

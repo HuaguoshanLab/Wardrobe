@@ -58,7 +58,9 @@ for (const source of ['photos', 'excel'] as const) {
       await expect(page.getByRole('status')).toHaveText('已保存')
       await page.goto('/wardrobe')
       await page.getByLabel('搜索衣服').fill(name)
+      await page.getByRole('button', { name: /^筛选/ }).click()
       await page.getByLabel('筛选状态').selectOption('unavailable')
+      await page.getByRole('button', { name: '查看结果', exact: true }).click()
       await expect(page.locator('.garment-card')).toHaveCount(1)
       await page.screenshot({
         path: `/private/tmp/wardrobe-p2-${source}-${testInfo.project.name}-wardrobe.png`,
@@ -70,7 +72,13 @@ for (const source of ['photos', 'excel'] as const) {
       await page.locator('.garment-card').click()
       page.once('dialog', (d) => d.accept())
       await page.getByRole('button', { name: '删除单品' }).click()
-      await expect(page).toHaveURL(/\/wardrobe$/)
+      await expect(page).toHaveURL(
+        (url) =>
+          url.pathname === '/wardrobe' &&
+          url.searchParams.get('q') === name &&
+          url.searchParams.get('availability') === 'unavailable',
+      )
+      await expect(page.locator('.garment-card')).toHaveCount(0)
       expect(errors).toEqual([])
     } finally {
       const response = await request.get(`/api/v1/garments/${garmentId}`)

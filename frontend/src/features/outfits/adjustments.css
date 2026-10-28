@@ -1,0 +1,67 @@
+.adjust-panel {
+  display: grid;
+  gap: 16px;
+}
+.adjust-panel > p {
+  margin: 0;
+}
+.adjust-panel > .outfit-status:empty {
+  display: none;
+}
+.adjust-items {
+  display: grid;
+  gap: 8px;
+}
+.adjust-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.adjust-item img {
+  width: 64px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: var(--soft);
+}
+.adjust-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.adjust-item-info p {
+  margin: 0;
+}
+.adjust-item .lock-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 13px;
+}
+.adjust-item > .button {
+  font-size: 12px;
+  padding: 8px;
+  flex-shrink: 0;
+}
+.adjust-panel > .attribute-form {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.adjust-panel .message-history {
+  margin-top: 0;
+}
+@media (max-width: 380px) {
+  .adjust-item {
+    flex-wrap: wrap;
+  }
+  .adjust-item > .button {
+    margin-left: auto;
+  }
+}

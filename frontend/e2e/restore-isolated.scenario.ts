@@ -9,7 +9,7 @@ test('isolated browser restore confirms replacement, resumes control progress an
   expect(testInfo.project.use.baseURL).toBe('http://localhost:8099')
   const original = (await (await request.get('/api/v1/profile/preferences')).json()).data
   const epoch = (await (await request.get('/api/v1/capabilities')).json()).data.data_epoch
-  await page.goto('/settings')
+  await page.goto('/settings/backups')
   await page.getByRole('button', { name: '创建完整备份' }).click()
   const download = page.getByRole('link', { name: /下载备份 ZIP/ })
   await expect(download).toBeVisible({ timeout: 60000 })

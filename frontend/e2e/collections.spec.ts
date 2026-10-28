@@ -144,7 +144,7 @@ test('backup export downloads and validates without applying to the running data
 }, testInfo) => {
   test.setTimeout(120000)
   const before = (await (await request.get('/api/v1/capabilities')).json()).data.data_epoch
-  await page.goto('/settings')
+  await page.goto('/settings/backups')
   await page.getByRole('button', { name: '创建完整备份' }).click()
   const link = page.getByRole('link', { name: /下载备份 ZIP/ })
   await expect(link).toBeVisible({ timeout: 60000 })

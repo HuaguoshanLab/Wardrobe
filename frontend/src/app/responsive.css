@@ -1,9 +1,4 @@
-@media (min-width: 1500px) {
-  main {
-    padding-top: 65px;
-  }
-}
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .sidebar {
     width: 190px;
     padding-inline: 12px;
@@ -12,127 +7,106 @@
     margin-left: 190px;
   }
   main {
-    padding: 30px 24px;
+    padding: 28px 24px 40px;
   }
   .topbar,
   footer {
     padding-inline: 24px;
   }
-  .welcome-panel {
-    padding: 28px;
-  }
-  .welcome-panel h2 {
-    font-size: 24px;
-  }
-  .wardrobe-illustration {
-    margin: 0;
-  }
-  .step-grid {
-    gap: 10px;
-  }
-  .step-card {
-    padding: 17px;
-  }
 }
-@media (max-width: 640px) {
+@media (max-width: 760px) {
   .sidebar {
     height: auto;
     position: fixed;
     inset: auto 0 0;
     width: 100%;
-    padding: 7px 6px calc(7px + env(safe-area-inset-bottom));
-    z-index: 10;
-    border-top: 1px solid #dfe2d7;
-    background: #f5f5eef5;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    border-right: 0;
+    background: #fafbf7;
   }
   .sidebar .brand,
   .nav-caption,
   .sidebar-note {
     display: none;
   }
-  nav {
-    display: flex;
-    justify-content: space-around;
-    gap: 1px;
+  .sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
   }
-  nav a {
-    display: flex;
+  .sidebar nav a {
     flex-direction: column;
-    gap: 5px;
-    font-size: 9px;
-    padding: 9px 7px;
-    min-width: 57px;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
+    padding: 8px 2px;
+    min-height: 58px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .sidebar nav a.active {
+    background: #e6eddf;
+    color: var(--primary);
   }
   .content-shell {
     margin-left: 0;
-    padding-bottom: 85px;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
   }
   .topbar {
-    padding: calc(16px + env(safe-area-inset-top)) 20px 16px;
-    font-size: 9px;
+    padding: calc(16px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 16px
+      max(20px, env(safe-area-inset-left));
+  }
+  .topbar > span:first-child {
+    max-width: 60%;
   }
   main {
-    padding: 29px 20px;
-  }
-  h1 {
-    font-size: 27px;
+    padding: 24px max(20px, env(safe-area-inset-right)) 32px max(20px, env(safe-area-inset-left));
   }
   .page-heading {
     margin-bottom: 24px;
+    flex-wrap: wrap;
   }
-  .page-heading .badge {
-    font-size: 8px;
+  .page-heading p {
+    font-size: 14px;
   }
-  .welcome-panel {
-    grid-template-columns: 1fr;
-    padding: 27px;
-  }
-  .welcome-panel h2 {
-    font-size: 26px;
-  }
-  .wardrobe-illustration {
-    display: none;
-  }
-  .step-grid {
-    grid-template-columns: 1fr;
-  }
-  .step-card {
+  .panel {
     padding: 20px;
-    position: relative;
-  }
-  .step-number {
-    position: absolute;
-    right: 20px;
-    top: 16px;
-  }
-  .step-card h3 {
-    margin-top: 3px;
-  }
-  .step-card p {
-    min-height: 0;
-    margin-bottom: 6px;
-    max-width: 85%;
-  }
-  .phase {
-    margin-top: 4px;
+    border-radius: 16px;
   }
   .service-grid {
     grid-template-columns: 1fr;
   }
   footer {
-    padding: 8px 20px 18px;
+    padding: 20px;
   }
   footer span {
     display: none;
   }
-  .honest-note {
-    align-items: flex-start;
-  }
-  .honest-note svg {
-    flex-shrink: 0;
-    margin-top: 12px;
-  }
-  input {
+  input,
+  select,
+  textarea {
     font-size: 16px;
+  }
+}
+@media (max-width: 380px) {
+  main {
+    padding-inline: 16px;
+  }
+  .sidebar nav a {
+    font-size: 10px;
+  }
+  .topbar {
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar,
+  .content-shell > footer {
+    display: none;
+  }
+  .content-shell > main {
+    padding-top: max(20px, env(safe-area-inset-top));
   }
 }

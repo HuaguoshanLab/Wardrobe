@@ -1,0 +1,42 @@
+.subpage-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--background);
+  padding: 2px 0;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.subpage-header a {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: var(--primary);
+}
+.subpage-header a:hover {
+  background: var(--soft);
+}
+.subpage-header h1 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+}
+@media (max-width: 760px) {
+  .subpage-header {
+    top: env(safe-area-inset-top);
+    margin-top: -8px;
+  }
+  .subpage-header h1 {
+    font-size: 18px;
+  }
+}
+
+.subpage :where(input, button, select, textarea, a, summary) {
+  scroll-margin-top: 100px;
+}

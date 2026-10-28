@@ -1,15 +1,18 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { NavLink, Outlet, createBrowserRouter, Link } from 'react-router'
+import {
+  NavLink,
+  Outlet,
+  createBrowserRouter,
+  Link,
+  useLocation,
+  ScrollRestoration,
+} from 'react-router'
 import { ArrowUpRight, CalendarDays, Heart, Settings2, Shirt, Sparkles } from 'lucide-react'
 import './wardrobe.css'
+import './imports.css'
 import '../features/profile/profile.css'
-import { LocationPanel, PreferencesPanel } from '../features/profile'
 import { getCapabilities } from '../features/system/api'
-import { BackupPanel } from '../features/backups'
-const Diagnostics = lazy(() =>
-  import('../features/system/diagnostics').then((module) => ({ default: module.Diagnostics })),
-)
 
 const navigation = [
   { to: '/', label: '今日穿搭', icon: Sparkles },
@@ -20,6 +23,7 @@ const navigation = [
 ]
 
 function Shell() {
+  const pathname = useLocation().pathname
   const queryClient = useQueryClient()
   const capability = useQuery({
     queryKey: ['capabilities'],
@@ -44,6 +48,10 @@ function Shell() {
   }, [capability.data?.data_epoch, queryClient])
   return (
     <div className="app-shell">
+      <ScrollRestoration />
+      <a className="skip-link" href="#main-content">
+        跳到主要内容
+      </a>
       <aside className="sidebar">
         <Link to="/" className="brand">
           <span className="brand-mark">
@@ -56,15 +64,26 @@ function Shell() {
         <span className="nav-caption">我的日常</span>
         <nav aria-label="主导航">
           {navigation.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to} end>
-              <Icon size={19} />
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              className={({ isActive }) =>
+                isActive ||
+                (to === '/wardrobe' && pathname.startsWith('/imports')) ||
+                (to === '/' && pathname.startsWith('/outfits/'))
+                  ? 'active'
+                  : undefined
+              }
+            >
+              <Icon size={20} aria-hidden="true" />
               <span>{label}</span>
             </NavLink>
           ))}
         </nav>
         <div className="sidebar-note">
           <span className="status-dot" />
-          个人衣橱 · 本地运行<small>P5 / 历史与数据保护</small>
+          你的衣橱，你的风格<small>慢慢收集，认真穿着。</small>
         </div>
       </aside>
       <div className="content-shell">
@@ -80,7 +99,7 @@ function Shell() {
             数据维护中，暂时不能修改或生成；已有任务会等待安全结束。
           </p>
         )}
-        <main key={epoch}>
+        <main key={epoch} id="main-content" tabIndex={-1}>
           <Outlet />
         </main>
         <footer>
@@ -91,84 +110,20 @@ function Shell() {
   )
 }
 
-function Settings() {
-  const capability = useQuery({ queryKey: ['capabilities'], queryFn: getCapabilities })
-  return (
-    <>
-      <div className="page-heading">
-        <div>
-          <span className="eyebrow">YOUR SPACE</span>
-          <h1>设置与环境</h1>
-          <p>查看当前能力，验证基础服务是否正常工作。</p>
-        </div>
-      </div>
-      <div className="service-grid">
-        <article className="panel">
-          <small>模型服务</small>
-          <h3>
-            {capability.data?.provider_mode === 'fake'
-              ? 'Fake Provider'
-              : capability.data?.model === 'configured'
-                ? '千问搭配服务已配置'
-                : '模型未配置'}
-          </h3>
-          <p>
-            {capability.data?.provider_mode === 'fake'
-              ? '明确的模拟环境，不请求千问。'
-              : capability.data?.model === 'configured'
-                ? '点击生成或调整时调用千问；实际可用性以任务结果为准。照片识别状态见下方。'
-                : '可继续管理衣橱；生成前需配置模型或明确启用 Fake。'}
-          </p>
-        </article>
-        <article className="panel">
-          <small>天气与图片处理</small>
-          <p>
-            照片识别：
-            {capability.data?.recognition === 'fake'
-              ? 'Fake 预填'
-              : capability.data?.recognition === 'configured'
-                ? '千问已配置，上传照片或显式重试时调用；实际可用性待任务验证'
-                : '未配置，可手工填写'}
-          </p>
-          <h3>本地图片处理</h3>
-          <p>
-            支持 HEIC 转换与去背景，原文件保留。天气服务：
-            {capability.data?.weather === 'configured'
-              ? '已配置（调用结果见首页）'
-              : '未配置，可手动填写'}
-            。
-          </p>
-        </article>
-      </div>
-      {capability.isError && (
-        <p role="alert" className="error">
-          {capability.error.message}
-        </p>
-      )}
-      <PreferencesPanel />
-      <LocationPanel />
-      <BackupPanel />
-      <Suspense fallback={<p>正在载入诊断工具…</p>}>
-        <Diagnostics />
-      </Suspense>
-    </>
-  )
-}
-
 function Planned({ title, description }: { title: string; description: string }) {
   return (
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">COMING NEXT</span>
+          <span className="eyebrow">PAGE NOT FOUND</span>
           <h1>{title}</h1>
           <p>{description}</p>
         </div>
       </div>
       <section className="panel planned">
         <Shirt size={40} strokeWidth={1} />
-        <h2>这个空间正在准备中</h2>
-        <p>当前阶段已开放衣橱与录入。此功能将在后续阶段开放。</p>
+        <h2>这个页面不存在</h2>
+        <p>链接可能已失效，请通过导航返回衣橱或今日穿搭。</p>
         <Link to="/" className="text-link">
           返回今日穿搭 <ArrowUpRight size={16} />
         </Link>
@@ -195,7 +150,44 @@ export const router = createBrowserRouter([
         path: 'outfits/:sessionId',
         lazy: async () => ({ Component: (await import('../features/profile/home')).HomePage }),
       },
-      { path: 'settings', Component: Settings },
+      {
+        path: 'outfits/prepare',
+        lazy: async () => ({
+          Component: (await import('../features/profile/prepare')).ConditionsPage,
+        }),
+      },
+      {
+        path: 'outfits/:sessionId/prepare',
+        lazy: async () => ({
+          Component: (await import('../features/profile/prepare')).ConditionsPage,
+        }),
+      },
+      {
+        path: 'outfits/:sessionId/edit',
+        lazy: async () => ({
+          Component: (await import('../features/outfits/edit')).OutfitEditPage,
+        }),
+      },
+      {
+        path: 'settings',
+        lazy: async () => ({ Component: (await import('./settings')).Settings }),
+      },
+      {
+        path: 'settings/preferences',
+        lazy: async () => ({ Component: (await import('./settings')).PreferencesSettings }),
+      },
+      {
+        path: 'settings/location',
+        lazy: async () => ({ Component: (await import('./settings')).LocationSettings }),
+      },
+      {
+        path: 'settings/backups',
+        lazy: async () => ({ Component: (await import('./settings')).BackupSettings }),
+      },
+      {
+        path: 'settings/services',
+        lazy: async () => ({ Component: (await import('./settings')).ServiceSettings }),
+      },
       {
         path: 'wardrobe/:id',
         lazy: async () => ({ Component: (await import('../features/wardrobe/page')).GarmentPage }),

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { Sparkles } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
@@ -48,6 +49,8 @@ export function ConditionsPanel({
   busy?: boolean
   submitted?: Requirements
 }) {
+  const optionsRef = useRef<HTMLDetailsElement>(null)
+  const temperatureRef = useRef<HTMLInputElement>(null)
   const [initial] = useState(() => loadDraft(storageKey, submitted))
   const form = useForm<Requirements>({ defaultValues: initial.requirements })
   const [manual, setManual] = useState(initial.manual)
@@ -80,6 +83,8 @@ export function ConditionsPanel({
     const parsed = requirementsSchema.safeParse(candidate)
     if (!parsed.success) {
       setValidation('请输入 -90 至 60℃ 的温度和天气现象；0℃有效。')
+      if (optionsRef.current) optionsRef.current.open = true
+      temperatureRef.current?.focus()
       return
     }
     setValidation('')
@@ -91,10 +96,12 @@ export function ConditionsPanel({
     else preview.mutate(parsed.data)
   }
   return (
-    <section className="panel profile-panel">
-      <h2>今天的条件</h2>
-      <p>条件保存在当前浏览器，刷新可恢复。更换城市或日期后，单独填写本次条件。</p>
+    <section className="panel profile-panel conditions-panel">
+      <span className="eyebrow">MAKE IT YOURS</span>
+      <h2>今天想怎么穿？</h2>
+      <p>选个场合，或直接按你的偏好生成。</p>
       <form
+        noValidate
         className="attribute-form"
         onChange={() => preview.reset()}
         onSubmit={form.handleSubmit((data) => save(data))}
@@ -106,106 +113,120 @@ export function ConditionsPanel({
             value={values.occasion_codes}
             onChange={(v) => form.setValue('occasion_codes', v)}
           />
-          <label>
-            风格来源
-            <select
-              value={values.style_codes === null ? 'preferences' : 'override'}
-              onChange={(e) =>
-                form.setValue('style_codes', e.target.value === 'preferences' ? null : [])
-              }
-            >
-              <option value="preferences">使用最新长期偏好</option>
-              <option value="override">本次单独指定</option>
-            </select>
-          </label>
-          {values.style_codes !== null && (
-            <Choices
-              label="本次风格（不选表示本次不限制）"
-              options={taxonomy.data?.fields.style_codes ?? {}}
-              value={values.style_codes}
-              onChange={(v) => form.setValue('style_codes', v)}
-            />
-          )}
-          <Choices
-            label="季节"
-            options={taxonomy.data?.fields.seasons ?? {}}
-            value={values.season_codes}
-            onChange={(v) => form.setValue('season_codes', v)}
-          />
-          <Choices
-            label="自定义标签"
-            options={Object.fromEntries(tags.data?.map((tag) => [tag.id, tag.name]) ?? [])}
-            value={values.custom_tag_ids}
-            onChange={(v) => form.setValue('custom_tag_ids', v)}
-          />
-          {missingTags.length > 0 && (
-            <div className="notice">
-              <p>草稿中有 {missingTags.length} 个标签已删除，请移除后保存。其他条件会保留。</p>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  form.setValue(
-                    'custom_tag_ids',
-                    values.custom_tag_ids.filter((id) => !missingTags.includes(id)),
-                  )
-                  preview.reset()
-                }}
+          <details
+            ref={optionsRef}
+            className="condition-options"
+            open={initial.manual || undefined}
+          >
+            <summary>更多条件 · 风格、季节与天气{manual ? '（已手动覆盖天气）' : ''}</summary>
+            <label>
+              风格来源
+              <select
+                value={values.style_codes === null ? 'preferences' : 'override'}
+                onChange={(e) =>
+                  form.setValue('style_codes', e.target.value === 'preferences' ? null : [])
+                }
               >
-                移除已删除标签
-              </Button>
-            </div>
-          )}
-          <label>
-            本次补充要求
-            <textarea
-              maxLength={1000}
-              {...form.register('notes')}
-              placeholder="例如：今天要走很多路，想穿得轻便些"
+                <option value="preferences">使用最新长期偏好</option>
+                <option value="override">本次单独指定</option>
+              </select>
+            </label>
+            {values.style_codes !== null && (
+              <Choices
+                label="本次风格（不选表示本次不限制）"
+                options={taxonomy.data?.fields.style_codes ?? {}}
+                value={values.style_codes}
+                onChange={(v) => form.setValue('style_codes', v)}
+              />
+            )}
+            <Choices
+              label="季节"
+              options={taxonomy.data?.fields.seasons ?? {}}
+              value={values.season_codes}
+              onChange={(v) => form.setValue('season_codes', v)}
             />
-          </label>
-          <label>
-            天气来源
-            <select
-              value={manual ? 'manual' : 'qweather'}
-              onChange={(e) => setManual(e.target.value === 'manual')}
-            >
-              <option value="qweather">使用有效的和风天气</option>
-              <option value="manual">手动填写 / 覆盖</option>
-            </select>
-          </label>
-          {manual && (
-            <div className="attribute-grid">
-              <label>
-                手动温度（℃）
-                <input
-                  type="number"
-                  step="any"
-                  min="-90"
-                  max="60"
-                  required
-                  value={temperature}
-                  onChange={(e) => setTemperature(e.target.value)}
-                />
-              </label>
-              <label>
-                天气现象
-                <input
-                  required
-                  maxLength={80}
-                  value={condition}
-                  onChange={(e) => setCondition(e.target.value)}
-                  placeholder="例如：阴天、小雨"
-                />
-              </label>
-            </div>
-          )}
-          {onGenerate && (
-            <Button type="button" onClick={form.handleSubmit((data) => save(data, true))}>
-              生成搭配
+            <Choices
+              label="自定义标签"
+              options={Object.fromEntries(tags.data?.map((tag) => [tag.id, tag.name]) ?? [])}
+              value={values.custom_tag_ids}
+              onChange={(v) => form.setValue('custom_tag_ids', v)}
+            />
+            {missingTags.length > 0 && (
+              <div className="notice">
+                <p>草稿中有 {missingTags.length} 个标签已删除，请移除后保存。其他条件会保留。</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    form.setValue(
+                      'custom_tag_ids',
+                      values.custom_tag_ids.filter((id) => !missingTags.includes(id)),
+                    )
+                    preview.reset()
+                  }}
+                >
+                  移除已删除标签
+                </Button>
+              </div>
+            )}
+            <label>
+              本次补充要求
+              <textarea
+                maxLength={1000}
+                {...form.register('notes')}
+                placeholder="例如：今天要走很多路，想穿得轻便些"
+              />
+            </label>
+            <label>
+              天气来源
+              <select
+                value={manual ? 'manual' : 'qweather'}
+                onChange={(e) => setManual(e.target.value === 'manual')}
+              >
+                <option value="qweather">使用有效的和风天气</option>
+                <option value="manual">手动填写 / 覆盖</option>
+              </select>
+            </label>
+            {manual && (
+              <div className="attribute-grid">
+                <label>
+                  手动温度（℃）
+                  <input
+                    ref={temperatureRef}
+                    type="number"
+                    step="any"
+                    min="-90"
+                    max="60"
+                    required
+                    value={temperature}
+                    onChange={(e) => setTemperature(e.target.value)}
+                  />
+                </label>
+                <label>
+                  天气现象
+                  <input
+                    required
+                    maxLength={80}
+                    value={condition}
+                    onChange={(e) => setCondition(e.target.value)}
+                    placeholder="例如：阴天、小雨"
+                  />
+                </label>
+              </div>
+            )}
+          </details>
+          <div className="condition-actions">
+            {onGenerate && (
+              <Button type="button" onClick={form.handleSubmit((data) => save(data, true))}>
+                <Sparkles size={18} aria-hidden="true" />
+                {busy ? '正在处理搭配…' : '生成搭配'}
+              </Button>
+            )}
+            <Button type="submit" variant="outline">
+              {preview.isPending ? '正在核对…' : '保存并核对条件'}
             </Button>
-          )}
-          <Button type="submit">{preview.isPending ? '正在核对…' : '保存并核对条件'}</Button>
+          </div>
+          <p className="form-hint">最多 3 套，点击才生成。保存条件后，刷新可恢复。</p>
         </fieldset>
       </form>
       {(validation || preview.error || taxonomy.error || tags.error) && (

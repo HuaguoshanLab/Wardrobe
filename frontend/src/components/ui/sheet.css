@@ -1,0 +1,75 @@
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgb(25 40 31 / 32%);
+  transition: opacity 180ms;
+}
+.sheet-popup {
+  position: fixed;
+  z-index: 101;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 560px);
+  max-height: 85dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 28px 28px 0 0;
+  background: var(--background);
+  color: var(--foreground, #273b32);
+  padding: 12px 24px max(24px, env(safe-area-inset-bottom));
+  box-shadow: 0 -12px 60px rgb(25 40 31 / 12%);
+  transition:
+    transform 240ms ease-out,
+    opacity 180ms;
+}
+.sheet-popup[data-starting-style],
+.sheet-popup[data-ending-style] {
+  transform: translate(-50%, 40px);
+  opacity: 0;
+}
+.sheet-backdrop[data-starting-style],
+.sheet-backdrop[data-ending-style] {
+  opacity: 0;
+}
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 8px;
+  border-radius: 8px;
+  background: var(--border);
+}
+.sheet-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.sheet-heading h2 {
+  margin: 12px 0;
+  font-size: 22px;
+}
+.sheet-close {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--primary);
+}
+.sheet-body {
+  line-height: 1.7;
+}
+.sheet-body p,
+.sheet-body li {
+  overflow-wrap: anywhere;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-popup,
+  .sheet-backdrop {
+    transition: none;
+  }
+}

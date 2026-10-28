@@ -1,5 +1,5 @@
 .outfit-panel {
-  margin-top: 24px;
+  margin-top: 36px;
 }
 .outfit-grid {
   display: grid;
@@ -9,10 +9,10 @@
 }
 .outfit-card {
   min-width: 0;
-  padding: 18px;
+  padding: 20px;
   border: 1px solid var(--border);
   border-radius: 18px;
-  background: #fbfaf7;
+  background: var(--surface);
   overflow-wrap: anywhere;
 }
 .outfit-items {
@@ -39,4 +39,117 @@
 }
 .outfit-panel details {
   margin-top: 16px;
+}
+
+.outfit-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.outfit-heading h2 {
+  margin: 6px 0 0;
+  font-size: 26px;
+}
+.outfit-card.is-selected {
+  border-color: #547860;
+  box-shadow: 0 0 0 1px #547860;
+}
+.outfit-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.outfit-number {
+  font-family: Georgia, serif;
+  font-size: 32px;
+  line-height: 1;
+  color: #62755d;
+}
+.selected-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--primary);
+  font-size: 12px;
+}
+.outfit-card h2,
+.outfit-card h3 {
+  font-size: 18px;
+  margin: 12px 0;
+}
+.outfit-card > small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.outfit-card p {
+  font-size: 14px;
+  color: var(--muted);
+}
+.outfit-card > a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--primary);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin: 8px 0;
+}
+.outfit-card > .button {
+  margin-top: 12px;
+}
+.outfit-item strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+.outfit-item .button {
+  font-size: 13px;
+  padding-inline: 8px;
+}
+.lock-control {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+.lock-control:has(input:checked) {
+  background: var(--soft);
+  border-color: var(--primary);
+}
+.outfit-reason {
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+.outfit-reason summary {
+  font-size: 14px;
+}
+.message-history {
+  padding: 16px 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+}
+@media (max-width: 760px) {
+  .outfit-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .outfit-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .outfit-item img {
+    height: 180px;
+  }
 }

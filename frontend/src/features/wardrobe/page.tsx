@@ -1,7 +1,9 @@
-import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useLayoutEffect, useRef } from 'react'
+import { CategoryRail, WardrobeFilters } from './filters'
+import './wardrobe-browser.css'
+import { Link, useNavigate, useParams, useSearchParams, useLocation } from 'react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Shirt } from 'lucide-react'
+import { Shirt, Plus } from 'lucide-react'
 import { api } from '../../lib/http'
 import { Button } from '../../components/ui/button'
 import { AttributeForm } from './attribute-form'
@@ -17,8 +19,22 @@ import {
 import { Tags } from './tags'
 
 export function WardrobePage() {
-  const [filters, setFilters] = useState<Record<string, string>>({})
-  const [cursor, setCursor] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const filters = Object.fromEntries(searchParams)
+  const listRef = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = 0
+  }, [searchParams.toString()])
+  const cursor = searchParams.get('cursor') ?? ''
+  const setCursor = (value: string) => {
+    const next = new URLSearchParams(searchParams)
+    if (value) next.set('cursor', value)
+    else next.delete('cursor')
+    setSearchParams(next)
+  }
+  const activeFilters = ['q', 'category', 'season', 'occasion', 'availability', 'tag_id'].some(
+    (key) => !!filters[key],
+  )
   const taxonomy = useQuery({ queryKey: ['taxonomies'], queryFn: getTaxonomy })
   const tags = useQuery({ queryKey: ['tags'], queryFn: getTags })
   const params = new URLSearchParams({
@@ -30,11 +46,14 @@ export function WardrobePage() {
     queryFn: () => getGarments(params),
   })
   const filter = (key: string, value: string) => {
-    setFilters((previous) => ({ ...previous, [key]: value }))
-    setCursor('')
+    const next = new URLSearchParams(searchParams)
+    if (value) next.set(key, value)
+    else next.delete(key)
+    next.delete('cursor')
+    setSearchParams(next, { replace: true })
   }
   return (
-    <>
+    <section className="wardrobe-page">
       <div className="page-heading">
         <div>
           <span className="eyebrow">EVERY PIECE, IN PLACE</span>
@@ -42,103 +61,141 @@ export function WardrobePage() {
           <p>衣服、鞋和配饰，按你的方式整理。</p>
         </div>
         <Link className="button button-primary" to="/imports">
+          <Plus size={18} aria-hidden="true" />
           录入衣服
         </Link>
       </div>
-      <div className="wardrobe-filters">
-        <input
-          aria-label="搜索衣服"
-          placeholder="搜索名称"
-          value={filters.q ?? ''}
-          onChange={(e) => filter('q', e.target.value)}
-        />
-        {[
-          ['category', '品类', 'category'],
-          ['season', '季节', 'seasons'],
-          ['occasion', '场合', 'occasion_codes'],
-          ['availability', '状态', 'availability'],
-        ].map(([key, label, field]) => (
-          <select
-            key={key}
-            aria-label={`筛选${label}`}
-            value={filters[key] ?? ''}
-            onChange={(e) => filter(key, e.target.value)}
+      <WardrobeFilters
+        filters={filters}
+        fields={taxonomy.data?.fields ?? {}}
+        filter={filter}
+        tags={tags.data ?? []}
+      />
+      {(taxonomy.error || tags.error) && (
+        <p role="alert" className="error">
+          筛选选项读取失败。
+          <button
+            onClick={() => {
+              void taxonomy.refetch()
+              void tags.refetch()
+            }}
           >
-            <option value="">全部{label}</option>
-            {Object.entries(taxonomy.data?.fields[field] ?? {}).map(([code, name]) => (
-              <option key={code} value={code}>
-                {name}
-              </option>
-            ))}
-          </select>
-        ))}
-        <select
-          aria-label="筛选标签"
-          value={filters.tag_id ?? ''}
-          onChange={(e) => filter('tag_id', e.target.value)}
-        >
-          <option value="">全部标签</option>
-          {tags.data?.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      {query.isPending && <p>正在读取衣橱…</p>}
-      {query.error && (
-        <p className="error" role="alert">
-          {query.error.message}
+            重试筛选选项
+          </button>
         </p>
       )}
-      {query.data?.items.length === 0 && (
-        <section className="panel planned">
-          <Shirt size={40} />
-          <h2>这里还没有衣服</h2>
-          <p>上传照片或导入 Excel，审核后就会出现在这里。</p>
-          <Link to="/imports" className="text-link">
-            开始录入
-          </Link>
-        </section>
-      )}
-      <div className="garment-grid">
-        {query.data?.items.map((item) => (
-          <Link to={`/wardrobe/${item.id}`} key={item.id} className="garment-card">
-            <img src={item.image_url} alt={item.name ?? '衣服'} loading="lazy" />
-            <div>
-              <h3>
-                {item.name || taxonomy.data?.fields.category[item.category ?? ''] || '未命名单品'}
-              </h3>
-              <p>
-                {item.availability === 'available' ? '可穿' : '暂不可用'}
-                {item.is_demo ? ' · 示例' : ''}
-              </p>
-              <span>
-                {item.seasons.map((s) => taxonomy.data?.fields.seasons[s] ?? s).join(' / ') ||
-                  '季节未标注'}
-              </span>
+      <div className="wardrobe-browser">
+        <CategoryRail filters={filters} fields={taxonomy.data?.fields ?? {}} filter={filter} />
+        <div
+          className="wardrobe-results"
+          ref={listRef}
+          role="region"
+          aria-label="衣橱列表"
+          tabIndex={0}
+        >
+          <div className="wardrobe-summary">
+            <span role="status">
+              {query.isPending
+                ? '正在读取衣橱…'
+                : query.data
+                  ? `本页 ${query.data.items.length} 件${activeFilters ? ' · 已筛选' : ''}`
+                  : ''}
+            </span>
+            {activeFilters && (
+              <Button variant="outline" onClick={() => setSearchParams({})}>
+                清除筛选
+              </Button>
+            )}
+          </div>
+          {query.isPending && (
+            <div className="garment-grid" aria-hidden="true">
+              {Array.from({ length: 8 }, (_, i) => (
+                <div className="garment-skeleton" key={i} />
+              ))}
             </div>
-          </Link>
-        ))}
+          )}
+          {query.error && (
+            <p className="error" role="alert">
+              {query.error.message}
+              <Button variant="outline" onClick={() => void query.refetch()}>
+                重试读取衣橱
+              </Button>
+            </p>
+          )}
+          {query.data?.items.length === 0 && (
+            <section className="panel planned">
+              <Shirt size={40} />
+              <h2>{activeFilters ? '没有找到匹配的单品' : '让第一件衣服住进来'}</h2>
+              <p>
+                {activeFilters
+                  ? '试试其他关键词，或清除筛选查看全部衣服。'
+                  : '上传照片或导入 Excel，审核后就会出现在这里。'}
+              </p>
+              {activeFilters ? (
+                <Button variant="outline" onClick={() => setSearchParams({})}>
+                  查看全部衣服
+                </Button>
+              ) : (
+                <Link to="/imports" className="button button-primary">
+                  开始录入
+                </Link>
+              )}
+            </section>
+          )}
+          <div className="garment-grid">
+            {query.data?.items.map((item) => (
+              <Link
+                to={`/wardrobe/${item.id}`}
+                state={{ wardrobeSearch: searchParams.toString() }}
+                key={item.id}
+                className="garment-card"
+              >
+                <img src={item.image_url} alt={item.name ?? '衣服'} loading="lazy" />
+                <div>
+                  <h3>
+                    {item.name ||
+                      taxonomy.data?.fields.category[item.category ?? ''] ||
+                      '未命名单品'}
+                  </h3>
+                  <p
+                    className={`availability ${item.availability === 'available' ? 'available' : 'unavailable'}`}
+                  >
+                    {item.availability === 'available' ? '可穿' : '暂不可用'}
+                    {item.is_demo ? ' · 示例' : ''}
+                  </p>
+                  <span>
+                    {item.seasons.map((s) => taxonomy.data?.fields.seasons[s] ?? s).join(' / ') ||
+                      '季节未标注'}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="actions">
+            {cursor && (
+              <Button variant="outline" onClick={() => setCursor('')}>
+                回到第一页
+              </Button>
+            )}
+            {query.data?.next_cursor && (
+              <Button variant="outline" onClick={() => setCursor(query.data!.next_cursor!)}>
+                下一页
+              </Button>
+            )}
+          </div>
+          <Tags />
+        </div>
       </div>
-      <div className="actions">
-        {cursor && (
-          <Button variant="outline" onClick={() => setCursor('')}>
-            回到第一页
-          </Button>
-        )}
-        {query.data?.next_cursor && (
-          <Button variant="outline" onClick={() => setCursor(query.data!.next_cursor!)}>
-            下一页
-          </Button>
-        )}
-      </div>
-      <Tags />
-    </>
+    </section>
   )
 }
 
 export function GarmentPage() {
+  const routeState = useLocation().state as { wardrobeSearch?: unknown } | null
+  const returnTo =
+    typeof routeState?.wardrobeSearch === 'string' && routeState.wardrobeSearch
+      ? `/wardrobe?${routeState.wardrobeSearch}`
+      : '/wardrobe'
   const { id } = useParams()
   const navigate = useNavigate()
   const client = useQueryClient()
@@ -163,7 +220,7 @@ export function GarmentPage() {
     mutationFn: () => deleteGarment(query.data!),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['garments'] })
-      navigate('/wardrobe')
+      navigate(returnTo)
     },
   })
   if (query.isPending) return <p>正在读取单品…</p>
@@ -171,13 +228,14 @@ export function GarmentPage() {
   const item = query.data
   return (
     <>
-      <Link to="/wardrobe" className="text-link">
+      <Link to={returnTo} className="text-link">
         ← 返回衣橱
       </Link>
       <div className="page-heading">
         <h1>{item.name || '单品详情'}</h1>
         <Button
           variant="outline"
+          className="button-danger"
           disabled={remove.isPending}
           onClick={() => {
             if (window.confirm('删除这件衣服？原图片将保留，不影响未来历史引用。')) remove.mutate()

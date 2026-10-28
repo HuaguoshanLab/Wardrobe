@@ -1,0 +1,58 @@
+.settings-page,
+.settings-detail {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.settings-menu {
+  border-top: 1px solid var(--border);
+}
+.settings-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 88px;
+  padding: 18px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+  font-size: 17px;
+  font-weight: 500;
+  transition: background 150ms;
+}
+.settings-menu-row > svg {
+  margin-left: auto;
+  color: var(--muted);
+}
+.settings-menu-row:hover,
+.settings-menu-row:active {
+  background: var(--soft);
+}
+.settings-menu-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--primary);
+}
+.settings-content .service-grid {
+  margin-top: 0;
+}
+.settings-content :where(input, button, select, textarea, a, summary) {
+  scroll-margin-top: 100px;
+}
+@media (max-width: 760px) {
+  .settings-menu-row {
+    padding: 16px 4px;
+    min-height: 84px;
+    gap: 16px;
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-menu-row {
+    transition: none;
+  }
+}

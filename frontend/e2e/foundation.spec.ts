@@ -11,6 +11,7 @@ test('explicit diagnostic completes and survives a page reload without a new POS
   await expect(page.getByRole('heading', { name: '今日穿搭', exact: true })).toBeVisible()
   expect(submissions).toBe(0)
   await page.getByRole('link', { name: '设置', exact: true }).click()
+  await page.getByText('服务状态与诊断', { exact: true }).click()
   await expect(page.getByText('明确的模拟环境，不请求千问。')).toBeVisible()
   await page.getByRole('button', { name: '运行模拟任务' }).click()
   await expect(page.getByText('任务状态：已完成')).toBeVisible({ timeout: 20000 })

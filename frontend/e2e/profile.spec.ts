@@ -21,7 +21,7 @@ test('preferences, manual city and zero-degree conditions persist without model 
     })
   })
   try {
-    await page.goto('/settings')
+    await page.goto('/settings/preferences')
     await page.getByLabel('偏好补充').fill('P3 E2E 明确填写')
     await page.getByLabel('版型').selectOption('loose')
     const saves: { body: string | null; key: string | undefined }[] = []
@@ -52,6 +52,8 @@ test('preferences, manual city and zero-degree conditions persist without model 
     const recovered = (await (await request.get('/api/v1/profile/preferences')).json()).data
     expect(recovered.version).toBe(committedVersion)
     await page.unroute('**/api/v1/profile/preferences')
+    await page.getByRole('link', { name: '返回设置' }).click()
+    await page.getByRole('link', { name: '默认城市', exact: true }).click()
     await page.getByRole('button', { name: '使用当前位置' }).click()
     await expect(page.getByRole('status').filter({ hasText: '定位失败或未授权' })).toBeVisible()
     await page.getByLabel('省级地区').selectOption('浙江省')
@@ -59,10 +61,13 @@ test('preferences, manual city and zero-degree conditions persist without model 
     await page.getByRole('button', { name: '保存手填城市' }).click()
     await expect(page.getByText('默认城市已保存')).toBeVisible()
     await page.reload()
+    await expect(page.getByText('浙江省 · 杭州（手动填写，位置未核验）')).toBeVisible()
+    await page.goto('/settings/preferences')
     await expect(page.getByLabel('偏好补充')).toHaveValue('P3 E2E 明确填写')
     await expect(page.getByLabel('版型')).toHaveValue('loose')
-    await expect(page.getByText('浙江省 · 杭州（手动填写，位置未核验）')).toBeVisible()
     await page.getByRole('link', { name: '今日穿搭', exact: true }).click()
+    await page.getByRole('link', { name: /^(换一套|准备搭配)$/ }).click()
+    await page.getByText(/^更多条件/).click()
     await page.getByLabel('风格来源').selectOption('override')
     await page.getByLabel('天气来源').selectOption('manual')
     await page.getByLabel('手动温度（℃）').fill('0')
@@ -78,12 +83,14 @@ test('preferences, manual city and zero-degree conditions persist without model 
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true)
     await page.screenshot({ path: testInfo.outputPath('p3-home.png'), fullPage: true })
+    await page.getByText(/^天气与城市/).click()
     await page.getByRole('link', { name: '更换城市' }).click()
     await page.getByLabel('省级地区').selectOption('江苏省')
     await page.getByLabel('手填城市').fill('南京')
     await page.getByRole('button', { name: '保存手填城市' }).click()
     await expect(page.getByText('默认城市已保存')).toBeVisible()
     await page.getByRole('link', { name: '今日穿搭', exact: true }).click()
+    await page.getByRole('link', { name: /^(换一套|准备搭配)$/ }).click()
     await expect(page.getByLabel('天气来源')).toHaveValue('qweather')
     await expect(page.getByLabel('手动温度（℃）')).toHaveCount(0)
   } finally {

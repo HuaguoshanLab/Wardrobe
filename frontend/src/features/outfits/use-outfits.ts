@@ -32,7 +32,7 @@ function readPending() {
     return null
   }
 }
-export function useOutfits(sessionId?: string) {
+export function useOutfits(sessionId?: string, returnToResults = false) {
   const navigate = useNavigate()
   const client = useQueryClient()
   const [pending, setPending] = useState(readPending)
@@ -70,7 +70,7 @@ export function useOutfits(sessionId?: string) {
           const value = await api(operation.path, sessionSchema, init)
           client.setQueryData(['outfits', sessionId ?? 'current'], value)
           if (operation.path === '/outfit-sessions' && sessionId && !operation.generateAfter)
-            navigate(`/outfits/${value.id}`)
+            navigate(`/outfits/${value.id}${returnToResults ? '/prepare' : ''}`)
           if (value.removed_lock_ids.length) setNotice('切换方案时已移除不共有或失效的锁定。')
           if (operation.generateAfter) {
             operation = {
@@ -87,6 +87,8 @@ export function useOutfits(sessionId?: string) {
         }
         store(null)
         await client.invalidateQueries({ queryKey: ['outfits'] })
+        const generatedSession = operation.path.match(/^\/outfit-sessions\/([^/]+)\/generate$/)?.[1]
+        if (returnToResults && generatedSession) navigate(`/outfits/${generatedSession}`)
         return
       }
     },
@@ -125,6 +127,7 @@ export function useOutfits(sessionId?: string) {
   })
   return {
     session: session.data,
+    loading: session.isPending,
     job: job.data,
     busy,
     active,

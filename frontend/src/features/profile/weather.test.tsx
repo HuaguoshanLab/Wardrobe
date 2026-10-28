@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import userEvent from '@testing-library/user-event'
 import { WeatherPanel } from './weather'
 import type { City } from './api'
 
@@ -67,7 +68,9 @@ it('expired weather is reference only and never shown for another city', async (
   const view = render(renderCity(city))
   expect(await screen.findByText('已过期，仅供参考')).toBeInTheDocument()
   expect(screen.getByText('0℃')).toBeInTheDocument()
-  expect(screen.getByText(/获取时间不等于观测时间/)).toBeInTheDocument()
+  expect(screen.getByText(/获取时间不等于观测时间/)).not.toBeVisible()
+  await userEvent.click(screen.getByText('来源与更新时间'))
+  expect(screen.getByText(/获取时间不等于观测时间/)).toBeVisible()
   view.rerender(renderCity({ ...city, id: 'nanjing', name: '南京', adm1: '江苏省' }))
   expect(await screen.findByText('没有可用天气，请手动填写')).toBeInTheDocument()
   expect(screen.queryByText('0℃')).not.toBeInTheDocument()

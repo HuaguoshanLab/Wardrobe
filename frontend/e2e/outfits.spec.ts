@@ -59,15 +59,17 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
     page.on('request', (req) => {
       if (req.method() === 'POST' && /\/(generate|adjust|retry)$/.test(req.url())) modelPosts++
     })
-    await page.goto('/')
+    await page.goto('/outfits/prepare')
     await page.getByRole('button', { name: '新建搭配会话' }).click()
     await expect(page.getByRole('link', { name: '打开此会话' })).toBeVisible()
+    await page.getByText(/^更多条件/).click()
     await page.getByLabel('本次补充要求').fill('P4 E2E 验证')
     await page.getByLabel('天气来源').selectOption('manual')
     await page.getByLabel('手动温度（℃）').fill('0')
     await page.getByLabel('天气现象').fill('阴天')
     await page.getByRole('button', { name: '生成搭配', exact: true }).click()
-    await expect(page.locator('.outfit-card').first()).toBeVisible({ timeout: 30000 })
+    await expect(page.locator('.lookbook').first()).toBeVisible({ timeout: 30000 })
+    await page.getByRole('button', { name: '调整这套', exact: true }).click()
     await expect(page.getByRole('button', { name: '重搭未锁定部分' })).toBeEnabled()
     const session = async () =>
       (await (await request.get('/api/v1/outfit-sessions/current')).json()).data
@@ -79,9 +81,7 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
     await page.reload()
     await expect(page.getByRole('button', { name: '重搭未锁定部分' })).toBeEnabled()
     expect(modelPosts).toBe(1)
-    const selected = page
-      .locator('.outfit-card')
-      .filter({ has: page.getByRole('heading', { name: /已选方案/ }) })
+    const selected = page.getByRole('region', { name: '调整当前搭配' })
     const outerwearItem = base.items.find((i: { slot: string }) => i.slot === 'outerwear')
     const outerwear = selected.locator(`[data-item-id="${outerwearItem.item_id}"]`)
     await outerwear.getByLabel('锁定此单品').click()
@@ -120,9 +120,9 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
         response.request().method() === 'GET',
     )
     await otherPage.goto(
-      (process.env.E2E_BASE_URL ?? 'http://localhost:8088') + `/outfits/${saved.id}`,
+      (process.env.E2E_BASE_URL ?? 'http://localhost:8088') + `/outfits/${saved.id}/edit`,
     )
-    await expect(otherPage.locator('.outfit-card').first()).toBeVisible()
+    await expect(otherPage.locator('.adjust-item').first()).toBeVisible()
     expect(await otherPage.locator('input[type=checkbox]:checked').count()).toBeGreaterThanOrEqual(
       1,
     )

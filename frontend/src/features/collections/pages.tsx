@@ -1,3 +1,4 @@
+import '../outfits/outfits.css'
 import { useState } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { Link } from 'react-router'
@@ -80,18 +81,21 @@ export function CollectionsPage() {
     <>
       <div className="page-heading">
         <div>
+          <span className="eyebrow">THE STYLE ARCHIVE</span>
           <h1>历史与收藏</h1>
           <p>保存每一次生成与调整的固定版本。</p>
         </div>
       </div>
-      <div className="actions">
+      <div className="segmented-control" role="group" aria-label="记录类型">
         <Button
+          aria-pressed={tab === 'history'}
           variant={tab === 'history' ? 'default' : 'outline'}
           onClick={() => setTab('history')}
         >
           历史
         </Button>
         <Button
+          aria-pressed={tab === 'favorites'}
           variant={tab === 'favorites' ? 'default' : 'outline'}
           onClick={() => setTab('favorites')}
         >
@@ -120,11 +124,18 @@ export function CollectionsPage() {
                 .filter((i) => i.image_url)
                 .map((i) => (
                   <div className="outfit-item" key={i.item_id}>
-                    <img src={i.image_url!} alt={String(i.attributes.name ?? '单品快照')} />
+                    <img
+                      loading="lazy"
+                      src={i.image_url!}
+                      alt={String(i.attributes.name ?? '单品快照')}
+                    />
                   </div>
                 ))}
             </div>
-            <p>{row.revision.reason}</p>
+            <details className="outfit-reason">
+              <summary>搭配说明</summary>
+              <p>{row.revision.reason}</p>
+            </details>
             <Link to={`/collections/${row.revision.id}`}>查看详情、收藏或记录穿着</Link>
             {row.history && (
               <Button
@@ -229,6 +240,7 @@ export function CalendarPage() {
     <>
       <div className="page-heading">
         <div>
+          <span className="eyebrow">DAYS WELL DRESSED</span>
           <h1>穿搭日历</h1>
           <p>只记录实际穿过的搭配；可从搭配详情补记。</p>
         </div>
@@ -244,7 +256,15 @@ export function CalendarPage() {
       <OperationNotice operation={op} />
       {query.isPending && <p>正在载入…</p>}
       {query.error && <p role="alert">{query.error.message}</p>}
-      {items?.length === 0 && <p>本月还没有穿着记录。</p>}
+      {items?.length === 0 && (
+        <div className="empty-state">
+          <h2>这个月，留一点穿搭记忆</h2>
+          <p>本月还没有穿着记录。打开搭配详情，记录实际穿过的那一套。</p>
+          <Link to="/collections" className="button button-outline">
+            查看历史搭配
+          </Link>
+        </div>
+      )}
       {items?.map((item) => (
         <WearEditor key={`${item.id}:${item.version}`} item={item} op={op} />
       ))}
