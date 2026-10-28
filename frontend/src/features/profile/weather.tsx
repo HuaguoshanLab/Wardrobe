@@ -1,6 +1,6 @@
 import { MapPin, RefreshCw } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { Button } from '../../components/ui/button'
 import { getWeather, type City } from './api'
 
@@ -9,7 +9,8 @@ const temperature = (value: number | null) =>
     ? '未知'
     : new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 1 }).format(value)
 
-export function WeatherPanel({ city }: { city: City | null }) {
+export function WeatherPanel({ city, draftKey }: { city: City | null; draftKey?: string }) {
+  const location = useLocation()
   const query = useQuery({
     queryKey: ['weather', city?.id],
     queryFn: () => getWeather(city!.id!),
@@ -97,7 +98,11 @@ export function WeatherPanel({ city }: { city: City | null }) {
       </div>
       {query.data && <p className="weather-credit">和风天气 · 今日实况与预报</p>}
       <div className="actions weather-actions">
-        <Link to="/settings/location" className="text-link">
+        <Link
+          to={`/settings/location?returnTo=${encodeURIComponent(location.pathname + location.search)}`}
+          state={{ conditionsDraftKey: draftKey, conditionsDraftCity: city }}
+          className="text-link"
+        >
           更换城市 →
         </Link>
         {city?.id && (

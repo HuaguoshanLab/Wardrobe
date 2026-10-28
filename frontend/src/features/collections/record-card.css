@@ -1,0 +1,70 @@
+/* List each garment at the same size; detailed previews retain their composition. */
+.records-page .record-card {
+  border-radius: 14px;
+}
+.records-page .record-card-link {
+  display: block;
+}
+.records-page .record-card .record-preview-stage {
+  padding: 8px 12px;
+}
+.records-page .record-card .record-composition {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.records-page .record-card .record-composition > *,
+.records-page .record-card .record-composition[data-count='3'] > :first-child {
+  grid-row: auto;
+}
+.records-page .record-card .record-composition img,
+.records-page .record-card .record-composition[data-count='3'] > :first-child img {
+  display: block;
+  width: 100%;
+  height: 82px;
+  max-height: 82px;
+}
+.records-page .record-card-link h3 {
+  margin: 8px 12px 3px;
+  font-size: 14px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.records-page .record-card-link > p {
+  margin: 0 12px 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.records-page .record-card-actions {
+  padding: 2px 8px;
+}
+.records-page .record-notes {
+  margin: 6px 12px 8px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.records-page .record-card .record-image-empty {
+  min-height: 82px;
+  font-size: 10px;
+  gap: 2px;
+}
+.records-page .record-card .record-image-empty > span {
+  display: none;
+}
+.records-page .record-card .record-suggestion-label {
+  font-size: 10px;
+}
+.records-page .record-card .record-simulation {
+  font-size: 10px;
+  padding: 2px 5px;
+}
+@media (max-width: 760px) {
+  .records-page .record-grid {
+    gap: 10px;
+  }
+}

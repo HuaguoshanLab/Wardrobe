@@ -1,0 +1,110 @@
+.stage-weather {
+  position: relative;
+  align-self: start;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  min-height: 60px;
+  aspect-ratio: 1;
+  gap: 2px;
+  margin: 0;
+  padding: 5px;
+  border: 1px solid rgb(176 193 186 / 38%);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 24% 16%, rgb(255 255 255 / 98%) 0 4%, transparent 25%),
+    radial-gradient(ellipse at 68% 88%, rgb(255 255 255 / 90%) 0 6%, transparent 30%),
+    radial-gradient(circle at 55% 42%, transparent 48%, rgb(190 207 199 / 16%) 83%, transparent 96%);
+  box-shadow: 0 2px 4px rgb(67 97 82 / 5%);
+  color: #52655d;
+  font-size: 9px;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.weather-film {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.weather-film::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from -35deg,
+    white,
+    rgb(151 176 164 / 38%) 22%,
+    transparent 36%,
+    white 55%,
+    rgb(148 172 161 / 35%) 72%,
+    white 96%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+.weather-film::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  width: 17px;
+  height: 7px;
+  border-top: 2px solid rgb(255 255 255 / 95%);
+  border-radius: 50%;
+  transform: rotate(-32deg);
+}
+/* Small satellite bubbles stay inside the weather column and never intercept taps. */
+.stage-weather::before,
+.stage-weather::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  border: 1px solid rgb(176 196 185 / 48%);
+  border-top-color: rgb(255 255 255 / 95%);
+  border-right-color: rgb(255 255 255 / 80%);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 28% 15%, rgb(255 255 255 / 90%) 0 6%, transparent 28%),
+    radial-gradient(circle, transparent 60%, rgb(255 255 255 / 65%) 97%);
+  box-shadow: 0 0 1px rgb(111 135 121 / 16%);
+}
+.stage-weather::before {
+  top: calc(100% + 9px);
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  opacity: 0.9;
+}
+.stage-weather::after {
+  top: calc(100% + 32px);
+  right: 5px;
+  width: 11px;
+  height: 11px;
+  opacity: 0.75;
+}
+.stage-weather strong {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+@media (max-width: 760px) {
+  .stage-weather {
+    width: 60px;
+    min-height: 60px;
+    padding: 5px;
+    font-size: 9px;
+  }
+  .stage-weather strong {
+    font-size: 17px;
+  }
+}

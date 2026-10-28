@@ -56,3 +56,236 @@
     transition: none;
   }
 }
+
+.settings-group {
+  margin: 28px 0;
+}
+.settings-group > h2 {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 12px 12px;
+}
+.settings-menu {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: white;
+  overflow: hidden;
+}
+.settings-menu-row {
+  padding: 20px;
+}
+.settings-menu-row:last-child {
+  border-bottom: 0;
+}
+.settings-menu-copy {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+.settings-menu-copy strong {
+  font-size: 16px;
+  font-weight: 500;
+}
+.settings-menu-copy small {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.settings-intro {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0 0 24px;
+}
+.settings-section-title {
+  font-size: 17px;
+  margin: 28px 0 18px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.settings-section-title:first-child {
+  border: 0;
+  padding-top: 0;
+  margin-top: 0;
+}
+.settings-save-bar {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  margin-top: 24px;
+  background: var(--background, #f7f7f2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 4px 18px #273b3210;
+}
+.settings-save-bar span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.settings-city-current {
+  padding: 22px;
+  border-radius: 14px;
+  background: var(--soft);
+}
+.settings-city-current h2 {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 12px 0 8px;
+}
+.settings-city-current > p {
+  font-size: 20px;
+  color: var(--primary);
+  margin: 0 0 12px;
+}
+.settings-disclosure {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+  padding-top: 8px;
+}
+.settings-disclosure > summary {
+  padding: 16px 0;
+  font-size: 15px;
+  cursor: pointer;
+}
+.settings-advanced .panel {
+  margin-top: 12px;
+}
+.settings-services {
+  padding-block: 4px;
+}
+.settings-service-row {
+  display: flex;
+  align-items: start;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+}
+.settings-service-row:last-child {
+  border: 0;
+}
+.settings-service-row h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.settings-service-row p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.settings-service-row .badge {
+  white-space: nowrap;
+}
+.settings-content .profile-panel > .text-link {
+  margin-top: 18px;
+}
+.settings-content .city-results {
+  flex-direction: column;
+}
+.settings-content .city-results .button {
+  justify-content: flex-start;
+  text-align: left;
+}
+.backup-section {
+  margin-bottom: 24px;
+}
+.backup-section h2 {
+  font-size: 19px;
+  margin-top: 0;
+}
+.backup-section p {
+  line-height: 1.8;
+  font-size: 14px;
+}
+.backup-steps {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.backup-steps li {
+  border-bottom: 2px solid var(--border);
+  padding: 8px 0;
+  flex: 1;
+  min-width: 100px;
+}
+.backup-steps [aria-current='step'] {
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+.backup-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.backup-summary li {
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+}
+.backup-technical {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .settings-menu-row {
+    padding: 18px 14px;
+    gap: 12px;
+  }
+  .settings-menu-icon {
+    width: 42px;
+    height: 42px;
+  }
+  .settings-save-bar {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    padding: 10px 12px;
+  }
+  .settings-city-current {
+    padding: 18px;
+  }
+  .settings-content .panel {
+    padding: 20px 16px;
+  }
+}
+.preference-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid #273b3240;
+  flex-shrink: 0;
+}
+.restore-confirm {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  line-height: 1.7;
+}
+.settings-page .page-heading {
+  display: block;
+}
+.settings-page .page-heading > p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.preference-editor :where(input, select, textarea) {
+  scroll-margin-bottom: 180px;
+}

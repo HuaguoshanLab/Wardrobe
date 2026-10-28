@@ -25,7 +25,10 @@
 .lookbook-switcher {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--soft);
 }
 .lookbook-switcher button {
   display: inline-flex;
@@ -33,7 +36,7 @@
   gap: 6px;
   min-height: 44px;
   border: 1px solid transparent;
-  border-radius: 24px;
+  border-radius: 12px;
   padding: 10px 16px;
   color: var(--muted);
   background: transparent;
@@ -41,8 +44,12 @@
 }
 .lookbook-switcher button[aria-pressed='true'] {
   color: var(--primary);
-  border-color: #9aaa92;
-  background: #e8eee0;
+  border-color: var(--border);
+  background: var(--surface);
+  font-weight: 600;
+}
+.lookbook-selection {
+  color: var(--primary);
   font-weight: 600;
 }
 .lookbook-count {

@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router'
 import { useOutfits, OutfitStatus } from '../outfits'
 import { citySchema, getLocation } from './api'
 import { ConditionsPanel } from './conditions'
+import { WeatherSummary } from './weather-summary'
 import { WeatherPanel } from './weather'
 import './profile.css'
 
@@ -43,7 +44,7 @@ export function ConditionsPage() {
           {location.error.message}
         </p>
       )}
-      {location.isPending ? (
+      {location.isPending || outfits.loading ? (
         <p role="status">正在载入默认城市…</p>
       ) : (
         <>
@@ -54,27 +55,35 @@ export function ConditionsPage() {
               onGenerate={outfits.generate}
               busy={outfits.busy}
               submitted={restoreSubmitted ? outfits.session?.requirements : undefined}
+              weather={
+                <WeatherPanel
+                  key={key}
+                  city={city}
+                  draftKey={`${key}.${outfits.session?.id ?? 'none'}`}
+                />
+              }
+              weatherSummary={<WeatherSummary city={city} />}
             />
-            <details className="panel prepare-weather">
-              <summary>天气与城市 · {city?.name ?? '未设置'}</summary>
-              <WeatherPanel key={key} city={city} />
-            </details>
           </div>
-          <OutfitStatus controller={outfits} />
-          <div className="actions">
-            <button
-              className="button button-outline"
-              disabled={outfits.busy}
-              onClick={outfits.newSession}
-            >
-              新建搭配会话
-            </button>
-            {outfits.session && (
-              <Link className="text-link" to={`/outfits/${outfits.session.id}`}>
-                打开此会话
-              </Link>
-            )}
-          </div>
+          <OutfitStatus controller={outfits} compact />
+          <details className="prepare-session">
+            <summary>其他操作</summary>
+            <p className="muted">开启独立搭配，清除本次选择和锁定；历史结果仍然保留。</p>
+            <div className="actions">
+              <button
+                className="button button-outline"
+                disabled={outfits.busy}
+                onClick={outfits.newSession}
+              >
+                开始新的搭配
+              </button>
+              {outfits.session && (
+                <Link className="text-link" to={`/outfits/${outfits.session.id}`}>
+                  返回当前搭配
+                </Link>
+              )}
+            </div>
+          </details>
         </>
       )}
     </div>

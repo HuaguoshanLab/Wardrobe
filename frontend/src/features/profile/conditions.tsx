@@ -1,5 +1,6 @@
+import './conditions.css'
 import { Sparkles } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
@@ -17,7 +18,7 @@ const empty: Requirements = {
   notes: null,
   weather_override: null,
 }
-const draftSchema = z.object({
+export const draftSchema = z.object({
   requirements: requirementsSchema,
   manual: z.boolean(),
   temperature: z.string(),
@@ -43,13 +44,17 @@ export function ConditionsPanel({
   onGenerate,
   busy = false,
   submitted,
+  weather,
+  weatherSummary,
 }: {
   storageKey: string
   onGenerate?: (requirements: Requirements) => void
   busy?: boolean
   submitted?: Requirements
+  weatherSummary?: ReactNode
+  weather?: ReactNode
 }) {
-  const optionsRef = useRef<HTMLDetailsElement>(null)
+  const weatherRef = useRef<HTMLDetailsElement>(null)
   const temperatureRef = useRef<HTMLInputElement>(null)
   const [initial] = useState(() => loadDraft(storageKey, submitted))
   const form = useForm<Requirements>({ defaultValues: initial.requirements })
@@ -64,6 +69,12 @@ export function ConditionsPanel({
       api('/tags', z.array(z.object({ id: z.uuid(), name: z.string(), version: z.int() }))),
   })
   const values = form.watch()
+  useEffect(() => {
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({ requirements: values, manual, temperature, condition }),
+    )
+  }, [storageKey, values, manual, temperature, condition])
   const preview = useMutation({
     mutationFn: previewConditions,
     onError: () => {
@@ -83,7 +94,7 @@ export function ConditionsPanel({
     const parsed = requirementsSchema.safeParse(candidate)
     if (!parsed.success) {
       setValidation('请输入 -90 至 60℃ 的温度和天气现象；0℃有效。')
-      if (optionsRef.current) optionsRef.current.open = true
+      if (weatherRef.current) weatherRef.current.open = true
       temperatureRef.current?.focus()
       return
     }
@@ -97,7 +108,6 @@ export function ConditionsPanel({
   }
   return (
     <section className="panel profile-panel conditions-panel">
-      <span className="eyebrow">MAKE IT YOURS</span>
       <h2>今天想怎么穿？</h2>
       <p>选个场合，或直接按你的偏好生成。</p>
       <form
@@ -107,18 +117,79 @@ export function ConditionsPanel({
         onSubmit={form.handleSubmit((data) => save(data))}
       >
         <fieldset className="plain-fieldset" disabled={preview.isPending || busy}>
+          <details
+            ref={weatherRef}
+            className="condition-weather"
+            open={initial.manual || undefined}
+          >
+            <summary>
+              天气与城市{' '}
+              {manual ? (
+                <span>
+                  手动 · {temperature || '—'}℃ · {condition || '待填写'}
+                </span>
+              ) : (
+                (weatherSummary ?? <span>自动获取 · 可修改</span>)
+              )}
+            </summary>
+            {weather}
+            <label>
+              天气来源
+              <select
+                value={manual ? 'manual' : 'qweather'}
+                onChange={(e) => setManual(e.target.value === 'manual')}
+              >
+                <option value="qweather">使用有效的和风天气</option>
+                <option value="manual">手动填写 / 覆盖</option>
+              </select>
+            </label>
+            {manual && (
+              <div className="attribute-grid">
+                <label>
+                  手动温度（℃）
+                  <input
+                    ref={temperatureRef}
+                    type="number"
+                    step="any"
+                    min="-90"
+                    max="60"
+                    required
+                    value={temperature}
+                    onChange={(e) => setTemperature(e.target.value)}
+                  />
+                </label>
+                <label>
+                  天气现象
+                  <input
+                    required
+                    maxLength={80}
+                    value={condition}
+                    onChange={(e) => setCondition(e.target.value)}
+                    placeholder="例如：阴天、小雨"
+                  />
+                </label>
+              </div>
+            )}
+          </details>
           <Choices
             label="场合"
             options={taxonomy.data?.fields.occasion_codes ?? {}}
             value={values.occasion_codes}
             onChange={(v) => form.setValue('occasion_codes', v)}
           />
+          <label>
+            本次补充要求
+            <textarea
+              maxLength={1000}
+              {...form.register('notes')}
+              placeholder="例如：今天要走很多路，想穿得轻便些"
+            />
+          </label>
           <details
-            ref={optionsRef}
             className="condition-options"
-            open={initial.manual || undefined}
+            open={initial.requirements.custom_tag_ids.length > 0 || undefined}
           >
-            <summary>更多条件 · 风格、季节与天气{manual ? '（已手动覆盖天气）' : ''}</summary>
+            <summary>更多条件 · 风格、季节与标签</summary>
             <label>
               风格来源
               <select
@@ -169,51 +240,6 @@ export function ConditionsPanel({
                 </Button>
               </div>
             )}
-            <label>
-              本次补充要求
-              <textarea
-                maxLength={1000}
-                {...form.register('notes')}
-                placeholder="例如：今天要走很多路，想穿得轻便些"
-              />
-            </label>
-            <label>
-              天气来源
-              <select
-                value={manual ? 'manual' : 'qweather'}
-                onChange={(e) => setManual(e.target.value === 'manual')}
-              >
-                <option value="qweather">使用有效的和风天气</option>
-                <option value="manual">手动填写 / 覆盖</option>
-              </select>
-            </label>
-            {manual && (
-              <div className="attribute-grid">
-                <label>
-                  手动温度（℃）
-                  <input
-                    ref={temperatureRef}
-                    type="number"
-                    step="any"
-                    min="-90"
-                    max="60"
-                    required
-                    value={temperature}
-                    onChange={(e) => setTemperature(e.target.value)}
-                  />
-                </label>
-                <label>
-                  天气现象
-                  <input
-                    required
-                    maxLength={80}
-                    value={condition}
-                    onChange={(e) => setCondition(e.target.value)}
-                    placeholder="例如：阴天、小雨"
-                  />
-                </label>
-              </div>
-            )}
           </details>
           <div className="condition-actions">
             {onGenerate && (
@@ -222,11 +248,11 @@ export function ConditionsPanel({
                 {busy ? '正在处理搭配…' : '生成搭配'}
               </Button>
             )}
-            <Button type="submit" variant="outline">
-              {preview.isPending ? '正在核对…' : '保存并核对条件'}
+            <Button type="submit" variant="outline" className="condition-check">
+              {preview.isPending ? '正在核对…' : '核对条件'}
             </Button>
           </div>
-          <p className="form-hint">最多 3 套，点击才生成。保存条件后，刷新可恢复。</p>
+          <p className="form-hint">最多 3 套，点击才生成。草稿自动保存在本浏览器。</p>
         </fieldset>
       </form>
       {(validation || preview.error || taxonomy.error || tags.error) && (
@@ -242,7 +268,6 @@ export function ConditionsPanel({
             {preview.data.effective_preferences.style_codes
               .map((v) => taxonomy.data?.fields.style_codes?.[v] ?? v)
               .join('、') || '不指定'}{' '}
-            · 偏好版本 {preview.data.preference_version}
           </p>
           {preview.data.requirements.weather_override && (
             <p>

@@ -9,7 +9,7 @@ export function HomePage() {
     <div className="today-page">
       <header className="today-heading">
         <div>
-          <span className="eyebrow">YOUR DAILY EDIT</span>
+          <span className="eyebrow">衣序 · 每日灵感</span>
           <h1>今日穿搭</h1>
         </div>
       </header>

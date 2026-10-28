@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { LockKeyhole, Plus } from 'lucide-react'
+import { LockKeyhole } from 'lucide-react'
 import { Sheet } from '../../components/ui/sheet'
+import { OutfitStatus } from './task-status'
+import { PieceAttributes } from './piece-attributes'
 import { Button } from '../../components/ui/button'
 import type { Revision } from './api'
 import type { OutfitController } from './use-outfits'
@@ -45,36 +47,52 @@ export function LookbookPiece({
             ) : (
               <span>图片暂不可用</span>
             )}
-            <span className="piece-lock">
-              {locked ? (
+            {locked && (
+              <span className="piece-lock">
                 <LockKeyhole size={14} aria-label="已锁定" />
-              ) : (
-                <Plus size={14} aria-hidden="true" />
-              )}
-            </span>
+              </span>
+            )}
           </button>
         }
       >
         {item.image_url && (
           <img className="sheet-piece-image" src={item.image_url} alt={`${name}详情`} />
         )}
-        <p>{categories[item.slot] || item.slot} · 搭配中的单品快照</p>
+        <p className="muted">{categories[item.slot] || item.slot} · 搭配保存时的单品</p>
+        <PieceAttributes attributes={item.attributes} />
+        <OutfitStatus controller={c} compact />
         {invalid && <p className="error">该单品当前不可用，历史图片仍保留。</p>}
         <p>
           {!selected
             ? '先选用这套，再替换其中的单品。'
             : locked
-              ? '此单品已锁定，请到“调整这套”解锁后再替换。'
+              ? '此单品已锁定。解锁后才可替换。'
               : '只替换这件，其他单品保持不变。'}
         </p>
+        {selected && item.garment_id && (
+          <label className="piece-lock-control">
+            <input
+              type="checkbox"
+              checked={locked}
+              disabled={c.busy}
+              onChange={(e) =>
+                c.patch({
+                  locked_garment_ids: e.target.checked
+                    ? [...(c.session?.locked_garment_ids ?? []), item.garment_id!]
+                    : (c.session?.locked_garment_ids.filter((id) => id !== item.garment_id) ?? []),
+                })
+              }
+            />
+            锁定此单品<span>重搭时保留</span>
+          </label>
+        )}
         <Button
           disabled={!selected || locked || c.busy}
-          onClick={() => {
-            c.adjust('replace_items', [item.item_id], '')
-            setOpen(false)
+          onClick={async () => {
+            if (await c.adjust('replace_items', [item.item_id], '')) setOpen(false)
           }}
         >
-          只替换此项
+          只换这件
         </Button>
       </Sheet>
       <figcaption>

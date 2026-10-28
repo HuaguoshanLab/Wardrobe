@@ -118,8 +118,11 @@ export function useOutfits(sessionId?: string, returnToResults = false) {
     body: Record<string, z.infer<ReturnType<typeof z.json>>>,
     generateAfter = false,
   ) => {
-    if (submit.isPending || pending) return
-    submit.mutate({ path, method, body, key: operationId(), generateAfter })
+    if (submit.isPending || pending) return Promise.resolve(false)
+    return submit.mutateAsync({ path, method, body, key: operationId(), generateAfter }).then(
+      () => true,
+      () => false,
+    )
   }
   const cancel = useMutation({
     mutationFn: () => api(`/jobs/${id}/cancel`, outfitJobSchema, { method: 'POST' }),

@@ -1,60 +1,43 @@
+import './workflow.css'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '../../components/ui/button'
+import { Sheet } from '../../components/ui/sheet'
+import { PageHeader } from '../../components/ui/page-header'
 import { api } from '../../lib/http'
 import { operationId } from '../../lib/id'
-import {
-  getBatch,
-  batchPollInterval,
-  terminal,
-  statusLabel,
-  confirmationSchema,
-  acceptedSchema,
-  rowSchema,
-  type ImportRow,
-} from './api'
+import { getBatch, batchPollInterval, acceptedSchema, rowSchema, type ImportRow } from './api'
 import { getTaxonomy } from '../wardrobe'
 import { RowEditor } from './row-editor'
+import { ReviewRow } from './review-row'
+import { useConfirmation } from './confirmation'
 
+type Filter = 'pending' | 'invalid' | 'confirmed' | 'all'
 export function ReviewPage() {
   const { id } = useParams()
+  return <ReviewBatch key={id} id={id!} />
+}
+function ReviewBatch({ id }: { id: string }) {
   const client = useQueryClient()
   const taxonomy = useQuery({ queryKey: ['taxonomies'], queryFn: getTaxonomy })
   const [selected, setSelected] = useState<string[]>([])
   const [editing, setEditing] = useState<string | null>(null)
+  const [preview, setPreview] = useState<ImportRow | null>(null)
+  const [filter, setFilter] = useState<Filter>('pending')
+  const [actionTarget, setActionTarget] = useState<{ row: ImportRow; step: string } | null>(null)
   const query = useQuery({
     queryKey: ['import', id],
-    queryFn: () => getBatch(id!),
+    queryFn: () => getBatch(id),
     refetchInterval: (query) => batchPollInterval(query.state.data),
   })
   const refresh = () => {
     void client.invalidateQueries({ queryKey: ['import', id] })
     void client.invalidateQueries({ queryKey: ['garments'] })
   }
-  const confirm = useMutation({
-    mutationFn: async (rows: ImportRow[]) => {
-      const payload = {
-        rows: rows.map((row) => ({ row_id: row.id, expected_version: row.version })),
-      }
-      const storageKey = `wardrobe.confirm.${id}`
-      const saved = localStorage.getItem(storageKey)
-      const old = saved ? (JSON.parse(saved) as { key: string; payload: typeof payload }) : null
-      // A failed transport always retries the original request, even if a poll changed versions.
-      const operation = old ?? { key: operationId(), payload }
-      localStorage.setItem(storageKey, JSON.stringify(operation))
-      const result = await api(`/imports/${id}/confirm`, confirmationSchema, {
-        method: 'POST',
-        headers: { 'Idempotency-Key': operation.key },
-        body: JSON.stringify(operation.payload),
-      })
-      localStorage.removeItem(storageKey)
-      return result
-    },
-    onSuccess: () => {
-      setSelected([])
-      refresh()
-    },
+  const confirm = useConfirmation(id, query.data?.rows ?? [], () => {
+    setSelected([])
+    refresh()
   })
   const action = useMutation({
     mutationFn: async ({ row, step }: { row: ImportRow; step: string }) => {
@@ -74,258 +57,300 @@ export function ReviewPage() {
       localStorage.removeItem(storageKey)
       return result
     },
-    onSuccess: refresh,
+    onSuccess: () => {
+      setActionTarget(null)
+      refresh()
+    },
   })
-  if (query.isPending) return <p>正在载入审核表格…</p>
-  if (query.error || !query.data)
+  if (!query.data)
     return (
-      <p role="alert" className="error">
-        {query.error?.message ?? '批次不存在'}
-      </p>
+      <section>
+        <PageHeader title="审核衣服" backTo="/imports" backLabel="返回录入入口" />
+        <div className="panel">
+          <p role={query.isError ? 'alert' : 'status'}>
+            {query.error?.message ?? '正在读取本批衣服…'}
+          </p>
+          {query.isError && <Button onClick={() => void query.refetch()}>重新读取</Button>}
+        </div>
+      </section>
     )
   const batch = query.data
+  const counts = {
+    ready: batch.rows.filter((row) => row.row_status === 'ready').length,
+    invalid: batch.rows.filter((row) => row.row_status === 'invalid').length,
+    confirmed: batch.rows.filter((row) => row.row_status === 'confirmed').length,
+    skipped: batch.rows.filter((row) => row.row_status === 'skipped').length,
+  }
+  const processing = !!batchPollInterval(batch)
+  const complete = !!batch.rows.length && counts.ready + counts.invalid === 0 && !processing
+  const visible = batch.rows.filter(
+    (row) =>
+      filter === 'all' ||
+      (filter === 'pending' && ['ready', 'invalid'].includes(row.row_status)) ||
+      row.row_status === filter,
+  )
+  const selectedRows = batch.rows.filter(
+    (row) => selected.includes(row.id) && row.row_status === 'ready',
+  )
+  const readyVisible = visible.filter((row) => row.row_status === 'ready')
   const active = batch.rows.find((row) => row.id === editing)
-  const selectable = batch.rows.filter((row) => row.row_status === 'ready')
-  const busy = confirm.isPending || action.isPending
+  const next =
+    active &&
+    batch.rows
+      .slice(batch.rows.indexOf(active) + 1)
+      .find((row) => !['confirmed', 'skipped'].includes(row.row_status))
+  const busy = confirm.blocked || action.isPending
   return (
-    <>
-      <Link className="text-link" to="/imports">
-        ← 返回录入入口
-      </Link>
-      <div className="page-heading">
+    <section className="import-review">
+      <PageHeader title="审核衣服" backTo="/imports" backLabel="返回录入入口" />
+      <p className="muted">
+        {batch.source === 'photos' ? '照片' : 'Excel'}导入 · 只有确认的单品才会加入衣橱
+      </p>
+      <div className="import-overview">
         <div>
-          <span className="eyebrow">REVIEW BEFORE YOU KEEP</span>
-          <h1>逐行审核</h1>
-          <p>
-            {batch.source === 'photos' ? '照片' : 'Excel'}导入 · {batch.rows.length} 行 ·{' '}
-            {statusLabel[batch.job_status] ?? batch.job_status}
-          </p>
+          <strong>{batch.rows.length}</strong>
+          <span>本批件数</span>
         </div>
-        <Link className="text-link" to="/wardrobe">
-          查看衣橱 →
-        </Link>
+        <div>
+          <strong>{counts.ready}</strong>
+          <span>待确认</span>
+        </div>
+        <div>
+          <strong>{counts.invalid}</strong>
+          <span>需处理</span>
+        </div>
+        <div>
+          <strong>{counts.confirmed}</strong>
+          <span>已入库</span>
+        </div>
       </div>
-      <div className="notice">
-        图片和品类必填。转换成功即可手工确认；识别或去背景失败不会阻止有效行入库。
-        {batch.source === 'photos' && '标注 Fake 的结果是模拟预填，请核对。'}
-        刷新页面只读取进度，不会重新识别。AI
-        预填需要核对，材质、厚度和保暖性请手工补充；重试识别可能再次计费。
-      </div>
+      {processing && (
+        <p className="notice" role="status">
+          正在处理图片与属性。已就绪的单品可先核对，刷新不会重复识别。
+        </p>
+      )}
       {batch.job_error && (
-        <p className="error" role="alert">
-          {batch.job_error}。已有行可继续审核或重试；没有审核行时，请修正文件后重新上传。
-        </p>
-      )}
-      {(confirm.error || action.error) && (
         <p role="alert" className="error">
-          {(confirm.error || action.error)?.message}
+          {batch.job_error}。已有单品仍可核对；源文件问题请修正后重新上传。
         </p>
       )}
-      {confirm.data && (
-        <div role="status" className="notice">
-          本次入库 / 已入库{' '}
-          {
-            confirm.data.rows.filter((r) => ['confirmed', 'already_confirmed'].includes(r.status))
-              .length
-          }{' '}
-          行。
-          {confirm.data.rows
-            .filter((r) => ['invalid', 'version_conflict'].includes(r.status))
-            .map((r) => (
-              <p key={r.row_id}>
-                第 {batch.rows.find((row) => row.id === r.row_id)?.row_number ?? '?'} 行：
-                {r.status === 'version_conflict'
-                  ? '数据已更新，请核对后重新确认'
-                  : r.errors.join('；')}
+      {query.isError && (
+        <div className="notice">
+          <p role="alert">进度读取失败，当前为上次结果。</p>
+          <Button onClick={() => void query.refetch()}>重试读取</Button>
+        </div>
+      )}
+      {complete && (
+        <div className="panel import-complete">
+          <h2>本批已处理完毕</h2>
+          <p>
+            已入库 {counts.confirmed} 件，已移除 {counts.skipped} 件。
+          </p>
+          <div className="actions">
+            <Link className="button" to="/wardrobe">
+              查看衣橱
+            </Link>
+            <Link className="button button-outline" to="/imports">
+              继续录入
+            </Link>
+          </div>
+        </div>
+      )}
+      {confirm.feedback}
+      {confirm.result && (
+        <div className="notice" role="status">
+          <p>
+            本次确认：
+            {
+              confirm.result.rows.filter((row) =>
+                ['confirmed', 'already_confirmed'].includes(row.status),
+              ).length
+            }{' '}
+            件已入库。
+          </p>
+          {confirm.result.rows
+            .filter((row) => ['invalid', 'version_conflict'].includes(row.status))
+            .map((row) => (
+              <p key={row.row_id}>
+                第 {batch.rows.find((item) => item.id === row.row_id)?.row_number} 行：
+                {row.status === 'version_conflict'
+                  ? '内容已更新，请重新核对'
+                  : row.errors.join('；')}
               </p>
             ))}
         </div>
       )}
-      <div className="actions review-actions">
-        <Button
-          variant="outline"
-          disabled={!selectable.length || busy}
-          onClick={() => setSelected(selectable.map((r) => r.id))}
-        >
-          选择所有有效行
-        </Button>
-        <Button
-          disabled={!selected.length || busy}
-          onClick={() => confirm.mutate(batch.rows.filter((r) => selected.includes(r.id)))}
-        >
-          确认选中（{selected.length}）
-        </Button>
-        {confirm.isError && (
-          <Button variant="outline" onClick={() => confirm.mutate([])}>
-            重试上次确认
-          </Button>
-        )}
+      <div className="import-filters" role="group" aria-label="审核状态筛选">
+        {(
+          [
+            ['pending', '待审核'],
+            ['invalid', '需处理'],
+            ['confirmed', '已入库'],
+            ['all', '全部'],
+          ] as const
+        ).map(([value, label]) => (
+          <button key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>
+            {label}
+          </button>
+        ))}
       </div>
-      {batch.rows.length === 0 && (
-        <section className="panel">
+      {!visible.length ? (
+        <div className="panel">
           <p>
-            {terminal.has(batch.job_status)
-              ? '暂无可审核行，请检查模板后重新上传。'
-              : '正在解析文件，请稍候…'}
+            {processing
+              ? '正在准备审核内容…'
+              : filter === 'pending'
+                ? '没有待审核单品。'
+                : '此分类暂无单品。'}
           </p>
-        </section>
+          <Button variant="outline" onClick={() => setFilter('all')}>
+            查看全部
+          </Button>
+          {!batch.rows.length && !processing && (
+            <Link className="text-link" to="/imports">
+              修正文件后重新上传
+            </Link>
+          )}
+        </div>
+      ) : (
+        <div className="review-table-wrap">
+          <table className="review-table">
+            <thead>
+              <tr>
+                <th>选择 / 行号</th>
+                <th>图片</th>
+                <th>单品</th>
+                <th>审核状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map((row) => (
+                <ReviewRow
+                  key={row.id}
+                  row={row}
+                  fields={taxonomy.data?.fields ?? {}}
+                  selected={selectedRows.some((item) => item.id === row.id)}
+                  busy={busy}
+                  onSelect={(checked) =>
+                    setSelected(
+                      checked
+                        ? [...selected, row.id]
+                        : selected.filter((value) => value !== row.id),
+                    )
+                  }
+                  onPreview={() => setPreview(row)}
+                  onEdit={() => setEditing(row.id)}
+                  onConfirm={() => confirm.open([row])}
+                  onAction={(step) => {
+                    action.reset()
+                    setActionTarget({ row, step })
+                  }}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-      <div className="review-table-wrap">
-        <table className="review-table">
-          <thead>
-            <tr>
-              <th>选择 / 行号</th>
-              <th>图片</th>
-              <th>名称与品类</th>
-              <th>处理与校验</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {batch.rows.map((row) => {
-              const finalized = ['confirmed', 'skipped'].includes(row.row_status)
-              return (
-                <tr key={row.id}>
-                  <td>
-                    <label>
-                      <input
-                        aria-label={`选择第 ${row.row_number} 行`}
-                        type="checkbox"
-                        checked={selected.includes(row.id)}
-                        disabled={row.row_status !== 'ready' || busy}
-                        onChange={(e) =>
-                          setSelected(
-                            e.target.checked
-                              ? [...selected, row.id]
-                              : selected.filter((x) => x !== row.id),
-                          )
-                        }
-                      />
-                      第 {row.row_number} 行
-                    </label>
-                  </td>
-                  <td>
-                    {row.image_url ? (
-                      <img
-                        className="row-image"
-                        src={row.image_url}
-                        alt={`第 ${row.row_number} 行图片`}
-                      />
-                    ) : (
-                      <span>暂无可用图片</span>
-                    )}
-                  </td>
-                  <td>
-                    <strong>{row.draft.name || row.filename}</strong>
-                    <p>
-                      {taxonomy.data?.fields.category[row.draft.category ?? ''] ??
-                        row.draft.category ??
-                        '品类未填写'}
-                      {row.analysis_source === 'fake' && <span className="badge">Fake 预填</span>}
-                      {row.analysis_source === 'qwen' && (
-                        <span className="badge">千问预填 · 待核对</span>
-                      )}
-                    </p>
-                    {row.analysis_notes.map((note, index) => (
-                      <p key={index}>{note}</p>
-                    ))}
-                    <small>
-                      {row.draft.seasons
-                        .map((s) => taxonomy.data?.fields.seasons[s] ?? s)
-                        .join(' / ') || '季节未知'}{' '}
-                      · {row.draft.availability === 'available' ? '可穿' : '暂不可用'}
-                    </small>
-                  </td>
-                  <td>
-                    <strong>{statusLabel[row.row_status]}</strong>
-                    <p className="step-status">
-                      转换：{statusLabel[row.conversion_status]}
-                      <br />
-                      识别：{statusLabel[row.analysis_status]}
-                      <br />
-                      去背景：{statusLabel[row.cutout_status]}
-                    </p>
-                    {row.validation_errors.map((error, i) => (
-                      <p className="error" key={i}>
-                        {error}
-                      </p>
-                    ))}
-                    {Object.entries(row.processing_errors)
-                      .filter(([key]) => ['conversion', 'analysis', 'cutout'].includes(key))
-                      .map(([key, error]) => (
-                        <p className="error" key={key}>
-                          {String(error)}
-                        </p>
-                      ))}
-                  </td>
-                  <td>
-                    <div className="row-actions">
-                      {!finalized && (
-                        <>
-                          <Button
-                            variant="outline"
-                            disabled={busy}
-                            onClick={() => setEditing(row.id)}
-                          >
-                            修改属性
-                          </Button>
-                          <Button
-                            disabled={row.row_status !== 'ready' || busy}
-                            onClick={() => confirm.mutate([row])}
-                          >
-                            确认入库
-                          </Button>
-                          {(['conversion', 'analysis', 'cutout'] as const)
-                            .filter((step) =>
-                              ['failed', 'interrupted', 'cancelled'].includes(
-                                row[`${step}_status`],
-                              ),
-                            )
-                            .map((step) => (
-                              <Button
-                                key={step}
-                                variant="outline"
-                                disabled={busy}
-                                onClick={() => action.mutate({ row, step })}
-                              >
-                                重试
-                                {step === 'conversion'
-                                  ? '转换'
-                                  : step === 'analysis'
-                                    ? '识别'
-                                    : '去背景'}
-                              </Button>
-                            ))}
-                          <Button
-                            variant="outline"
-                            disabled={busy}
-                            onClick={() => action.mutate({ row, step: 'skip' })}
-                          >
-                            移除此行
-                          </Button>
-                        </>
-                      )}
-                      {row.confirmed_garment_id && (
-                        <Link className="text-link" to={`/wardrobe/${row.confirmed_garment_id}`}>
-                          查看单品
-                        </Link>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-      {active && !['confirmed', 'skipped'].includes(active.row_status) && (
+      {!complete && (
+        <div className="import-confirm-bar">
+          <Button
+            variant="outline"
+            disabled={busy || !readyVisible.length}
+            onClick={() => setSelected(readyVisible.map((row) => row.id))}
+          >
+            选择本页待确认
+          </Button>
+          {selectedRows.length > 0 && (
+            <button className="text-link" disabled={busy} onClick={() => setSelected([])}>
+              取消选择
+            </button>
+          )}
+          <Button
+            disabled={busy || !selectedRows.length}
+            onClick={() => confirm.open(selectedRows)}
+          >
+            确认选中（{selectedRows.length}）
+          </Button>
+        </div>
+      )}
+      <details className="import-help">
+        <summary>审核与识别说明</summary>
+        <p>
+          图片和品类必填，其他属性可未知。识别或去背景失败不阻止有效单品入库。Excel
+          原有属性不会被自动识别覆盖；AI 预填需要人工核对，材质、厚度和保暖性请按实际填写。
+        </p>
+      </details>
+      {active && (
         <RowEditor
           key={active.id}
-          batchId={batch.id}
+          batchId={id}
           row={active}
+          onNext={next ? () => setEditing(next.id) : undefined}
           onClose={() => setEditing(null)}
         />
       )}
-    </>
+      <Sheet
+        title={preview?.draft.name || '单品图片'}
+        trigger={<span hidden />}
+        open={!!preview}
+        onOpenChange={(open) => {
+          if (!open) setPreview(null)
+        }}
+      >
+        {preview?.image_url && (
+          <img
+            className="import-preview-large"
+            src={preview.image_url}
+            alt={preview.draft.name || preview.filename}
+          />
+        )}
+      </Sheet>
+      {confirm.panels}
+      <Sheet
+        title={actionTarget?.step === 'skip' ? '移除此行？' : '重试处理？'}
+        trigger={<span hidden />}
+        open={!!actionTarget}
+        onOpenChange={(open) => {
+          if (!open && !action.isPending) setActionTarget(null)
+        }}
+      >
+        <p>
+          第 {actionTarget?.row.row_number} 行 ·{' '}
+          {actionTarget?.row.draft.name || actionTarget?.row.filename}
+        </p>
+        <p>
+          {actionTarget?.step === 'skip'
+            ? '此行将从本批审核中移除，不会加入衣橱。已入库的其他单品不受影响。'
+            : actionTarget?.step === 'analysis'
+              ? '再次识别可能产生新的模型费用；人工修改过的属性仍会保留。'
+              : '仅重试这个处理步骤，已完成的其他步骤保留。'}
+        </p>
+        {action.error && (
+          <p role="alert" className="error">
+            {action.error.message}
+          </p>
+        )}
+        <div className="actions">
+          <Button
+            variant="outline"
+            disabled={action.isPending}
+            onClick={() => setActionTarget(null)}
+          >
+            暂不操作
+          </Button>
+          <Button
+            disabled={action.isPending}
+            onClick={() => actionTarget && action.mutate(actionTarget)}
+          >
+            {action.isPending
+              ? '正在提交…'
+              : actionTarget?.step === 'skip'
+                ? '确认移除'
+                : '确认重试'}
+          </Button>
+        </div>
+      </Sheet>
+    </section>
   )
 }

@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter } from 'react-router'
+import { createMemoryRouter, RouterProvider } from 'react-router'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { afterAll, afterEach, beforeAll, expect, it } from 'vitest'
@@ -41,9 +41,7 @@ it.each([
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
     >
-      <MemoryRouter>
-        <ImportPage />
-      </MemoryRouter>
+      <RouterProvider router={createMemoryRouter([{ path: '*', element: <ImportPage /> }])} />
     </QueryClientProvider>,
   )
   expect(await screen.findByText(new RegExp(text))).toBeTruthy()
@@ -89,15 +87,13 @@ it('blocks photos while capabilities are unknown and recovers after an explicit 
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
     >
-      <MemoryRouter>
-        <ImportPage />
-      </MemoryRouter>
+      <RouterProvider router={createMemoryRouter([{ path: '*', element: <ImportPage /> }])} />
     </QueryClientProvider>,
   )
   fireEvent.change(screen.getByLabelText('上传照片'), {
     target: { files: [new File(['photo'], 'shirt.png', { type: 'image/png' })] },
   })
-  const submit = screen.getByRole('button', { name: '上传并开始预览' }) as HTMLButtonElement
+  const submit = screen.getByRole('button', { name: /上传并/ }) as HTMLButtonElement
   expect(submit.disabled).toBe(true)
   expect(screen.queryByText(/真实识别未配置/)).toBeNull()
   resolveRequest()

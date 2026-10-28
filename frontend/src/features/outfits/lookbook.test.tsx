@@ -59,6 +59,7 @@ const session = (): OutfitSession => ({
   removed_lock_ids: [],
 })
 const server = setupServer(
+  http.get('/api/v1/taxonomies', () => HttpResponse.json(envelope({ version: 1, fields: {} }))),
   http.get('/api/v1/outfit-sessions/current', () => HttpResponse.json(envelope(session()))),
   http.patch('/api/v1/outfit-sessions/:id', async ({ request }) => {
     const body = (await request.json()) as { selected_revision_id: string }
@@ -132,7 +133,7 @@ it('opening a piece is read-only and replacing explicitly targets only that item
   expect(await screen.findByRole('dialog', { name: '上衣 1' })).toBeVisible()
   expect(adjustments).toEqual([])
   expect(patches).toEqual([])
-  await user.click(screen.getByRole('button', { name: '只替换此项' }))
+  await user.click(screen.getByRole('button', { name: '只换这件' }))
   await waitFor(() => expect(adjustments).toHaveLength(1))
   expect(adjustments[0]).toEqual({
     expected_version: 1,
@@ -152,11 +153,11 @@ it('locked and preview items cannot be replaced from their sheets', async () => 
   )
   mount()
   await user.click(await screen.findByRole('button', { name: '查看上衣 1' }))
-  expect(screen.getByRole('button', { name: '只替换此项' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: '只换这件' })).toBeDisabled()
   await user.click(screen.getByRole('button', { name: '关闭面板' }))
   await user.click(screen.getByRole('button', { name: '方案 02' }))
   await user.click(screen.getByRole('button', { name: '查看上衣 2' }))
-  expect(screen.getByRole('button', { name: '只替换此项' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: '只换这件' })).toBeDisabled()
   expect(patches).toEqual([])
 })
 
@@ -167,10 +168,32 @@ it('adjustment opens on the lookbook without writing and preserves the chat draf
   expect(await screen.findByRole('dialog', { name: '调整这套' })).toBeVisible()
   expect(screen.getByRole('checkbox', { name: '锁定此单品' })).not.toBeChecked()
   expect(screen.getByRole('button', { name: '重搭未锁定部分' })).toBeEnabled()
+  await user.click(screen.getByRole('button', { name: '描述要求' }))
   await user.type(screen.getByLabelText('聊天调整要求'), '只换裤子')
   await user.click(screen.getByRole('button', { name: '关闭面板' }))
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   await user.click(screen.getByRole('button', { name: '调整这套' }))
+  await user.click(screen.getByRole('button', { name: '描述要求' }))
   expect(screen.getByLabelText('聊天调整要求')).toHaveValue('只换裤子')
   expect(patches).toEqual([])
+})
+
+it('a failed replacement stays in the piece sheet and only an explicit retry resends the same operation', async () => {
+  const user = userEvent.setup()
+  const requests: { body: string; key: string | null }[] = []
+  server.use(
+    http.post('/api/v1/outfit-sessions/:id/adjust', async ({ request }) => {
+      requests.push({ body: await request.text(), key: request.headers.get('Idempotency-Key') })
+      return HttpResponse.error()
+    }),
+  )
+  mount()
+  await user.click(await screen.findByRole('button', { name: '查看上衣 1' }))
+  await user.click(screen.getByRole('button', { name: '只换这件' }))
+  await screen.findByRole('alert')
+  expect(screen.getByRole('dialog', { name: '上衣 1' })).toBeVisible()
+  expect(requests).toHaveLength(1)
+  await user.click(screen.getByRole('button', { name: '重发同一搭配操作' }))
+  await waitFor(() => expect(requests).toHaveLength(2))
+  expect(requests[1]).toEqual(requests[0])
 })

@@ -29,12 +29,14 @@ for (const source of ['photos', 'excel'] as const) {
         buffer: await readFile(new URL('./fixtures/shirt.png', import.meta.url)),
       })
     }
-    await page.getByRole('button', { name: '上传并开始预览' }).click()
-    await expect(page.getByRole('heading', { name: '逐行审核' })).toBeVisible()
-    await expect(page.locator('.page-heading')).toContainText('已完成', { timeout: 60000 })
-    await expect(page.getByRole('button', { name: '确认入库', exact: true })).toBeEnabled()
+    await page.getByRole('button', { name: /上传并/ }).click()
+    await expect(page.getByRole('heading', { name: '审核衣服' })).toBeVisible()
+    await expect(page.getByRole('button', { name: '核对入库', exact: true })).toBeEnabled({
+      timeout: 60000,
+    })
+    await expect(page.getByRole('button', { name: '核对入库', exact: true })).toBeEnabled()
     await page.reload()
-    await expect(page.getByRole('heading', { name: '逐行审核' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '审核衣服' })).toBeVisible()
     expect(uploads).toBe(1)
     await page.getByRole('button', { name: '修改属性' }).click()
     const name = `E2E-${source}-${testInfo.project.name}-${Date.now()}`
@@ -46,20 +48,20 @@ for (const source of ['photos', 'excel'] as const) {
       path: `/private/tmp/wardrobe-p2-${source}-${testInfo.project.name}-review.png`,
       fullPage: true,
     })
+    await page.getByRole('button', { name: '核对入库', exact: true }).click()
     await page.getByRole('button', { name: '确认入库', exact: true }).click()
+    await page.getByRole('button', { name: '已入库', exact: true }).click()
     await expect(page.getByRole('link', { name: '查看单品', exact: true })).toBeVisible()
     await page.getByRole('link', { name: '查看单品', exact: true }).click()
     await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
     const garmentId = page.url().split('/').at(-1)!
     try {
-      await page.getByLabel('状态', { exact: true }).selectOption('unavailable')
-      await page.getByLabel('展示图片').selectOption('original')
-      await page.getByRole('button', { name: '保存修改' }).click()
+      await page.getByRole('button', { name: '设为不可用' }).click()
       await expect(page.getByRole('status')).toHaveText('已保存')
       await page.goto('/wardrobe')
       await page.getByLabel('搜索衣服').fill(name)
       await page.getByRole('button', { name: /^筛选/ }).click()
-      await page.getByLabel('筛选状态').selectOption('unavailable')
+      await page.getByRole('button', { name: '暂不可用', exact: true }).click()
       await page.getByRole('button', { name: '查看结果', exact: true }).click()
       await expect(page.locator('.garment-card')).toHaveCount(1)
       await page.screenshot({
@@ -70,8 +72,8 @@ for (const source of ['photos', 'excel'] as const) {
         true,
       )
       await page.locator('.garment-card').click()
-      page.once('dialog', (d) => d.accept())
-      await page.getByRole('button', { name: '删除单品' }).click()
+      await page.getByRole('button', { name: '删除这件单品' }).click()
+      await page.getByRole('button', { name: '确认删除单品' }).click()
       await expect(page).toHaveURL(
         (url) =>
           url.pathname === '/wardrobe' &&

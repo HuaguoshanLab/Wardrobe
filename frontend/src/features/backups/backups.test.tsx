@@ -58,6 +58,7 @@ it('requires explicit confirmation and preserves the exact apply request after a
   )
   const user = userEvent.setup()
   const first = mount()
+  await user.click(await screen.findByRole('button', { name: '检查并恢复' }))
   const button = await screen.findByRole('button', { name: '确认覆盖恢复' })
   expect(button).toBeDisabled()
   expect(posts).toHaveLength(0)

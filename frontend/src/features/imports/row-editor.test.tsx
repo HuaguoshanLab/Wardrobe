@@ -1,3 +1,5 @@
+import { createMemoryRouter, RouterProvider } from 'react-router'
+import { useRef, createContext, useContext } from 'react'
 import { afterAll, beforeAll, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -7,6 +9,8 @@ import { setupServer } from 'msw/node'
 import { RowEditor } from './row-editor'
 import { rowSchema } from './api'
 
+const Content = createContext<React.ReactNode>(null)
+const Slot = () => useContext(Content)
 const id = '00000000-0000-4000-8000-000000000001'
 const row = rowSchema.parse({
   id,
@@ -68,9 +72,16 @@ beforeAll(() => {
 afterAll(() => server.close())
 it('background polling preserves an unsaved draft and submits its opening version', async () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={client}>{children}</QueryClientProvider>
-  )
+  const wrapper = ({ children }: { children: React.ReactNode }) => {
+    const router = useRef(createMemoryRouter([{ path: '*', element: <Slot /> }]))
+    return (
+      <QueryClientProvider client={client}>
+        <Content.Provider value={children}>
+          <RouterProvider router={router.current} />
+        </Content.Provider>
+      </QueryClientProvider>
+    )
+  }
   const view = render(<RowEditor batchId={id} row={row} onClose={() => {}} />, { wrapper })
   const user = userEvent.setup()
   await screen.findByRole('option', { name: '鞋' })

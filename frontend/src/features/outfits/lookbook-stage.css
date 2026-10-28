@@ -1,95 +1,135 @@
-/* The page keeps the existing warm background. Only the outfit gains a stage. */
+@import './weather-bubble.css';
+
+/* Real wardrobe images remain the focus; the established warm palette is retained. */
 .lookbook {
   position: relative;
-  isolation: isolate;
-  border-radius: 28px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: linear-gradient(160deg, var(--surface), var(--background));
 }
 .lookbook-meta {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  font-size: 12px;
+  flex-wrap: wrap;
+  gap: 6px 12px;
   color: var(--muted);
+  font-size: 13px;
 }
 .lookbook-board {
-  display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  grid-template-rows: 180px 210px 110px;
-  grid-auto-rows: 130px;
-  gap: 12px 24px;
-  max-width: 650px;
-  margin: 16px auto 0;
-  padding: 0 24px 24px;
-  touch-action: pan-y pinch-zoom;
   position: relative;
+  max-width: 760px;
+  margin: 2px auto 0;
+  touch-action: pan-y pinch-zoom;
 }
-.lookbook-board::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 5%;
-  right: 5%;
-  height: 45px;
-  border: 1px solid rgb(41 79 64 / 9%);
-  border-radius: 50%;
-  box-shadow: 0 12px 24px -18px rgb(41 79 64 / 35%);
-  z-index: -1;
-  pointer-events: none;
+.stage-composition {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) 72px;
+  gap: 20px;
+  max-width: 640px;
+  margin: auto;
+  padding-top: 8px;
+}
+.stage-garments {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
 }
 .lookbook-piece {
   margin: 0;
   min-width: 0;
-  min-height: 0;
   display: flex;
   flex-direction: column;
-  grid-column: 2;
+  align-items: center;
+  order: 5;
 }
 .piece-top {
-  grid-column: 1;
-  grid-row: 1;
-}
-.piece-bottom {
-  grid-column: 1;
-  grid-row: 2;
-}
-.piece-dress {
-  grid-column: 1;
-  grid-row: 1 / 3;
-}
-.piece-shoes {
-  grid-column: 1;
-  grid-row: 3;
+  order: 1;
 }
 .piece-outerwear {
-  grid-row: span 2;
+  order: 2;
+}
+.piece-dress {
+  order: 2;
+}
+.piece-bottom {
+  order: 3;
+}
+.piece-shoes {
+  order: 4;
+}
+.stage-tools {
+  align-self: start;
+  display: grid;
+  gap: 12px;
+  margin-top: 0;
+  padding: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+}
+.stage-tools .outfit-save-actions {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+}
+.stage-tools .lookbook-utility,
+.stage-detail-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 64px;
+  gap: 6px;
+  padding: 8px 2px;
+  border: 0;
+  border-radius: 20px;
+  color: var(--primary);
+  background: transparent;
+  font-size: 11px;
+}
+.stage-detail-button:hover {
+  background: var(--soft);
+}
+.stage-reminders {
+  font-size: 10px;
+  color: #884324;
+}
+.stage-tools .save-feedback {
+  font-size: 11px;
+  padding: 0 4px;
+  flex-wrap: wrap;
 }
 .piece-photo {
   position: relative;
   display: grid;
   place-items: center;
   width: 100%;
-  flex: 1;
-  min-height: 0;
+  height: 210px;
+  max-width: 300px;
+  flex: none;
+  min-height: 44px;
   border: 0;
-  border-radius: 20px;
+  border-radius: 18px;
   background: transparent;
   color: var(--primary);
-  padding: 4px;
+  padding: 0;
   cursor: pointer;
   transition: background 150ms;
 }
 .piece-photo:hover,
 .piece-photo:active {
-  background: rgb(41 79 64 / 5%);
+  background: var(--soft);
 }
 .piece-photo img {
   position: absolute;
-  inset: 4px;
-  height: calc(100% - 8px);
-  width: calc(100% - 8px);
+  inset: 0;
+  height: 100%;
+  width: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 10px 9px rgb(38 48 38 / 10%));
+  filter: drop-shadow(0 8px 8px rgb(38 48 38 / 8%));
   user-select: none;
 }
 .piece-photo > span:not(.piece-lock) {
@@ -97,127 +137,221 @@
 }
 .piece-lock {
   position: absolute;
-  right: 4px;
-  bottom: 4px;
+  right: 0;
+  top: 0;
   display: grid;
   place-items: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--border);
   border-radius: 50%;
-  background: white;
+  background: var(--surface);
+  color: var(--muted);
 }
 .lookbook-piece figcaption {
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 13px;
+  color: var(--foreground);
   text-align: center;
   overflow-wrap: anywhere;
   line-height: 1.4;
-  padding-top: 4px;
+  padding-top: 0;
 }
-.single-piece .lookbook-piece {
-  grid-column: 1;
-  grid-row: 1 / 4;
+.piece-bottom .piece-photo {
+  height: 260px;
 }
-.stage-weather {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: start;
-  justify-self: end;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px 16px;
-  border-radius: 16px;
-  background: rgb(255 255 255 / 86%);
-  border: 1px solid var(--border);
-  box-shadow: 0 6px 24px rgb(41 79 64 / 4%);
-  font-size: 12px;
-  max-width: 130px;
-  overflow-wrap: anywhere;
+.piece-dress .piece-photo {
+  height: 300px;
 }
-.stage-weather strong {
-  font-size: 24px;
-  font-weight: 500;
+.piece-shoes .piece-photo {
+  height: 120px;
 }
-.stage-weather span {
-  color: var(--muted);
+.single-piece .piece-photo {
+  height: 320px;
 }
 .stage-hint {
   text-align: center;
   color: var(--muted);
   font-size: 12px;
-  margin: 12px 0 16px;
+  margin: 10px 0 0;
 }
-.stage-details {
-  grid-column: 2;
-  grid-row: span 2;
-  align-self: start;
+.stage-tools .lookbook-actions {
+  display: grid;
+  gap: 8px;
+  padding: 10px 0 0;
+  margin: 0 5px;
+  border-top: 1px solid var(--border);
+}
+.stage-tools .lookbook-actions .button {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
+  min-width: 0;
+  min-height: 64px;
+  padding: 8px 0;
+  border-radius: 12px;
+  font-size: 11px;
+  white-space: nowrap;
 }
-.stage-detail-button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 14px 12px;
-  min-height: 56px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  color: var(--primary);
-  background: rgb(255 255 255 / 86%);
-  font-size: 14px;
-  text-decoration: none;
-  text-align: left;
-}
-.stage-detail-button svg {
-  flex-shrink: 0;
-}
-.lookbook-actions {
-  display: flex;
-  gap: 12px;
-  padding: 16px 0 4px;
-}
-.lookbook-actions > * {
-  flex: 1;
-  min-height: 50px;
+.stage-tools .lookbook-actions .button-outline {
+  border: 0;
+  background: transparent;
 }
 .sheet-piece-image {
   display: block;
   width: 100%;
-  height: 220px;
+  height: 240px;
   object-fit: contain;
-  margin: 12px auto;
+  margin: 0 auto 16px;
+}
+.piece-attributes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+  background: var(--soft);
+  border-radius: 16px;
+  font-size: 14px;
+}
+.piece-attributes dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+.piece-attributes dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+.piece-lock-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  margin-bottom: 16px;
+}
+.piece-lock-control span {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+.outfit-explanation {
+  display: grid;
+  gap: 24px;
+}
+.outfit-explanation h3 {
+  font-size: 16px;
+  margin: 0 0 10px;
+}
+.outfit-explanation p {
+  margin: 8px 0;
+  font-size: 14px;
+  white-space: pre-line;
+}
+.explanation-facts {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+}
+.explanation-facts summary {
+  min-height: 28px;
+}
+.explanation-facts p + p {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.explanation-warning {
+  background: var(--soft);
+  padding: 16px;
+  border-radius: 12px;
+}
+.explanation-warning ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+}
+.outfit-save-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding: 8px 0;
+}
+.lookbook-utility {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+.lookbook-utility:hover,
+.lookbook-utility:active {
+  background: var(--soft);
+}
+.save-feedback {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  color: var(--primary);
+  font-size: 13px;
+}
+.record-preview {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--soft);
+  border-radius: 16px;
+  padding: 16px;
+}
+.record-preview img {
+  width: 80px;
+  height: 100px;
+  object-fit: contain;
 }
 @media (max-width: 760px) {
-  .today-heading {
-    margin-bottom: 12px;
+  .stage-composition {
+    grid-template-columns: 60px minmax(0, 1fr) 72px;
+    gap: 6px;
+    padding-top: 8px;
   }
-  .lookbook-toolbar {
-    margin-bottom: 12px;
+  .stage-garments {
+    gap: 0;
   }
-  .lookbook-board {
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    grid-template-rows: 145px 175px 85px;
-    grid-auto-rows: 110px;
-    gap: 10px 12px;
-    padding: 0 8px 20px;
-    margin-top: 12px;
+  .piece-photo {
+    height: 164px;
   }
-  .stage-weather {
-    padding: 10px 12px;
+  .piece-bottom .piece-photo {
+    height: 204px;
   }
-  .stage-detail-button {
-    font-size: 13px;
+  .piece-dress .piece-photo {
+    height: 280px;
   }
-  .lookbook-actions {
-    position: sticky;
-    bottom: calc(78px + env(safe-area-inset-bottom));
-    z-index: 5;
-    background: var(--background);
-    padding: 12px 0;
+  .piece-shoes .piece-photo {
+    height: 90px;
+  }
+  .single-piece .piece-photo {
+    height: 300px;
+  }
+  .lookbook-piece figcaption {
+    font-size: 11px;
+    padding-top: 0;
+  }
+  .today-page .today-heading {
+    margin-bottom: 10px;
+  }
+  .today-page .today-heading .eyebrow {
+    display: none;
+  }
+  .today-page .today-heading h1 {
+    margin-top: 0;
+    font-size: 26px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

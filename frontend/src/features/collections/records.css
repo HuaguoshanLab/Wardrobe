@@ -1,0 +1,328 @@
+@import './calendar.css';
+@import './record-detail.css';
+@import './record-card.css';
+.records-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 160px);
+  min-height: 380px;
+}
+.records-page > .page-heading {
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+.records-page h1 {
+  margin: 0;
+}
+.records-page .page-heading p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+.records-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  background: var(--soft);
+  border-radius: 14px;
+  flex-shrink: 0;
+  max-width: 420px;
+  margin-bottom: 16px;
+}
+.records-tabs button {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 10px 24px;
+}
+.records-tabs button[aria-pressed='true'] {
+  color: white;
+  background: var(--primary);
+}
+.records-body {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 0 4px 24px;
+  scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+.record-date-group > h2,
+.record-day-heading h2 {
+  font-size: 16px;
+  margin: 16px 0 12px;
+}
+.record-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.record-card {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: white;
+  overflow: hidden;
+  min-width: 0;
+}
+.record-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.record-card-link h3 {
+  margin: 14px 14px 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.record-card-link > p {
+  margin: 0 14px 12px;
+  font-size: 12px;
+}
+.record-preview-stage {
+  background: #f0f1e9;
+  position: relative;
+  padding: 14px;
+}
+.record-composition {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.record-composition > * {
+  min-width: 0;
+}
+.record-composition img {
+  width: 100%;
+  height: 135px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.record-composition[data-count='1'] {
+  grid-template-columns: 1fr;
+}
+.record-composition[data-count='3'] > :first-child {
+  grid-row: span 2;
+}
+.record-composition[data-count='3'] > :first-child img {
+  height: 100%;
+  max-height: 278px;
+}
+.record-suggestion-label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.record-simulation {
+  font-size: 12px;
+  background: #ece7dc;
+  color: #6a5539;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.record-preview-stage > .record-simulation {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+.record-card-actions {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding: 4px 8px;
+  gap: 4px;
+}
+.record-card-actions > button {
+  border: 0;
+  background: transparent;
+  min-height: 44px;
+  min-width: 44px;
+  color: var(--primary);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.record-card-actions > button:nth-child(2) {
+  flex: 1;
+}
+.record-notes {
+  margin: 0 14px 12px;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.record-more {
+  display: grid;
+  gap: 12px;
+  padding-top: 16px;
+}
+.record-image-empty {
+  display: flex;
+  min-height: 100px;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.record-empty,
+.record-skeleton {
+  text-align: center;
+  padding: 48px 20px;
+  border: 1px dashed var(--border);
+  border-radius: 18px;
+  margin: 16px 0;
+}
+.record-empty h2 {
+  font-size: 18px;
+}
+.record-empty p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.record-load {
+  text-align: center;
+  padding: 24px;
+}
+.record-action-form {
+  padding-top: 16px;
+}
+.record-action-form .record-preview-stage {
+  border-radius: 14px;
+  max-width: 300px;
+  margin: 0 auto 20px;
+}
+.record-action-form .record-composition img {
+  height: 90px;
+}
+.record-action-form .record-composition[data-count='3'] > :first-child img {
+  max-height: 188px;
+  height: 100%;
+}
+.record-action-form label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  margin: 18px 0;
+}
+.record-action-form input,
+.record-action-form textarea {
+  width: 100%;
+}
+.record-action-form > .button {
+  width: 100%;
+  margin: 12px 0;
+}
+.record-action-form p {
+  line-height: 1.8;
+}
+@media (max-width: 1100px) {
+  .record-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .records-page {
+    height: calc(100dvh - 110px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    min-height: 280px;
+  }
+  .records-page h1 {
+    font-size: 26px;
+  }
+  .records-tabs {
+    max-width: none;
+    margin-bottom: 8px;
+  }
+  .records-tabs button {
+    padding-inline: 12px;
+  }
+  .record-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .record-preview-stage {
+    padding: 18px 24px;
+  }
+  .record-composition img {
+    height: 120px;
+  }
+  .record-composition[data-count='3'] > :first-child img {
+    max-height: 248px;
+  }
+  .record-calendar {
+    padding: 12px 8px;
+  }
+  .calendar-days,
+  .calendar-week {
+    gap: 2px;
+  }
+  .calendar-days button {
+    min-height: 46px;
+  }
+  .record-detail-stage {
+    padding: 16px;
+  }
+  .record-detail-stage img {
+    height: 135px;
+  }
+  .record-detail-stage .record-composition[data-count='3'] > :first-child img {
+    max-height: 300px;
+  }
+  .record-detail-actions {
+    bottom: calc(78px + env(safe-area-inset-bottom));
+  }
+  .record-detail-heading h1 {
+    font-size: 22px;
+  }
+}
+.record-backfill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--primary);
+  margin: 0 0 8px;
+}
+.record-backfill button {
+  flex-shrink: 0;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  text-decoration: underline;
+}
+.record-preview-stage > p {
+  padding-top: 20px;
+}
+@media (max-width: 760px) {
+  .record-action-form .record-preview-stage {
+    max-width: none;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+  .record-action-form .record-composition {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  .record-action-form .record-composition > * {
+    flex: 1;
+    max-width: 100px;
+    min-width: 0;
+  }
+  .record-action-form .record-composition img,
+  .record-action-form .record-composition[data-count='3'] > :first-child img {
+    height: 80px;
+    max-height: 80px;
+  }
+}

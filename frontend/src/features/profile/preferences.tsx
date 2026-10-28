@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '../../components/ui/button'
 import { getTaxonomy } from '../wardrobe'
 import { Choices } from './choices'
+import { EditGuard } from './edit-guard'
 import {
   getPreferences,
   preferencesSchema,
@@ -23,7 +24,10 @@ export function PreferencesPanel() {
   const [revision, setRevision] = useState(0)
   if (!query.data)
     return (
-      <p role={query.isError ? 'alert' : 'status'}>{query.error?.message ?? '正在载入偏好…'}</p>
+      <div className="panel">
+        <p role={query.isError ? 'alert' : 'status'}>{query.error?.message ?? '正在载入偏好…'}</p>
+        {query.isError && <Button onClick={() => void query.refetch()}>重新读取</Button>}
+      </div>
     )
   return (
     <PreferenceEditor
@@ -31,7 +35,7 @@ export function PreferencesPanel() {
       initial={query.data}
       reload={async () => {
         const result = await query.refetch()
-        if (!result.isSuccess) return
+        if (!result.isSuccess) throw result.error ?? new Error('读取失败，请重试')
         discardProfileSave(path)
         setRevision((value) => value + 1)
       }}
@@ -67,16 +71,16 @@ function PreferenceEditor({
     },
   })
   return (
-    <section className="panel profile-panel">
-      <h2>长期偏好</h2>
-      <p>只保存你明确填写的偏好；未选择代表未知，本次条件可覆盖风格。</p>
+    <section className="panel profile-panel preference-editor">
+      <p className="settings-intro">让之后的搭配更贴近你。所有项目均可留空，当次搭配要求优先。</p>
       <form className="attribute-form" onSubmit={form.handleSubmit((data) => save.mutate(data))}>
         <fieldset disabled={save.isPending || !!pending} className="plain-fieldset">
+          <h2 className="settings-section-title">风格与版型</h2>
           <Choices
             label="偏好风格"
             options={taxonomy.data?.fields.style_codes ?? {}}
             value={values.style_codes}
-            onChange={(v) => form.setValue('style_codes', v)}
+            onChange={(v) => form.setValue('style_codes', v, { shouldDirty: true })}
           />
           <div className="attribute-grid">
             <label>
@@ -104,18 +108,22 @@ function PreferenceEditor({
               </select>
             </label>
           </div>
+          <h2 className="settings-section-title">颜色喜好</h2>
           <Choices
+            swatches
             label="喜欢的颜色"
             options={taxonomy.data?.fields.color_codes ?? {}}
             value={values.preferred_colors}
-            onChange={(v) => form.setValue('preferred_colors', v)}
+            onChange={(v) => form.setValue('preferred_colors', v, { shouldDirty: true })}
           />
           <Choices
+            swatches
             label="避开的颜色"
             options={taxonomy.data?.fields.color_codes ?? {}}
             value={values.avoided_colors}
-            onChange={(v) => form.setValue('avoided_colors', v)}
+            onChange={(v) => form.setValue('avoided_colors', v, { shouldDirty: true })}
           />
+          <h2 className="settings-section-title">补充说明</h2>
           <label>
             偏好补充
             <textarea
@@ -123,17 +131,29 @@ function PreferenceEditor({
               {...form.register('notes', { setValueAs: (v: string | null) => v?.trim() || null })}
             />
           </label>
-          <Button type="submit">{save.isPending ? '正在保存…' : '保存偏好'}</Button>
+          <div className="settings-save-bar">
+            <span role="status">
+              {form.formState.isDirty ? '有未保存修改' : save.isSuccess ? '偏好已保存' : '尚无修改'}
+            </span>
+            <Button
+              type="submit"
+              disabled={!form.formState.isDirty || taxonomy.isPending || taxonomy.isError}
+            >
+              {save.isPending ? '正在保存…' : '保存偏好'}
+            </Button>
+          </div>
         </fieldset>
       </form>
       {pending && (
         <div className="notice">
-          <p>已恢复待确认的偏好保存。请重发原操作，或放弃草稿并重新载入后编辑。</p>
+          <p>
+            上次保存结果尚未确认。重试会发送同一份内容，不会重复保存。也可以放弃修改，读取最新设置。
+          </p>
           <Button
             disabled={save.isPending}
             onClick={() => save.mutate(pending.payload.preferences)}
           >
-            重发原保存操作
+            重试保存
           </Button>
         </div>
       )}
@@ -143,10 +163,11 @@ function PreferenceEditor({
           {save.error.message}。草稿已保留，可重试保存，或重新载入后编辑。
         </p>
       )}
-      {save.isSuccess && <p role="status">偏好已保存</p>}
-      <button className="text-link" disabled={save.isPending} onClick={() => void reload()}>
-        放弃草稿并重新载入偏好
-      </button>
+      <EditGuard
+        dirty={form.formState.isDirty || !!pending}
+        busy={save.isPending}
+        onDiscard={reload}
+      />
     </section>
   )
 }

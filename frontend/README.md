@@ -112,8 +112,18 @@ P6_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8099 npx playwright test 
 E2E_BASE_URL=http://localhost:8088 npx playwright test -c playwright.ui.config.ts
 ```
 
-该套件阻止 API 写请求，验证条件展开、导航、衣橱筛选恢复和多尺寸布局。衣橱需有至少一件可穿单品供详情返回测试。截图输出到忽略目录 `data/acceptance/ui-refresh/browser-results`。它不替代隔离 Fake 栈里的生成/导入/恢复业务回归。
+该套件拦截 API 写请求（写入用例由浏览器本地模拟），验证条件展开、导航、衣橱筛选/分页/滚动恢复、详情编辑与弹层以及多尺寸布局。衣橱需有至少一件可穿单品供详情返回测试。截图输出到忽略目录 `data/acceptance/ui-refresh/browser-results`。它不替代隔离 Fake 栈里的生成/导入/恢复业务回归。
 
 ## H5 穿搭页面
 
 首页和 `/outfits/:sessionId` 优先展示衣服组合；`/outfits/prepare`、`/outfits/:sessionId/prepare` 填写条件与查看天气；锁定、替换和聊天由当前页“调整这套”面板承载，旧 edit 链接重定向打开面板。进入页面或恢复面板都是只读；生成按钮获得任务响应后返回展示页。方案切换仅预览，点击“选用这套”才保存选择。页面行为以 [PRODUCT](../docs/PRODUCT.md) 为准。
+
+2026-10-28 今日穿搭改造：收藏/穿着在原页面板完成；单品面板可锁定与替换，调整面板分单品/文字两种方式；条件草稿自动本地保存。测试范围、已知限制和证据见 [本轮记录](../docs/history/2026-10-28-today-refinement.md)。
+
+2026-10-28 穿搭记录：主导航四项，`/collections?view=history|favorites|calendar` 提供三个分栏，旧 `/calendar` 自动跳转。详情返回来源分栏与日期，月历读取整月分页。UI 回归增加 `records-ui.spec.ts`，写入通过浏览器模拟；实现与验证见 [本轮记录](../docs/history/2026-10-28-records-refinement.md)。
+
+2026-10-28 设置优化：四个设置子页增加摘要分组、表单离开保护、城市原请求恢复与条件来源返回、备份覆盖确认面板和独立服务状态。`settings-ui.spec.ts` 验证只读浏览及模拟保存/覆盖操作，禁止在业务环境执行真实恢复测试。证据见 [设置优化](../docs/history/2026-10-28-settings-refinement.md)。
+
+2026-10-28 录入优化：上传前缩略图与逐文件校验、Excel 指引、审核分类与面板编辑、入库请求原对象恢复。`imports-ui.spec.ts` 的上传/确认请求全部模拟；正常业务 `wardrobe.spec.ts` 同步新控件，但只能在隔离 Fake 环境运行。证据见 [录入流程优化](../docs/history/2026-10-28-imports-refinement.md)。
+
+2026-10-28 移动端统一：公共面板支持浏览器返回先关闭、嵌套草稿确认和独立底部提交；`mobile-polish.spec.ts` 覆盖返回历史、标签草稿、小屏上传入口和字号。弹窗历史监听在 Router 创建前安装，测试时仍拦截所有 API 写入。证据与真机限制见 [移动端收尾](../docs/history/2026-10-28-mobile-polish.md)。

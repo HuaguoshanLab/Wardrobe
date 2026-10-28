@@ -1,0 +1,132 @@
+.conditions-page {
+  max-width: 640px;
+}
+.conditions-page .today-setup {
+  display: block;
+}
+.conditions-page .conditions-panel {
+  background: transparent;
+  border: 0;
+  padding: 8px 0;
+  box-shadow: none;
+}
+.conditions-panel h2 {
+  font-size: 24px;
+  margin: 8px 0;
+}
+.condition-weather {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  margin-bottom: 24px;
+  padding: 4px 16px 12px;
+}
+.condition-weather > summary {
+  min-height: 48px;
+  align-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+.condition-weather > summary span {
+  float: right;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.condition-weather .weather-panel {
+  border: 0;
+  box-shadow: none;
+  padding: 12px 0;
+  background: transparent;
+}
+.condition-weather .weather-panel > .eyebrow {
+  display: none;
+}
+.condition-weather .weather-panel h2 {
+  font-size: 18px;
+}
+.condition-weather .weather-readings {
+  gap: 8px;
+}
+.condition-weather .weather-reading {
+  padding: 12px;
+}
+.condition-weather .weather-temperature {
+  font-size: 22px;
+}
+.condition-weather > label {
+  margin-top: 16px;
+}
+.conditions-panel .condition-options {
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 12px 0;
+}
+.conditions-panel .condition-options > summary {
+  min-height: 44px;
+  align-content: center;
+  font-size: 14px;
+}
+.condition-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+.condition-actions > .button {
+  min-height: 48px;
+  width: 100%;
+}
+.condition-actions > .condition-check {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  min-height: 44px;
+}
+.prepare-session {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+  padding-top: 12px;
+  font-size: 14px;
+}
+.prepare-session > summary {
+  min-height: 44px;
+  align-content: center;
+  color: var(--muted);
+}
+@media (max-width: 380px) {
+  .condition-weather > summary span {
+    float: none;
+    display: block;
+    margin-left: 16px;
+  }
+}
+
+.conditions-panel .choice-list {
+  gap: 8px;
+}
+.conditions-panel .choice-list label {
+  border-color: var(--border);
+  border-radius: 24px;
+  min-height: 44px;
+  padding: 8px 16px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.conditions-panel .choice-list label:has(input:checked) {
+  color: var(--primary);
+  background: var(--soft);
+  border-color: var(--primary);
+}
+.conditions-panel .choice-list input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.conditions-panel .choice-list label:has(input:focus-visible) {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}

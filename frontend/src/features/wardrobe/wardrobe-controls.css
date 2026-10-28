@@ -1,0 +1,156 @@
+.wardrobe-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wardrobe-tag-trigger {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--primary);
+  background: white;
+}
+.wardrobe-choice-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.wardrobe-choice-group legend {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.wardrobe-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.wardrobe-chips button,
+.detail-image-controls button {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: white;
+  padding: 8px 14px;
+  color: var(--muted);
+}
+.wardrobe-chips button[aria-pressed='true'],
+.detail-image-controls button[aria-pressed='true'] {
+  background: var(--soft);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+.wardrobe-active-filters {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.wardrobe-active-filters button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 6px 10px;
+  background: var(--soft);
+  color: var(--primary);
+  font-size: 12px;
+}
+.wardrobe-load-more {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 8px;
+  font-size: 12px;
+}
+.wardrobe-results .availability.available {
+  background: transparent;
+  padding-left: 0;
+  color: var(--muted);
+}
+.garment-image-fallback {
+  display: flex;
+  aspect-ratio: 4 / 5;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 12px;
+}
+.garment-image-fallback button {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  text-decoration: underline;
+}
+.tag-manager {
+  padding-top: 16px;
+}
+.tag-manager label {
+  display: grid;
+  gap: 8px;
+}
+.tag-manager form .actions {
+  margin-top: 12px;
+}
+.tag-manager-list > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 0;
+}
+.tag-manager-list span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.tag-manager-list button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  background: transparent;
+  color: var(--primary);
+  border: 0;
+}
+.tag-empty {
+  text-align: center;
+  padding: 32px 12px;
+  background: var(--soft);
+  border-radius: 16px;
+}
+@media (max-width: 760px) {
+  .garment-image-fallback {
+    aspect-ratio: 3 / 4;
+  }
+}
+.wardrobe-chips[data-multiple='true'] button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.wardrobe-chips[data-multiple='true'] button::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--muted);
+  border-radius: 3px;
+}
+.wardrobe-chips[data-multiple='true'] button[aria-pressed='true']::before {
+  content: '✓';
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  font-size: 12px;
+  line-height: 16px;
+}

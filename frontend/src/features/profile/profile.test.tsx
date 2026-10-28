@@ -1,3 +1,4 @@
+import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterAll, afterEach, beforeAll, expect, it } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -62,7 +63,11 @@ function mount(component: React.ReactNode) {
   })
   return {
     client,
-    ...render(<QueryClientProvider client={client}>{component}</QueryClientProvider>),
+    ...render(
+      <QueryClientProvider client={client}>
+        <RouterProvider router={createMemoryRouter([{ path: '*', element: component }])} />
+      </QueryClientProvider>,
+    ),
   }
 }
 
@@ -71,10 +76,11 @@ it('manual zero and explicit empty style survive reload without posting', async 
   const view = mount(<ConditionsPanel storageKey="wardrobe.test.conditions" />)
   await user.click(screen.getByText(/^更多条件/))
   await user.selectOptions(screen.getByLabelText('风格来源'), 'override')
+  await user.click(screen.getByText(/^天气与城市/))
   await user.selectOptions(screen.getByLabelText('天气来源'), 'manual')
   await user.type(screen.getByLabelText('手动温度（℃）'), '0')
   await user.type(screen.getByLabelText('天气现象'), '下雪')
-  await user.click(screen.getByRole('button', { name: '保存并核对条件' }))
+  await user.click(screen.getByRole('button', { name: '核对条件' }))
   await screen.findByText('手动天气：0℃ · 下雪')
   expect(requests[0].style_codes).toEqual([])
   expect(requests[0].weather_override?.temperature_c).toBe(0)
@@ -109,7 +115,7 @@ it('preference drafts survive background refresh and ambiguous retry reuses key'
   expect(screen.getByLabelText('偏好补充')).toHaveValue('保留输入')
   await user.click(screen.getByRole('button', { name: '保存偏好' }))
   await screen.findByRole('alert')
-  await user.click(screen.getByRole('button', { name: '重发原保存操作' }))
+  await user.click(screen.getByRole('button', { name: '重试保存' }))
   await waitFor(() => expect(keys).toHaveLength(2))
   expect(keys[0]).toBe(keys[1])
   await screen.findByText('偏好已保存')
@@ -142,7 +148,7 @@ it('removes deleted draft tags while preserving valid tags, notes and zero weath
   const user = userEvent.setup()
   const view = mount(<ConditionsPanel storageKey="tag-draft" />)
   await user.click(await screen.findByRole('button', { name: '移除已删除标签' }))
-  await user.click(screen.getByRole('button', { name: '保存并核对条件' }))
+  await user.click(screen.getByRole('button', { name: '核对条件' }))
   await screen.findByText('条件已核对，未生成搭配')
   expect(requests[0]).toMatchObject({
     custom_tag_ids: [valid],
@@ -189,7 +195,7 @@ it.each([false, true])(
     expect(await screen.findByLabelText('偏好补充')).toHaveValue('恢复原操作')
     expect(screen.getByLabelText('版型')).toHaveValue('loose')
     expect(attempts).toBe(1)
-    await user.click(screen.getByRole('button', { name: '重发原保存操作' }))
+    await user.click(screen.getByRole('button', { name: '重试保存' }))
     await screen.findByText('偏好已保存')
     expect(bodies[1]).toBe(bodies[0])
     expect(keys[1]).toBe(keys[0])
@@ -217,22 +223,38 @@ it('explicitly discards a recovered save and loads the latest server preferences
       HttpResponse.json(envelope({ preferences: { ...prefs, notes: '最新偏好' }, version: 3 })),
     ),
   )
-  await user.click(screen.getByRole('button', { name: '放弃草稿并重新载入偏好' }))
+  await user.click(screen.getByRole('button', { name: '放弃修改' }))
+  await user.click(screen.getByRole('button', { name: '确认放弃' }))
   await waitFor(() => expect(screen.getByLabelText('偏好补充')).toHaveValue('最新偏好'))
-  expect(screen.queryByRole('button', { name: '重发原保存操作' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: '重试保存' })).not.toBeInTheDocument()
   expect(localStorage.getItem('wardrobe.save./profile/preferences')).toBeNull()
 })
 
 it('invalid manual weather reopens collapsed fields without submitting', async () => {
   const user = userEvent.setup()
   mount(<ConditionsPanel storageKey="invalid-manual-weather" />)
-  await user.click(screen.getByText(/^更多条件/))
+  await user.click(screen.getByText(/^天气与城市/))
   await user.selectOptions(screen.getByLabelText('天气来源'), 'manual')
-  await user.click(screen.getByText(/^更多条件/))
+  await user.click(screen.getByText(/^天气与城市/))
   expect(screen.getByLabelText('手动温度（℃）')).not.toBeVisible()
-  await user.click(screen.getByRole('button', { name: '保存并核对条件' }))
+  await user.click(screen.getByRole('button', { name: '核对条件' }))
   expect(await screen.findByRole('alert')).toHaveTextContent('请输入 -90 至 60℃')
   expect(screen.getByLabelText('手动温度（℃）')).toBeVisible()
   expect(screen.getByLabelText('手动温度（℃）')).toHaveFocus()
+  expect(requests).toHaveLength(0)
+})
+
+it('automatically preserves unsent notes and incomplete manual weather without a request', async () => {
+  const user = userEvent.setup()
+  const view = mount(<ConditionsPanel storageKey="auto-draft" />)
+  await user.type(screen.getByLabelText('本次补充要求'), '今天步行')
+  await user.click(screen.getByText(/^天气与城市/))
+  await user.selectOptions(screen.getByLabelText('天气来源'), 'manual')
+  await user.type(screen.getByLabelText('天气现象'), '雨')
+  view.unmount()
+  mount(<ConditionsPanel storageKey="auto-draft" />)
+  expect(screen.getByLabelText('本次补充要求')).toHaveValue('今天步行')
+  expect(screen.getByLabelText('天气现象')).toHaveValue('雨')
+  expect(screen.getByLabelText('手动温度（℃）')).toHaveValue(null)
   expect(requests).toHaveLength(0)
 })

@@ -65,3 +65,32 @@
     margin-left: auto;
   }
 }
+.adjust-modes {
+  display: flex;
+  padding: 4px;
+  gap: 4px;
+  background: var(--soft);
+  border-radius: 14px;
+}
+.adjust-modes button {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--muted);
+  background: transparent;
+}
+.adjust-modes button[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgb(25 40 31 / 5%);
+}
+.adjust-summary {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 16px 0 10px;
+}
+.adjust-rebuild {
+  width: 100%;
+}

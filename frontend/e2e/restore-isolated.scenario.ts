@@ -26,6 +26,7 @@ test('isolated browser restore confirms replacement, resumes control progress an
     .getByLabel('备份文件', { exact: true })
     .setInputFiles({ name: 'isolated.zip', mimeType: 'application/zip', buffer: bytes })
   await page.getByRole('button', { name: '上传并验证', exact: true }).click()
+  await page.getByRole('button', { name: '检查并恢复' }).click({ timeout: 60000 })
   const apply = page.getByRole('button', { name: '确认覆盖恢复' })
   await expect(apply).toBeVisible({ timeout: 60000 })
   await expect(apply).toBeDisabled()
@@ -41,7 +42,9 @@ test('isolated browser restore confirms replacement, resumes control progress an
     })
     .not.toBe(epoch)
   await expect(
-    page.getByText('恢复成功，旧缓存和待发业务操作已按数据世代清除。旧任务不会自动执行。'),
+    page.getByText(
+      '恢复完成，应用已清理旧缓存。可以返回衣橱查看恢复的数据，之前的任务不会自动运行。',
+    ),
   ).toBeVisible({ timeout: 30000 })
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem('wardrobe.test-stale-operation')), {

@@ -1,46 +1,110 @@
 import { PageHeader } from '../components/ui/page-header'
 import { lazy, Suspense, type ReactNode } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronRight, SlidersHorizontal, MapPin, DatabaseBackup, Activity } from 'lucide-react'
-import { PreferencesPanel, LocationPanel } from '../features/profile'
+import { PreferencesPanel, LocationPanel, getPreferences, getLocation } from '../features/profile'
+import { getTaxonomy } from '../features/wardrobe'
 import { BackupPanel } from '../features/backups'
 import { getCapabilities } from '../features/system/api'
+import { Button } from '../components/ui/button'
 import './settings.css'
 
 const Diagnostics = lazy(() =>
   import('../features/system/diagnostics').then((module) => ({ default: module.Diagnostics })),
 )
-const entries = [
-  { path: 'preferences', title: '穿衣偏好', icon: SlidersHorizontal },
-  { path: 'location', title: '默认城市', icon: MapPin },
-  { path: 'backups', title: '备份与恢复', icon: DatabaseBackup },
-  { path: 'services', title: '服务状态与诊断', icon: Activity },
-]
 export function Settings() {
+  const preferences = useQuery({ queryKey: ['preferences'], queryFn: getPreferences })
+  const location = useQuery({ queryKey: ['location'], queryFn: getLocation })
+  const taxonomy = useQuery({ queryKey: ['taxonomy'], queryFn: getTaxonomy })
+  const styles = preferences.data?.preferences.style_codes ?? []
+  const entries = [
+    {
+      path: 'preferences',
+      title: '穿衣偏好',
+      icon: SlidersHorizontal,
+      summary: preferences.isPending
+        ? '正在读取…'
+        : preferences.isError
+          ? '读取失败，进入重试'
+          : styles.length
+            ? styles.map((code) => taxonomy.data?.fields.style_codes[code] ?? code).join(' · ')
+            : '风格、颜色与穿着感受',
+    },
+    {
+      path: 'location',
+      title: '默认城市',
+      icon: MapPin,
+      summary: location.isPending
+        ? '正在读取…'
+        : location.isError
+          ? '读取失败，进入重试'
+          : location.data?.city
+            ? `${location.data.city.adm1} · ${location.data.city.name}`
+            : '尚未设置，可手动选择',
+    },
+    {
+      path: 'backups',
+      title: '备份与恢复',
+      icon: DatabaseBackup,
+      summary: '导出衣橱与穿搭记录，或从备份恢复',
+    },
+    {
+      path: 'services',
+      title: '服务状态与诊断',
+      icon: Activity,
+      summary: '查看搭配、识别与天气服务状态',
+    },
+  ]
   return (
     <section className="settings-page">
       <div className="page-heading">
         <h1>我的设置</h1>
+        <p className="muted">照顾你的偏好，也保管好你的衣橱。</p>
       </div>
-      <div className="settings-menu">
-        {entries.map(({ path, title, icon: Icon }) => (
-          <Link className="settings-menu-row" key={path} to={`/settings/${path}`}>
-            <span className="settings-menu-icon">
-              <Icon size={23} aria-hidden="true" />
-            </span>
-            <span>{title}</span>
-            <ChevronRight size={21} aria-hidden="true" />
-          </Link>
-        ))}
-      </div>
+      {['个人偏好', '数据与服务'].map((group, index) => (
+        <section key={group} className="settings-group">
+          <h2>{group}</h2>
+          <div className="settings-menu">
+            {entries.slice(index * 2, index * 2 + 2).map(({ path, title, icon: Icon, summary }) => (
+              <Link
+                aria-label={title}
+                className="settings-menu-row"
+                key={path}
+                to={`/settings/${path}`}
+              >
+                <span className="settings-menu-icon">
+                  <Icon size={22} aria-hidden="true" />
+                </span>
+                <span className="settings-menu-copy">
+                  <strong>{title}</strong>
+                  <small>{summary}</small>
+                </span>
+                <ChevronRight size={20} aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+        </section>
+      ))}
     </section>
   )
 }
-function SettingsDetail({ title, children }: { title: string; children: ReactNode }) {
+function SettingsDetail({
+  title,
+  children,
+  backTo = '/settings',
+}: {
+  title: string
+  children: ReactNode
+  backTo?: string
+}) {
   return (
     <section className="settings-detail">
-      <PageHeader title={title} backTo="/settings" backLabel="返回设置" />
+      <PageHeader
+        title={title}
+        backTo={backTo}
+        backLabel={backTo === '/settings' ? '返回设置' : '返回搭配条件'}
+      />
       <div className="settings-content">{children}</div>
     </section>
   )
@@ -53,8 +117,13 @@ export function PreferencesSettings() {
   )
 }
 export function LocationSettings() {
+  const [params] = useSearchParams()
+  const origin = params.get('returnTo') ?? ''
+  const backTo = /^\/outfits\/(?:[a-f0-9-]+\/)?prepare(?:\?.*)?$/.test(origin)
+    ? origin
+    : '/settings'
   return (
-    <SettingsDetail title="默认城市">
+    <SettingsDetail title="默认城市" backTo={backTo}>
       <LocationPanel />
     </SettingsDetail>
   )
@@ -68,54 +137,70 @@ export function BackupSettings() {
 }
 export function ServiceSettings() {
   const capability = useQuery({ queryKey: ['capabilities'], queryFn: getCapabilities })
+  const data = capability.data
+  const status = (value: string) =>
+    value === 'fake'
+      ? '模拟模式'
+      : value === 'configured'
+        ? '已配置'
+        : ['enabled', 'local_u2netp'].includes(value)
+          ? '已启用'
+          : value === 'disabled'
+            ? '未启用'
+            : '未配置'
   return (
     <SettingsDetail title="服务状态与诊断">
-      <div className="service-grid">
-        <article className="panel">
-          <small>模型服务</small>
-          <h3>
-            {capability.data?.provider_mode === 'fake'
-              ? 'Fake Provider'
-              : capability.data?.model === 'configured'
-                ? '千问搭配服务已配置'
-                : '模型未配置'}
-          </h3>
-          <p>
-            {capability.data?.provider_mode === 'fake'
-              ? '明确的模拟环境，不请求千问。'
-              : capability.data?.model === 'configured'
-                ? '点击生成或调整时调用千问；实际可用性以任务结果为准。照片识别状态见下方。'
-                : '可继续管理衣橱；生成前需配置模型或明确启用 Fake。'}
-          </p>
-        </article>
-        <article className="panel">
-          <small>天气与图片处理</small>
-          <p>
-            照片识别：
-            {capability.data?.recognition === 'fake'
-              ? 'Fake 预填'
-              : capability.data?.recognition === 'configured'
-                ? '千问已配置，上传照片或显式重试时调用；实际可用性待任务验证'
-                : '未配置，可手工填写'}
-          </p>
-          <h3>本地图片处理</h3>
-          <p>
-            支持 HEIC 转换与去背景，原文件保留。天气服务：
-            {capability.data?.weather === 'configured'
-              ? '已配置（调用结果见搭配条件页）'
-              : '未配置，可手动填写'}
-            。
-          </p>
-        </article>
-      </div>
-      {capability.isError && (
-        <p role="alert" className="error">
-          {capability.error.message}
-        </p>
+      <p className="settings-intro">
+        查看服务配置。已配置不等于连接验证通过，实际结果以使用时的反馈为准。
+      </p>
+      {capability.isPending && (
+        <div className="panel" role="status">
+          正在读取服务状态…
+        </div>
       )}
-      <Suspense fallback={<p>正在载入诊断工具…</p>}>
-        <Diagnostics />
-      </Suspense>
+      {capability.isError && (
+        <div className="notice">
+          <p role="alert">无法读取服务状态：{capability.error.message}</p>
+          <Button variant="outline" onClick={() => void capability.refetch()}>
+            重新读取
+          </Button>
+        </div>
+      )}
+      {data && (
+        <section className="panel settings-services">
+          {data.maintenance && <p className="notice">正在维护，暂时不能修改衣橱或生成搭配。</p>}
+          {[
+            [
+              'AI 穿搭',
+              data.provider_mode === 'fake' ? 'fake' : data.model,
+              '仅在你生成或调整搭配时调用。',
+            ],
+            ['照片识别', data.recognition, '上传照片或主动重试时识别；未配置也可手工填写。'],
+            ['天气服务', data.weather, '按默认城市查询；不可用时可手动填写天气。'],
+            ['图片去背景', data.cutout, '本地处理，保留原图；关闭后仍可使用原图。'],
+          ].map(([name, value, description]) => (
+            <article className="settings-service-row" key={name}>
+              <div>
+                <h2>{name}</h2>
+                <p>{description}</p>
+              </div>
+              <span className="badge">{status(value)}</span>
+            </article>
+          ))}
+        </section>
+      )}
+      <details className="settings-disclosure settings-advanced">
+        <summary>高级工具 · 环境诊断</summary>
+        {data?.provider_mode === 'fake' ? (
+          <Suspense fallback={<p>正在载入诊断工具…</p>}>
+            <Diagnostics />
+          </Suspense>
+        ) : (
+          <p className="muted">
+            模拟诊断仅在模拟环境开放。当前页面不会调用云端模型或生成穿搭；服务使用失败时，请查看对应任务的错误提示。
+          </p>
+        )}
+      </details>
     </SettingsDetail>
   )
 }

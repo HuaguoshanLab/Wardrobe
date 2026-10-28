@@ -1,7 +1,9 @@
+import { OutfitActions } from '../collections'
+import { OutfitExplanation, formatTemperature } from './explanation'
 import { OutfitsPanel } from './panel'
 import { useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { Check, Sparkles, Shirt, ChevronRight, RefreshCw } from 'lucide-react'
+import { Check, Sparkles, Shirt, ListChecks, RefreshCw, SlidersHorizontal } from 'lucide-react'
 import { Button } from '../../components/ui/button'
 import type { OutfitController } from './use-outfits'
 import { Sheet } from '../../components/ui/sheet'
@@ -18,6 +20,7 @@ export function OutfitLookbook({
   controller: OutfitController
   preparePath: string
 }) {
+  const [feedbackContainer, setFeedbackContainer] = useState<HTMLDivElement | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [preview, setPreview] = useState<{ id: string; selection: string | null } | null>(null)
   const touch = useRef<{ x: number; y: number } | null>(null)
@@ -41,6 +44,7 @@ export function OutfitLookbook({
       <OutfitStatus controller={c} compact />
       {c.loading ? (
         <div className="lookbook-loading" role="status">
+          <div className="lookbook-skeleton" aria-hidden="true" />
           正在打开你的搭配…
         </div>
       ) : !revision ? (
@@ -85,7 +89,10 @@ export function OutfitLookbook({
           <article className="lookbook" aria-label={`方案 ${number}`}>
             <div className="lookbook-meta">
               <span>
-                {selected ? '已选用' : '预览方案'} ·{' '}
+                <strong className="lookbook-selection">{selected ? '当前选用' : '方案预览'}</strong>
+              </span>
+              <span>
+                保存于{' '}
                 {new Date(revision.created_at).toLocaleDateString('zh-CN', {
                   timeZone: 'Asia/Shanghai',
                 })}
@@ -123,54 +130,92 @@ export function OutfitLookbook({
                 }
               }}
             >
-              <div className="stage-weather">
-                <span>生成时天气</span>
-                <strong>{String(revision.weather_snapshot.temperature_c ?? '未知')}℃</strong>
-                <span>{String(revision.weather_snapshot.condition ?? '天气未知')}</span>
-              </div>
-              {pieces.map((item) => (
-                <LookbookPiece
-                  key={revision.id + item.item_id}
-                  item={item}
-                  controller={c}
-                  selected={selected}
-                />
-              ))}
-              <div className="stage-details">
-                <Sheet
-                  title="搭配说明"
-                  trigger={
-                    <button className="stage-detail-button">
-                      搭配说明
-                      {revision.unmet_requirements.length > 0 &&
-                        ` · ${revision.unmet_requirements.length} 项提醒`}
-                      <ChevronRight size={16} aria-hidden="true" />
-                    </button>
-                  }
-                >
-                  <p>{revision.reason}</p>
-                  <p>
-                    生成时天气：{String(revision.weather_snapshot.temperature_c ?? '未知')}℃ ·{' '}
-                    {String(revision.weather_snapshot.condition ?? '未知')}（
-                    {revision.weather_snapshot.source === 'manual' ? '手动填写' : '和风天气'}）
-                  </p>
-                  {!!revision.unmet_requirements.length && (
-                    <>
-                      <h3>穿着前留意</h3>
-                      <ul>
-                        {revision.unmet_requirements.map((text, i) => (
-                          <li key={i}>{text}</li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-                </Sheet>
-                <Link to={`/collections/${revision.id}`} className="stage-detail-button">
-                  收藏 / 记录穿着
-                  <ChevronRight size={16} aria-hidden="true" />
-                </Link>
+              <div className="stage-composition">
+                <div className="stage-weather">
+                  <span className="weather-film" aria-hidden="true" />
+                  <span>生成时</span>
+                  <strong>{formatTemperature(revision.weather_snapshot.temperature_c)}</strong>
+                  <span>{String(revision.weather_snapshot.condition ?? '天气未知')}</span>
+                </div>
+                <div className="stage-garments">
+                  {pieces.map((item) => (
+                    <LookbookPiece
+                      key={revision.id + item.item_id}
+                      item={item}
+                      controller={c}
+                      selected={selected}
+                    />
+                  ))}
+                </div>
+                <aside className="stage-tools" aria-label="这套搭配的操作">
+                  <OutfitActions
+                    key={revision.id}
+                    revision={revision}
+                    feedbackContainer={feedbackContainer}
+                  />
+                  <div className="stage-details">
+                    <Sheet
+                      title="搭配说明"
+                      trigger={
+                        <button className="stage-detail-button">
+                          <ListChecks size={21} aria-hidden="true" />
+                          <span>搭配说明</span>
+                          {revision.unmet_requirements.length > 0 && (
+                            <span className="stage-reminders">
+                              {revision.unmet_requirements.length} 项提醒
+                            </span>
+                          )}
+                        </button>
+                      }
+                    >
+                      <OutfitExplanation revision={revision} />
+                    </Sheet>
+                  </div>
+                  <div className="lookbook-actions">
+                    <Link to={preparePath} className="button button-outline">
+                      <RefreshCw size={17} aria-hidden="true" />
+                      重新搭配
+                    </Link>
+                    {selected ? (
+                      <Sheet
+                        title="调整这套"
+                        open={searchParams.get('adjust') === '1'}
+                        onOpenChange={(open) => {
+                          const next = new URLSearchParams(searchParams)
+                          if (open) next.set('adjust', '1')
+                          else next.delete('adjust')
+                          setSearchParams(next, { replace: true, preventScrollReset: true })
+                        }}
+                        trigger={
+                          <button className="button button-primary">
+                            <SlidersHorizontal size={21} aria-hidden="true" />
+                            <span>调整这套</span>
+                          </button>
+                        }
+                      >
+                        <OutfitsPanel
+                          controller={c}
+                          onAccepted={() => {
+                            const next = new URLSearchParams(searchParams)
+                            next.delete('adjust')
+                            setSearchParams(next, { replace: true, preventScrollReset: true })
+                          }}
+                        />
+                      </Sheet>
+                    ) : (
+                      <Button
+                        disabled={c.busy}
+                        onClick={() => c.patch({ selected_revision_id: revision.id })}
+                      >
+                        <Check size={21} aria-hidden="true" />
+                        <span>选用这套</span>
+                      </Button>
+                    )}
+                  </div>
+                </aside>
               </div>
             </div>
+            <div className="stage-feedback" ref={setFeedbackContainer} />
             <p className="stage-hint">
               {revisions.length > 1 ? '左右滑动浏览 · ' : ''}轻触单品查看
             </p>
@@ -183,34 +228,6 @@ export function OutfitLookbook({
               </div>
             )}
           </article>
-          <div className="lookbook-actions">
-            <Link to={preparePath} className="button button-outline">
-              <RefreshCw size={17} aria-hidden="true" />
-              换一套
-            </Link>
-            {selected ? (
-              <Sheet
-                title="调整这套"
-                open={searchParams.get('adjust') === '1'}
-                onOpenChange={(open) => {
-                  const next = new URLSearchParams(searchParams)
-                  if (open) next.set('adjust', '1')
-                  else next.delete('adjust')
-                  setSearchParams(next, { replace: true, preventScrollReset: true })
-                }}
-                trigger={<button className="button button-primary">调整这套</button>}
-              >
-                <OutfitsPanel controller={c} />
-              </Sheet>
-            ) : (
-              <Button
-                disabled={c.busy}
-                onClick={() => c.patch({ selected_revision_id: revision.id })}
-              >
-                选用这套
-              </Button>
-            )}
-          </div>
           {!!s?.invalid_garment_ids.length && (
             <p className="lookbook-warning" role="status">
               部分单品已不可用，重新穿着前请到“调整这套”检查或替换。

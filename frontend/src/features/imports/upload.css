@@ -1,0 +1,109 @@
+.import-choices {
+  gap: 12px;
+}
+.import-choice {
+  padding: 20px;
+  border-radius: 16px;
+}
+.import-choice strong {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+.import-choice svg {
+  margin-bottom: 10px;
+}
+.import-help {
+  margin: 20px 0;
+  border-top: 1px solid var(--border);
+}
+.import-help summary {
+  padding: 16px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+.import-help p {
+  line-height: 1.8;
+  font-size: 14px;
+  color: var(--muted);
+}
+.import-files {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+}
+.import-file {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.import-file-image {
+  aspect-ratio: 1;
+  background: var(--soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
+.import-file-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.import-file-image small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.import-file-caption {
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+.import-file-caption strong {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  font-weight: 500;
+}
+.import-file-caption small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.import-file-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: white;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.excel-guide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+.excel-guide span {
+  display: block;
+  background: var(--soft);
+  padding: 10px;
+  font-size: 13px;
+}
+.excel-guide > div > div {
+  margin: 10px;
+  padding: 20px 10px;
+  border: 1px dashed var(--primary);
+  font-size: 13px;
+  text-align: center;
+}

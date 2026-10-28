@@ -5,9 +5,11 @@ import type { OutfitController } from './use-outfits'
 export function OutfitChat({
   controller: c,
   sessionId,
+  onAccepted,
 }: {
   controller: OutfitController
   sessionId: string
+  onAccepted?: () => void
 }) {
   const key = `wardrobe.outfit.chat.${sessionId}`
   const [message, setMessage] = useState(() => {
@@ -20,9 +22,13 @@ export function OutfitChat({
   return (
     <form
       className="attribute-form"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault()
-        c.adjust('chat', [], message)
+        if (await c.adjust('chat', [], message)) {
+          setMessage('')
+          localStorage.removeItem(key)
+          onAccepted?.()
+        }
       }}
     >
       <label>

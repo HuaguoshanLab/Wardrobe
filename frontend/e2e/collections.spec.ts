@@ -67,15 +67,17 @@ test('history snapshots survive garment deletion and history hiding; favorites a
       if (req.method() === 'POST' && /\/(generate|adjust|retry)$/.test(req.url())) modelPosts++
     })
     await page.goto(`/collections/${rid}`)
-    await page.getByLabel('收藏名称').fill(`P5 收藏 ${testInfo.project.name}`)
-    await page.getByRole('button', { name: '收藏此版本' }).click()
+    await page.getByRole('button', { name: '收藏这套', exact: true }).click()
+    await page.getByLabel('收藏名称（选填）').fill(`P5 收藏 ${testInfo.project.name}`)
+    await page.getByRole('button', { name: '确认收藏' }).click()
     await expect(page.getByRole('status')).toHaveText('操作已保存。')
     const favorites = (await (await request.get('/api/v1/favorites')).json()).data.items
     favoriteId = favorites.find((f: { revision_id: string }) => f.revision_id === rid).id
     const beforeWears = (await (await request.get('/api/v1/wear-records')).json()).data.items
     expect(beforeWears.some((w: { revision_id: string }) => w.revision_id === rid)).toBe(false)
-    await page.getByLabel('穿着备注').fill('P5 浏览器验证')
     await page.getByRole('button', { name: '记录穿着', exact: true }).click()
+    await page.getByLabel('穿着备注（选填）').fill('P5 浏览器验证')
+    await page.getByRole('button', { name: '确认记录穿着', exact: true }).click()
     await expect
       .poll(async () =>
         (await (await request.get('/api/v1/wear-records')).json()).data.items.some(
@@ -95,23 +97,28 @@ test('history snapshots survive garment deletion and history hiding; favorites a
       ).ok(),
     ).toBe(true)
     await page.reload()
-    await expect(page.getByRole('heading', { name: /Fake 模拟搭配/ })).toBeVisible()
+    await expect(page.getByText('模拟搭配', { exact: true })).toBeVisible()
     expect(await (await request.get(image)).body()).toEqual(pixels)
-    await page.goto('/collections')
+    await page.goto('/collections?view=history')
     const card = page
-      .locator('.outfit-card')
+      .locator('.record-card')
       .filter({ has: page.locator(`a[href="/collections/${rid}"]`) })
-    page.once('dialog', (d) => d.accept())
-    await card.getByRole('button', { name: '从历史删除' }).click()
+    await card.getByRole('button', { name: '更多搭配操作' }).click()
+    await page.getByRole('button', { name: '从历史移除', exact: true }).click()
+    await page.getByRole('button', { name: '确认从历史移除' }).click()
     await expect(card).toHaveCount(0)
     await page.getByRole('button', { name: '收藏', exact: true }).click()
     await expect(
       page.getByRole('heading', { name: `P5 收藏 ${testInfo.project.name}` }),
     ).toBeVisible()
     await page.goto('/calendar')
-    await expect(page.getByLabel('备注').filter({ visible: true })).toHaveCount(1)
-    await page.getByLabel('备注').fill('P5 修改穿着备注')
-    await page.getByRole('button', { name: '保存穿着记录' }).click()
+    await page
+      .locator('.record-card')
+      .filter({ has: page.locator(`a[href="/collections/${rid}"]`) })
+      .getByRole('button', { name: '编辑记录' })
+      .click()
+    await page.getByLabel('穿着备注（选填）').fill('P5 修改穿着备注')
+    await page.getByRole('button', { name: '保存修改' }).click()
     await expect(page.getByRole('status')).toHaveText('操作已保存。')
     await page.screenshot({ path: testInfo.outputPath('p5-calendar.png'), fullPage: true })
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
@@ -156,9 +163,11 @@ test('backup export downloads and validates without applying to the running data
     buffer: await response.body(),
   })
   await page.getByRole('button', { name: '上传并验证', exact: true }).click()
+  await page.getByRole('button', { name: '检查并恢复' }).click({ timeout: 60000 })
   await expect(page.getByRole('button', { name: '确认覆盖恢复' })).toBeVisible({ timeout: 60000 })
   await expect(page.getByRole('button', { name: '确认覆盖恢复' })).toBeDisabled()
   await page.reload()
+  await page.getByRole('button', { name: '检查并恢复' }).click({ timeout: 60000 })
   await expect(page.getByRole('button', { name: '确认覆盖恢复' })).toBeVisible()
   await expect(page.getByRole('button', { name: '确认覆盖恢复' })).toBeDisabled()
   expect((await (await request.get('/api/v1/capabilities')).json()).data.data_epoch).toBe(before)

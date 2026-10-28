@@ -1,3 +1,4 @@
+import { installSheetHistory } from '../components/ui/sheet-history'
 import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -8,17 +9,17 @@ import {
   useLocation,
   ScrollRestoration,
 } from 'react-router'
-import { ArrowUpRight, CalendarDays, Heart, Settings2, Shirt, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Heart, Settings2, Shirt, Sparkles } from 'lucide-react'
 import './wardrobe.css'
 import './imports.css'
+import './mobile-polish.css'
 import '../features/profile/profile.css'
 import { getCapabilities } from '../features/system/api'
 
 const navigation = [
   { to: '/', label: '今日穿搭', icon: Sparkles },
   { to: '/wardrobe', label: '我的衣橱', icon: Shirt },
-  { to: '/collections', label: '历史与收藏', icon: Heart },
-  { to: '/calendar', label: '穿搭日历', icon: CalendarDays },
+  { to: '/collections', label: '穿搭记录', icon: Heart },
   { to: '/settings', label: '设置', icon: Settings2 },
 ]
 
@@ -131,6 +132,8 @@ function Planned({ title, description }: { title: string; description: string })
     </>
   )
 }
+
+installSheetHistory()
 
 export const router = createBrowserRouter([
   {

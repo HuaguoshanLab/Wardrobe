@@ -60,10 +60,12 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
       if (req.method() === 'POST' && /\/(generate|adjust|retry)$/.test(req.url())) modelPosts++
     })
     await page.goto('/outfits/prepare')
-    await page.getByRole('button', { name: '新建搭配会话' }).click()
-    await expect(page.getByRole('link', { name: '打开此会话' })).toBeVisible()
+    await page.getByText('其他操作', { exact: true }).click()
+    await page.getByRole('button', { name: '开始新的搭配' }).click()
+    await expect(page.getByRole('link', { name: '返回当前搭配' })).toBeVisible()
     await page.getByText(/^更多条件/).click()
     await page.getByLabel('本次补充要求').fill('P4 E2E 验证')
+    await page.getByText(/^天气与城市/).click()
     await page.getByLabel('天气来源').selectOption('manual')
     await page.getByLabel('手动温度（℃）').fill('0')
     await page.getByLabel('天气现象').fill('阴天')
@@ -91,7 +93,7 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
     const kept = base.items.filter((i: { item_id: string }) => i.item_id !== target.item_id)
     await selected
       .locator(`[data-item-id="${target.item_id}"]`)
-      .getByRole('button', { name: '只替换此项' })
+      .getByRole('button', { name: '只换这件' })
       .click()
     await expect.poll(async () => (await session()).selected_revision_id).not.toBe(base.id)
     saved = await session()
@@ -100,7 +102,9 @@ test('generate, reload, lock, replace and chat preserve snapshots and avoid dupl
     expect(updated.items.map((i: { garment_id: string }) => i.garment_id)).not.toContain(
       target.garment_id,
     )
+    await page.getByRole('button', { name: '调整这套', exact: true }).click()
     await expect(page.getByRole('button', { name: '重搭未锁定部分' })).toBeEnabled()
+    await page.getByRole('button', { name: '描述要求', exact: true }).click()
     await page.getByLabel('聊天调整要求').fill('只换裤子')
     await page.getByRole('button', { name: '发送调整要求' }).click()
     await expect.poll(async () => (await session()).selected_revision_id).not.toBe(updated.id)
