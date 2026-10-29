@@ -27,9 +27,15 @@ export function WardrobePage() {
       )
     }
   }, [positionKey])
-  const activeFilters = ['q', 'category', 'season', 'occasion', 'availability', 'tag_id'].some(
-    (key) => !!filters[key],
-  )
+  const activeFilters = [
+    'q',
+    'category',
+    'season',
+    'occasion',
+    'availability',
+    'tag_id',
+    'ownership',
+  ].some((key) => !!filters[key])
   const taxonomy = useQuery({ queryKey: ['taxonomies'], queryFn: getTaxonomy })
   const tags = useQuery({ queryKey: ['tags'], queryFn: getTags })
   const params = new URLSearchParams({
@@ -85,6 +91,17 @@ export function WardrobePage() {
           </Link>
         </div>
       </div>
+      <nav className="wardrobe-management-nav" aria-label="衣橱整理">
+        <Link to="/wardrobe/inventory">
+          <strong>四季盘点</strong>
+        </Link>
+        <Link to="/wardrobe/organization">
+          <strong>补充与处理</strong>
+        </Link>
+        <Link to="/wardrobe/seasonal">
+          <strong>换季整理</strong>
+        </Link>
+      </nav>
       <WardrobeFilters
         filters={filters}
         fields={taxonomy.data?.fields ?? {}}
@@ -92,7 +109,8 @@ export function WardrobePage() {
         tags={tags.data ?? []}
         resetExtra={() => {
           const next = new URLSearchParams(searchParams)
-          for (const key of ['occasion', 'availability', 'tag_id', 'cursor']) next.delete(key)
+          for (const key of ['occasion', 'availability', 'tag_id', 'ownership', 'cursor'])
+            next.delete(key)
           applyFilters(next)
         }}
       />
@@ -189,7 +207,11 @@ export function WardrobePage() {
                   <p
                     className={`availability ${item.availability === 'available' ? 'available' : 'unavailable'}`}
                   >
-                    {item.availability === 'available' ? '可穿' : '暂不可用'}
+                    {item.ownership === 'retired'
+                      ? '已退出'
+                      : item.availability === 'available'
+                        ? '可穿'
+                        : '暂不可用'}
                     {item.is_demo ? ' · 示例' : ''}
                   </p>
                   <span>

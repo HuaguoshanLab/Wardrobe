@@ -1,0 +1,214 @@
+.organization-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.organization-disclosure {
+  min-width: 0;
+}
+.organization-disclosure > summary {
+  min-height: 48px;
+  align-content: center;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.organization-disclosure > summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.organization-disclosure > .organization-plan-grid {
+  margin-top: 12px;
+}
+.organization-form > fieldset.organization-card {
+  padding: 24px;
+  border: 1px solid var(--border);
+}
+.organization-form > fieldset.organization-card legend {
+  margin: 0;
+  padding: 0 8px;
+  font-size: 16px;
+}
+.organization-choice {
+  display: flex !important;
+  gap: 12px !important;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  cursor: pointer;
+  align-items: flex-start;
+}
+.organization-form .organization-choice input {
+  accent-color: var(--primary);
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.organization-choice span {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.organization-choice strong {
+  font-size: 15px;
+}
+.organization-choice small {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.organization-choice[data-selected='true'] {
+  background: var(--soft);
+  border-color: var(--primary);
+}
+.organization-choice:focus-within {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.organization-choices {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.organization-evidence {
+  background: var(--soft);
+  padding: 14px 16px;
+  border-radius: 12px;
+  line-height: 1.65;
+}
+.organization-evidence p {
+  margin: 4px 0 0;
+}
+.organization-process-entry {
+  border-style: dashed;
+}
+.organization-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.organization-facts > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.organization-facts span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.organization-facts strong {
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.organization-facts small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.supply-meter {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+.supply-meter-track {
+  height: 6px;
+  background: var(--soft);
+  border-radius: 99px;
+  display: flex;
+  overflow: hidden;
+}
+.supply-meter-track > span {
+  background: var(--primary);
+}
+.supply-meter-track > .supply-meter-cancelled {
+  background: var(--border);
+}
+.supply-meter-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+}
+.supply-meter-labels strong {
+  font-size: 20px;
+  color: var(--foreground);
+}
+.supply-overview .supply-meter {
+  margin: 24px 0;
+}
+.supply-overview .supply-meter-labels strong {
+  font-size: 30px;
+}
+.organization-impact-summary {
+  margin: 12px 0;
+  padding: 10px 12px;
+  background: var(--soft);
+  border-radius: 10px;
+}
+.organization-impact .organization-facts {
+  margin: 12px 0;
+}
+.organization-impact .organization-facts strong {
+  font-size: 19px;
+}
+.organization-impact article:last-of-type {
+  border-bottom: 0;
+}
+.organization-impact article > .organization-badge {
+  margin-bottom: 6px;
+}
+.organization-process-form > fieldset > legend {
+  font-size: 16px;
+}
+.organization-process-form .organization-check {
+  background: var(--soft);
+  padding: 14px;
+  border-radius: 12px;
+}
+@media (max-width: 500px) {
+  .organization-choices {
+    grid-template-columns: 1fr;
+  }
+  .organization-form > fieldset.organization-card {
+    padding: 18px;
+  }
+}
+@media (min-width: 761px) {
+  .organization-save {
+    bottom: 0;
+  }
+}
+
+.organization-impact h4 {
+  margin: 4px 0;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+.organization-process-item {
+  align-items: center;
+}
+.organization-form .organization-process-item img {
+  width: 48px;
+  height: 60px;
+}
+.organization-process-item p {
+  margin: 2px 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.button.organization-confirm-exit,
+.button.organization-confirm-exit:hover {
+  color: var(--surface);
+  background: var(--danger);
+  border-color: var(--danger);
+}

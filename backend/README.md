@@ -40,7 +40,7 @@ uv run alembic check
 
 initialize 顺序执行 Alembic upgrade head、Checkpointer setup 和一次性示例播种，可重复执行。业务迁移位于 migrations/，检查点使用独立 checkpoints schema。不要在 API/worker 普通启动时执行 setup 或 create_all。
 
-新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0006_recognition，P6 追加识别账本和不确定性提示；既有迁移、快照和调用记录保留。
+新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0010_seasonal；W4 追加整理会话、核对与动作回执，恢复和总结约定见 [W4](../docs/W4.md)；W3 追加补充计划、来源、核销关联和整理决定，跨季退出确认及备份约定见 [W3](../docs/W3.md)；W2 追加季节目标、需求行与子类启用状态，统计/影响/备份约定见 [W2](../docs/W2.md)；W1 生命周期见 [W1](../docs/W1.md)；P6 识别账本和不确定性提示保留；既有迁移、快照和调用记录保留。
 
 ## 验证
 

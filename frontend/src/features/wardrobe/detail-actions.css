@@ -1,0 +1,56 @@
+.detail-actions {
+  display: grid;
+  gap: 16px;
+}
+.detail-actions > .button {
+  width: 100%;
+  min-height: 48px;
+}
+.detail-management {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: white;
+}
+.detail-management > a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 84px;
+  padding: 16px;
+  color: var(--primary);
+  border-radius: 15px;
+}
+.detail-management > a + a {
+  border-top: 1px solid var(--border);
+}
+.detail-management > a:first-child:not(:last-child) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.detail-management > a:last-child:not(:first-child) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.detail-management > a:hover,
+.detail-management > a:active {
+  background: var(--soft);
+}
+.detail-management svg {
+  flex-shrink: 0;
+}
+.detail-management span {
+  flex: 1;
+  min-width: 0;
+}
+.detail-management strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+}
+.detail-management small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}

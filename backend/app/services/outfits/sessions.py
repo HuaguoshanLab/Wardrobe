@@ -18,6 +18,7 @@ from app.schemas.outfits import (
     SessionView,
 )
 from app.schemas.profile import Requirements
+from app.services.garment_state import eligible_filter
 from app.services.operations import owner_id, receipt, save_receipt
 from app.services.profile import profile
 
@@ -59,9 +60,7 @@ def invalid_ids(db: Session, ids: list[str]) -> list[UUID]:
         db.scalars(
             select(Garment.id).where(
                 Garment.id.in_([UUID(i) for i in ids]),
-                Garment.deleted_at.is_(None),
-                Garment.attributes["availability"].astext == "available",
-                Garment.is_demo.is_(False),
+                *eligible_filter(),
             )
         )
     )
@@ -157,10 +156,7 @@ def patch_session(session_id: UUID, payload: SessionPatch, key: str) -> SessionV
                 if row.selected_revision_id
                 else []
             )
-            invalid = invalid_ids(db, valid)
-            removed = [
-                UUID(i) for i in row.locked_garment_ids if i not in valid or UUID(i) in invalid
-            ]
+            removed = [UUID(i) for i in row.locked_garment_ids if i not in valid]
             row.locked_garment_ids = [i for i in row.locked_garment_ids if UUID(i) not in removed]
         if payload.requirements is not None:
             check_tags(db, payload.requirements)

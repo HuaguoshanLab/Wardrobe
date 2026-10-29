@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import type { components } from '../../generated/api'
 import { api } from '../../lib/http'
+import { profileSchema } from './lifecycle-api'
 
 export const attributesSchema = z.object({
   category: z.string().nullable(),
@@ -20,6 +21,9 @@ const _attributesContract: z.ZodType<components['schemas']['Attributes']> = attr
 void _attributesContract
 export type Attributes = z.infer<typeof attributesSchema>
 export const garmentSchema = attributesSchema.extend({
+  lifecycle: profileSchema.prefault({}),
+  ownership: z.enum(['owned', 'retired']).default('owned'),
+  subtype_id: z.uuid().nullable().default(null),
   id: z.uuid(),
   image_asset_id: z.uuid(),
   is_demo: z.boolean(),

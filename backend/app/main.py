@@ -3,7 +3,20 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request, Response
 
-from app.api import backups, collections, imports, jobs, outfits, profile, system, wardrobe
+from app.api import (
+    backups,
+    collections,
+    imports,
+    inventory,
+    jobs,
+    lifecycle,
+    organization,
+    outfits,
+    profile,
+    seasonal,
+    system,
+    wardrobe,
+)
 from app.core.errors import install_error_handlers
 from app.core.maintenance_http import MaintenanceBarrier
 from app.core.upload_limit import UploadLimit
@@ -44,3 +57,11 @@ app.include_router(outfits.router, prefix="/api/v1", tags=["outfits"])
 app.include_router(collections.router, prefix="/api/v1", tags=["collections"])
 
 app.include_router(backups.router, prefix="/api/v1", tags=["backup-restore"])
+
+app.include_router(lifecycle.router, prefix="/api/v1")
+
+app.include_router(inventory.router, prefix="/api/v1", tags=["inventory"])
+
+app.include_router(organization.router, prefix="/api/v1", tags=["organization"])
+
+app.include_router(seasonal.router, prefix="/api/v1")

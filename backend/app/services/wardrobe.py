@@ -1,5 +1,7 @@
 import unicodedata
+from typing import Literal, cast
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -9,7 +11,9 @@ from app.db.models import utcnow
 from app.db.session import session_factory
 from app.db.wardrobe import Garment, MediaAsset, Tag
 from app.domain.taxonomy import attribute_errors
+from app.schemas.lifecycle import LifecycleProfile
 from app.schemas.wardrobe import Attributes, GarmentView
+from app.services.garment_state import check_subtype, record, state
 from app.services.operations import owner_id
 
 
@@ -45,6 +49,9 @@ def garment_view(db: Session, garment: Garment) -> GarmentView:
     attrs = Attributes.model_validate(garment.attributes)
     return GarmentView(
         **attrs.model_dump(),
+        lifecycle=LifecycleProfile.model_validate(garment.lifecycle),
+        ownership=cast(Literal["owned", "retired"], garment.ownership),
+        subtype_id=garment.subtype_id,
         id=garment.id,
         image_asset_id=media.id,
         is_demo=garment.is_demo,
@@ -74,7 +81,19 @@ def patch_garment(garment_id: UUID, version: int, changes: dict[str, object]) ->
         errors = validate_attributes(db, attrs, asset(db, garment.image_asset_id))
         if errors:
             raise AppError("VALIDATION_ERROR", "；".join(errors), 422)
+        check_subtype(db, garment.subtype_id, attrs.category, retained=True)
+        before = state(garment)
+        if "availability" in changes:
+            garment.lifecycle = {**garment.lifecycle, "unavailable_reason": None}
         garment.attributes, garment.version = attrs.model_dump(mode="json"), garment.version + 1
+        if "availability" in changes:
+            record(
+                db,
+                garment,
+                "availability",
+                before,
+                utcnow().astimezone(ZoneInfo("Asia/Shanghai")).date(),
+            )
         db.flush()
         return garment_view(db, garment)
 

@@ -1,0 +1,332 @@
+.seasonal-page {
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+.seasonal-page h2 {
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  text-wrap: balance;
+}
+
+.seasonal-page h3 {
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+.seasonal-page p {
+  line-height: 1.65;
+}
+
+.seasonal-intro {
+  display: flex;
+  gap: 24px;
+  padding: 28px;
+  border-radius: 20px;
+  background: var(--soft);
+  margin-bottom: 24px;
+}
+
+.seasonal-intro > svg {
+  flex-shrink: 0;
+  color: var(--primary);
+  margin-top: 8px;
+}
+
+.seasonal-section {
+  margin-block: 24px;
+}
+
+.panel.seasonal-section {
+  padding: 24px;
+}
+
+.seasonal-page label {
+  display: grid;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.seasonal-records {
+  display: grid;
+  gap: 12px;
+}
+
+.seasonal-record {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.seasonal-record > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+}
+
+.seasonal-record p {
+  color: var(--muted);
+  margin-bottom: 0;
+}
+
+.seasonal-resume {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.seasonal-resume p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.seasonal-resume button {
+  flex-shrink: 0;
+}
+
+.seasonal-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-block: 12px;
+}
+
+.seasonal-steps button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 8px;
+  font: inherit;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.seasonal-steps button span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+}
+
+.seasonal-steps button[aria-current='step'] {
+  color: var(--primary);
+  background: var(--soft);
+  font-weight: 600;
+  opacity: 1;
+}
+
+.seasonal-steps button:disabled:not([aria-current]) {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.seasonal-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.seasonal-section-heading > label {
+  flex-shrink: 0;
+}
+
+.seasonal-items {
+  display: grid;
+  gap: 12px;
+}
+
+.seasonal-item {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.seasonal-item > img {
+  width: 76px;
+  height: 96px;
+  object-fit: contain;
+  background: var(--background);
+  border-radius: 10px;
+}
+
+.seasonal-item-info p {
+  font-size: 0.9rem;
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+
+.seasonal-facts {
+  display: grid;
+  gap: 12px;
+  margin-block: 20px;
+}
+
+.seasonal-facts article {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.seasonal-facts p {
+  margin: 4px 0;
+}
+
+.seasonal-facts strong {
+  font-size: 1.2rem;
+}
+
+.seasonal-facts small {
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.seasonal-attention {
+  color: var(--warning-foreground, var(--foreground));
+  border-left: 3px solid var(--primary);
+  padding-left: 12px;
+}
+
+.seasonal-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-block: 24px;
+}
+
+.seasonal-metrics > div {
+  display: grid;
+  gap: 8px;
+  border-radius: 12px;
+  background: var(--soft);
+  padding: 20px;
+}
+
+.seasonal-metrics strong {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.seasonal-metrics span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.seasonal-history {
+  margin-block: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.seasonal-history summary {
+  cursor: pointer;
+  min-height: 48px;
+  padding-block: 12px;
+  font-weight: 600;
+}
+
+.seasonal-history article {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.seasonal-empty {
+  padding: 28px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--muted);
+}
+
+.seasonal-pause {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+
+.seasonal-pause span {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.seasonal-page .seasonal-danger {
+  color: white;
+  background: var(--danger);
+}
+
+@media (max-width: 600px) {
+  .seasonal-intro {
+    padding: 20px;
+    gap: 12px;
+  }
+  .seasonal-intro .eyebrow {
+    display: none;
+  }
+  .seasonal-record,
+  .seasonal-section-heading,
+  .seasonal-resume {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .seasonal-steps {
+    gap: 4px;
+  }
+  .seasonal-steps button {
+    flex-direction: column;
+    font-size: 0.85rem;
+    padding: 8px 2px;
+  }
+  .seasonal-item {
+    grid-template-columns: 56px minmax(0, 1fr);
+    padding: 16px;
+    gap: 12px;
+  }
+  .seasonal-item > img {
+    width: 56px;
+    height: 76px;
+  }
+  .seasonal-item > button {
+    grid-column: 1 / -1;
+  }
+  .seasonal-pick-list,
+  .seasonal-facts article {
+    grid-template-columns: 1fr;
+  }
+  .seasonal-metrics {
+    gap: 8px;
+  }
+  .seasonal-metrics > div {
+    padding: 12px;
+  }
+  .seasonal-metrics span {
+    font-size: 0.8rem;
+  }
+  .seasonal-buttons > button {
+    flex: 1 1 auto;
+  }
+}

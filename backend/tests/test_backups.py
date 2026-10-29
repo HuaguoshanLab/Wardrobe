@@ -188,7 +188,11 @@ workflow.process(control.require(UUID(os.environ['RESTORE_ID'])))
         capture_output=True,
         timeout=120,
     )
-    assert result.returncode == 77, result.stderr.decode()
+    assert result.returncode == 77, (
+        result.stderr.decode(),
+        control.require(record.id).message,
+        control.require(record.id).error,
+    )
     assert active()  # Real process death must leave the persistent maintenance gate.
     with exclusive():
         workflow.recover(control.require(record.id))

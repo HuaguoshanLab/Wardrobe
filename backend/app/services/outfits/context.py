@@ -11,6 +11,7 @@ from app.db.session import session_factory
 from app.db.wardrobe import Garment, Tag
 from app.jobs.queue import check_lease
 from app.schemas.profile import Preferences, Requirements
+from app.services.garment_state import eligible_filter
 from app.services.jobs import append_event, get_job
 from app.services.outfits.sessions import check_tags, get_revision, get_session, invalid_ids
 from app.services.profile import profile
@@ -41,9 +42,7 @@ def prepare_context(job_id: UUID, token: UUID) -> dict[str, JsonValue]:
             db.scalars(
                 select(Garment)
                 .where(
-                    Garment.deleted_at.is_(None),
-                    Garment.is_demo.is_(False),
-                    Garment.attributes["availability"].astext == "available",
+                    *eligible_filter(),
                 )
                 .order_by(Garment.id)
                 .limit(501)
@@ -61,7 +60,12 @@ def prepare_context(job_id: UUID, token: UUID) -> dict[str, JsonValue]:
             "preferences": preferences.model_dump(mode="json"),
             "preference_version": pref.preference_version,
             "city": pref.city,
-            "candidates": [garment_view(db, g).model_dump(mode="json") for g in garments],
+            "candidates": [
+                garment_view(db, g).model_dump(
+                    mode="json", exclude={"lifecycle", "ownership", "subtype_id"}
+                )
+                for g in garments
+            ],
             "tags": {str(t.id): t.name for t in db.scalars(select(Tag))},
             "base_items": [dict(i) for i in base.items] if base else [],
             "locked_garment_ids": [str(i) for i in row.locked_garment_ids],

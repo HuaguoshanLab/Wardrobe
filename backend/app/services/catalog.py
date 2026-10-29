@@ -18,9 +18,12 @@ def list_garments(
     occasion: str | None,
     availability: str | None,
     tag_id: UUID | None,
+    ownership: str = "owned",
 ) -> GarmentList:
     with session_factory()() as db:
         query = select(Garment).where(Garment.deleted_at.is_(None))
+        if ownership != "all":
+            query = query.where(Garment.ownership == ownership)
         for key, value in [("category", category), ("availability", availability)]:
             if value:
                 query = query.where(Garment.attributes[key].astext == value)

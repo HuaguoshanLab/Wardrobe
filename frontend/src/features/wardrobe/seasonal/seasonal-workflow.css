@@ -1,0 +1,349 @@
+/* Workflow hierarchy, searchable review, selection and explicit confirmation. */
+.seasonal-page {
+  max-width: 960px;
+}
+.seasonal-page h2 {
+  margin-block: 0 10px;
+}
+.seasonal-intro {
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 8px 0 24px;
+  align-items: flex-start;
+}
+.seasonal-intro h2 {
+  margin-top: 10px;
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+}
+.seasonal-intro p {
+  color: var(--muted);
+  margin-bottom: 0;
+}
+.seasonal-status {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--primary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.seasonal-status.is-attention {
+  color: var(--danger);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.seasonal-create {
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+.seasonal-records {
+  gap: 0;
+  border-block: 1px solid var(--border);
+}
+.seasonal-record {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 24px 4px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 150ms ease;
+}
+.seasonal-record:last-child {
+  border-bottom: 0;
+}
+.seasonal-record:hover {
+  background: var(--soft);
+}
+.seasonal-record > .seasonal-record-icon {
+  width: 44px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  background: var(--soft);
+  border-radius: 12px;
+}
+.seasonal-record h3 {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.seasonal-record h3 small {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.seasonal-record p {
+  margin: 0 0 6px;
+}
+.seasonal-record small {
+  color: var(--muted);
+}
+.seasonal-resume {
+  padding: 24px;
+  margin-block: 20px;
+  background: var(--soft);
+  border-radius: 16px;
+}
+.seasonal-resume h2 {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 1rem;
+}
+.seasonal-resume strong {
+  font-size: 1.75rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+.seasonal-resume progress {
+  appearance: none;
+  width: min(320px, 100%);
+  height: 5px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--border);
+  margin-top: 14px;
+  display: block;
+}
+.seasonal-resume progress::-webkit-progress-bar {
+  border-radius: 5px;
+  background: var(--border);
+}
+.seasonal-resume progress::-webkit-progress-value {
+  border-radius: 5px;
+  background: var(--primary);
+}
+.seasonal-resume progress::-moz-progress-bar {
+  border-radius: 5px;
+  background: var(--primary);
+}
+.seasonal-resume.is-complete {
+  padding-block: 16px;
+}
+.seasonal-steps {
+  margin-bottom: 28px;
+}
+.seasonal-steps button[aria-current='step'] span {
+  background: var(--primary);
+  color: var(--surface);
+  border-color: var(--primary);
+}
+.seasonal-filter {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+  min-width: 0;
+}
+.seasonal-page .seasonal-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding-left: 14px;
+}
+.seasonal-search svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.seasonal-page .seasonal-search input {
+  border: 0;
+  background: transparent;
+  min-width: 0;
+}
+.seasonal-filter-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-block: 4px;
+}
+.seasonal-filter-tabs button {
+  flex-shrink: 0;
+  min-height: 44px;
+  border-radius: 10px;
+  gap: 8px;
+  white-space: nowrap;
+}
+.seasonal-filter-tabs button span {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+.seasonal-filter-tabs button[aria-pressed='true'] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--surface);
+}
+.seasonal-items {
+  gap: 0;
+}
+.seasonal-item {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 20px 4px;
+  box-shadow: none;
+}
+.seasonal-item-info h3,
+.seasonal-item h3 {
+  overflow-wrap: anywhere;
+}
+.seasonal-item-info .seasonal-status {
+  margin-bottom: 6px;
+}
+.seasonal-review-form {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.seasonal-selection {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.seasonal-selection > span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.seasonal-selection > button {
+  margin-left: auto;
+}
+.seasonal-pick-list {
+  grid-template-columns: 1fr;
+  max-height: 420px;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding: 4px;
+  scroll-padding: 8px;
+}
+.seasonal-pick {
+  border-radius: 10px;
+}
+.seasonal-pick img {
+  width: 56px;
+  height: 68px;
+}
+.seasonal-confirm-sheet {
+  width: 100%;
+}
+.seasonal-confirm-sheet .seasonal-confirm {
+  background: var(--soft);
+  border: 0;
+  margin-top: 0;
+}
+.seasonal-confirm-sheet ul {
+  padding-left: 20px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.seasonal-page .seasonal-confirm-sheet .seasonal-check,
+.seasonal-confirm-sheet .seasonal-check {
+  padding-block: 12px;
+  font-weight: 500;
+}
+.seasonal-confirm-sheet .organization-impact {
+  margin-bottom: 24px;
+}
+.sheet-footer .seasonal-buttons {
+  width: 100%;
+}
+.seasonal-action-record {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.seasonal-action-record > .seasonal-status {
+  flex-shrink: 0;
+}
+.seasonal-action-record > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.seasonal-action-record p {
+  margin: 6px 0 0;
+}
+.seasonal-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 32px;
+  padding-top: 24px;
+}
+.seasonal-next p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.seasonal-pause {
+  border: 0;
+  margin-top: 24px;
+  padding-top: 0;
+}
+.seasonal-confirm details > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+  cursor: pointer;
+}
+.seasonal-page button:active:not(:disabled),
+.seasonal-record:active {
+  filter: brightness(0.96);
+}
+@media (max-width: 600px) {
+  .seasonal-record {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .seasonal-record > span:last-child {
+    grid-column: 2;
+    font-size: 0.9rem;
+  }
+  .seasonal-resume {
+    padding: 20px;
+  }
+  .seasonal-resume button {
+    align-self: flex-start;
+  }
+  .seasonal-review-form {
+    padding: 16px;
+  }
+  .seasonal-next {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .seasonal-selection {
+    gap: 8px;
+  }
+  .seasonal-selection > span {
+    flex-basis: 100%;
+    order: 2;
+  }
+  .seasonal-pick-list {
+    max-height: 360px;
+  }
+  .sheet-footer .seasonal-buttons > button {
+    flex: 1 1 auto;
+  }
+  .seasonal-confirm-sheet .seasonal-confirm {
+    padding: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seasonal-record {
+    transition: none;
+  }
+}

@@ -1,0 +1,317 @@
+.inventory-editor-fields,
+.inventory-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+.inventory-form,
+.inventory-estimator {
+  display: grid;
+  gap: 16px;
+}
+.inventory-form label,
+.inventory-copy label,
+.inventory-toolbar label,
+.inventory-search {
+  display: grid;
+  gap: 8px;
+}
+.inventory-page input,
+.inventory-page select,
+.inventory-page textarea,
+.inventory-form input,
+.inventory-form select,
+.inventory-form textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  font-size: 16px;
+}
+.inventory-form h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.inventory-form p {
+  margin: 0;
+}
+.inventory-form .muted {
+  font-size: 13px;
+}
+.inventory-form .inventory-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+.inventory-form input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  accent-color: var(--primary);
+}
+.inventory-target-fields {
+  padding: 16px;
+  background: var(--soft);
+  border-radius: 16px;
+}
+.inventory-target-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-bottom: 12px;
+}
+.inventory-target-heading .button {
+  background: transparent;
+  border: 0;
+  padding-inline: 0;
+  font-size: 13px;
+}
+.inventory-number-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.inventory-number-pair label {
+  font-size: 13px;
+}
+.inventory-number-pair input {
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  font-weight: 600;
+  min-height: 56px;
+  padding: 12px;
+}
+.inventory-estimate-result,
+.inventory-impact {
+  background: var(--soft);
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+.inventory-estimate-note {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 12px;
+  border-left: 2px solid var(--border);
+}
+.inventory-draft-note {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+.inventory-disclosure {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 4px 16px;
+  background: var(--surface);
+  min-width: 0;
+}
+.inventory-disclosure summary {
+  min-height: 48px;
+  align-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+}
+.inventory-disclosure[open] {
+  padding-bottom: 16px;
+}
+.inventory-disclosure[open] > summary {
+  margin-bottom: 12px;
+}
+.inventory-disclosure > .wardrobe-choice-group {
+  margin: 16px 0;
+}
+.inventory-disclosure > label {
+  margin-block: 12px;
+}
+.inventory-disclosure > p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.inventory-estimate-disclosure {
+  background: var(--background);
+}
+.inventory-estimator {
+  margin-top: 16px;
+}
+.inventory-editor-extras {
+  display: grid;
+  gap: 12px;
+  margin-top: 8px;
+}
+.inventory-copy > .button {
+  margin-top: 12px;
+}
+.inventory-section-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.inventory-section-title h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.inventory-draft-row {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 16px;
+  min-width: 0;
+}
+.inventory-draft-row.is-disabled {
+  border-style: dashed;
+}
+.inventory-draft-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.inventory-row-number {
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  align-self: flex-start;
+  padding-top: 5px;
+}
+.inventory-draft-heading > div {
+  flex: 1;
+  min-width: 100px;
+}
+.inventory-draft-heading > .button {
+  font-size: 13px;
+  min-height: 44px;
+}
+.inventory-draft-row h3 {
+  margin: 0;
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+.inventory-draft-row p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.inventory-row-options {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.inventory-row-options summary {
+  min-height: 44px;
+  align-content: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.inventory-row-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.inventory-row-tools .button {
+  font-size: 13px;
+  flex: 1;
+  min-height: 44px;
+}
+.inventory-row-tools .button:last-child {
+  color: var(--danger);
+}
+.inventory-save-bar {
+  position: sticky;
+  bottom: 16px;
+  z-index: 11;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgb(25 40 31 / 8%);
+}
+.inventory-save-bar span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.inventory-save-bar .button {
+  min-height: 48px;
+}
+.inventory-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+.inventory-toolbar > label {
+  flex: 1;
+  min-width: 130px;
+  font-size: 14px;
+}
+.inventory-search {
+  color: var(--muted);
+  font-size: 14px;
+}
+.inventory-subtype {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  box-shadow: none;
+}
+.inventory-subtype > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.inventory-subtype small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+.inventory-subtype > .button {
+  max-width: 55%;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.inventory-suggestions > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.inventory-suggestions .button {
+  font-size: 14px;
+  min-height: 44px;
+}
+@media (max-width: 760px) {
+  .inventory-save-bar {
+    bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+  .inventory-form .inventory-disclosure {
+    padding-inline: 12px;
+  }
+}
+@media (max-height: 500px) {
+  .inventory-save-bar {
+    position: static;
+  }
+}
+@media (max-width: 359px) {
+  .inventory-number-pair {
+    gap: 8px;
+  }
+  .inventory-target-fields {
+    padding: 12px;
+  }
+}

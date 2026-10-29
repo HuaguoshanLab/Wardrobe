@@ -47,8 +47,11 @@ export function WardrobeFilters({
     setSearch(filters.q ?? '')
   }, [filters.q])
   useEffect(() => () => clearTimeout(timer.current), [])
-  const extraCount = ['occasion', 'availability', 'tag_id'].filter((key) => filters[key]).length
+  const extraCount = ['occasion', 'availability', 'tag_id', 'ownership'].filter(
+    (key) => filters[key],
+  ).length
   const names: Record<string, string> = {
+    ownership: filters.ownership === 'retired' ? '已退出档案' : '全部档案',
     q: filters.q,
     category: fields.category?.[filters.category] ?? filters.category,
     season: fields.seasons?.[filters.season] ?? filters.season,
@@ -86,6 +89,12 @@ export function WardrobeFilters({
           }
         >
           <div className="wardrobe-extra-filters">
+            <Choices
+              label="档案范围"
+              options={{ '': '持有中', retired: '已退出档案', all: '全部档案' }}
+              selected={[filters.ownership ?? '']}
+              onChange={(value) => filter('ownership', value)}
+            />
             <Choices
               label="状态"
               options={{ '': '全部状态', available: '可穿', unavailable: '暂不可用' }}

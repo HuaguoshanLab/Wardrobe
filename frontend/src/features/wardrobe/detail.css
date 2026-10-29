@@ -66,9 +66,6 @@
   line-height: 1.7;
   margin: 12px 0 24px;
 }
-.detail-information > .button {
-  width: 100%;
-}
 .detail-attributes {
   border-top: 1px solid var(--border);
   margin-top: 28px;

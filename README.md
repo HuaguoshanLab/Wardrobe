@@ -113,4 +113,4 @@ docker compose --profile test run --build --rm test
 
 可选本地 Langfuse 的部署、登录凭据位置、追踪字段及费用估算口径见 [观测运行指南](docs/LANGFUSE.md)。观测数据使用独立存储，不包含在衣橱业务备份中。
 
-先读 [AGENTS](AGENTS.md)，再读 [DEVELOPMENT](docs/DEVELOPMENT.md) 的“下一任务”。2026-10-28 用户要求按 [P7 进阶计划](docs/plans/P7-advanced.md) 逐项完整实施；目前仅完成计划，下一实现任务是 P7.1 穿搭轮换，不自动继续旧验收计划或提前铺开后续阶段。文档中的“已确认需求”“工程默认”“待验证”和“已实现”必须区分。切勿重新引入已经取消的 CSV 导入、默认自动生成或自动偏好学习。
+先读 [AGENTS](AGENTS.md)，再读 [DEVELOPMENT](docs/DEVELOPMENT.md) 的“下一任务”。2026-10-29 用户要求先制定 [衣橱整理计划](docs/plans/wardrobe-organization.md)，随后授权 W1 单品生命周期，现已实现、验证并部署。入口为“我的衣橱 → 单品 → 生命周期”，见 [W1](docs/W1.md)。W2 四季盘点也已实现、验证并部署，入口“我的衣橱 → 四季盘点”，见 [W2](docs/W2.md)。W3 补充与处理已实现、验证并部署，入口“我的衣橱 → 补充与处理”，见 [W3](docs/W3.md)。W4 换季整理已实现、验证并部署，入口“我的衣橱 → 换季整理”，见 [W4](docs/W4.md)。后续接续原 [P7 进阶计划](docs/plans/P7-advanced.md)，本轮未展开。不自动继续旧验收计划或提前铺开后续阶段。文档中的“已确认需求”“工程默认”“待验证”和“已实现”必须区分。切勿重新引入已经取消的 CSV 导入、默认自动生成或自动偏好学习。

@@ -18,13 +18,12 @@ from sqlalchemy.engine import make_url
 
 from app.core.config import get_settings
 from app.core.errors import AppError
-from app.db import collections, outfits, profile, recognition, wardrobe  # noqa: F401
-from app.db.models import Base
+from app.db.registry import business_metadata
 from app.schemas.outfits import ItemSnapshot
 
 DataSet = dict[str, list[dict[str, JsonValue]]]
 
-REVISION = "0006_recognition"
+REVISION = "0010_seasonal"
 CHECKPOINT_TABLES = [
     "checkpoint_migrations",
     "checkpoints",
@@ -36,7 +35,7 @@ CHECKPOINT_TABLES = [
 def compatibility() -> dict[str, str | int]:
     return {
         "format_version": 1,
-        "app_version": "0.1.0-p6",
+        "app_version": "0.5.0-w4",
         "alembic_revision": REVISION,
         "checkpoint_adapter": version("langgraph-checkpoint-postgres"),
     }
@@ -45,7 +44,7 @@ def compatibility() -> dict[str, str | int]:
 def tables() -> list[tuple[str, str]]:
     return (
         [("public", "alembic_version")]
-        + [("public", t.name) for t in Base.metadata.sorted_tables]
+        + [("public", t.name) for t in business_metadata().sorted_tables]
         + [("checkpoints", n) for n in CHECKPOINT_TABLES]
     )
 

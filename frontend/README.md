@@ -127,3 +127,13 @@ E2E_BASE_URL=http://localhost:8088 npx playwright test -c playwright.ui.config.t
 2026-10-28 录入优化：上传前缩略图与逐文件校验、Excel 指引、审核分类与面板编辑、入库请求原对象恢复。`imports-ui.spec.ts` 的上传/确认请求全部模拟；正常业务 `wardrobe.spec.ts` 同步新控件，但只能在隔离 Fake 环境运行。证据见 [录入流程优化](../docs/history/2026-10-28-imports-refinement.md)。
 
 2026-10-28 移动端统一：公共面板支持浏览器返回先关闭、嵌套草稿确认和独立底部提交；`mobile-polish.spec.ts` 覆盖返回历史、标签草稿、小屏上传入口和字号。弹窗历史监听在 Router 创建前安装，测试时仍拦截所有 API 写入。证据与真机限制见 [移动端收尾](../docs/history/2026-10-28-mobile-polish.md)。
+
+W1：`/wardrobe/:id/lifecycle` 管理获得资料、状况、收纳、维修、决定和退出；筛选可查看已退出档案。操作恢复和事件规则见 [W1](../docs/W1.md)。新增 `lifecycle-isolated.scenario.ts` 仅使用上述 Fake 隔离配置运行。
+
+W2：衣橱工具栏的“四季盘点”进入 `/wardrobe/inventory`；编辑位于 `/wardrobe/inventory/:season/edit`，子类管理位于 `/wardrobe/inventory/subtypes`。支持整季草稿、追加复制、估算显式采用、版本冲突保留输入及明细核对返回。`inventory-isolated.scenario.ts` 只运行在隔离 Fake 栈；`inventory-ui.spec.ts` 与 `inventory-design.spec.ts` 拦截全部写请求，可用于部署后只读检查。盘点提供需求分组、数量直达核对、指定行直接编辑和返回位置恢复；表单按需展开，子类可本地搜索。规则见 [W2](../docs/W2.md)。
+
+W3：`/wardrobe/organization` 提供补充计划和观察处理两页签；计划详情/编辑位于 `plans/:id`、`plans/:id/edit`，单品整理位于 `garments/:id`。入库入口携带返回计划链接，正式入库后明确关联；W1 退出也必须核对全季影响。丢失响应恢复原请求，不自动重发。`organization-isolated.scenario.ts` 验证完整写流程，仅用于隔离 Fake 栈；`organization-ui.spec.ts` 拦截写请求，可用于部署后只读检查；`organization-design.spec.ts` 使用只读响应夹具验证进度分层、单选决定、筛选返回、面板焦点和窄屏，所有写请求被拦截。契约与边界见 [W3](../docs/W3.md)。
+
+W4：`/wardrobe/seasonal` 创建与继续整理，`/wardrobe/seasonal/:id` 提供核对、目标、处理、总结四步；固定范围、待办和版本核对持久化，动作必须明确选择并确认，完成总结不重复执行。`seasonal-isolated.scenario.ts` 验证中断、跨页变化、部分失败、丢失响应与冻结总结，仅运行于隔离 Fake 栈；`seasonal-ui.spec.ts` 与 `seasonal-design.spec.ts` 拦截写请求，可用于部署后只读检查；后者覆盖分组/搜索恢复、草稿保护、保留选择、独立确认面板和总结阻塞入口。规则见 [W4](../docs/W4.md)。
+
+W1～W4 整体检查已补充空原因提交、手工目标与估算独立校验，以及换季外出编辑后刷新/保存返回的回归；后端同时修复决定双向同步和待办保护。证据见 [整体检查记录](../docs/history/2026-10-29-w1-w4-audit.md)。

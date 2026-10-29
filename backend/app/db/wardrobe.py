@@ -38,6 +38,11 @@ class Garment(Base):
     owner_id: Mapped[UUID]
     image_asset_id: Mapped[UUID] = mapped_column(ForeignKey("media_assets.id"))
     attributes: Mapped[dict[str, JsonValue]] = mapped_column(JSONB)
+    lifecycle: Mapped[dict[str, JsonValue]] = mapped_column(
+        JSONB, default=dict, server_default="{}"
+    )
+    ownership: Mapped[str] = mapped_column(default="owned", server_default="owned")
+    subtype_id: Mapped[UUID | None] = mapped_column(ForeignKey("garment_subtypes.id"))
     is_demo: Mapped[bool] = mapped_column(default=False)
     version: Mapped[int] = mapped_column(default=1)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

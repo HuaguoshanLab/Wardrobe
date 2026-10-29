@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { PageHeader } from '../../components/ui/page-header'
 import { Images, FileSpreadsheet } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { useNavigate, Link } from 'react-router'
+import { useNavigate, Link, useSearchParams } from 'react-router'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button } from '../../components/ui/button'
 import { api } from '../../lib/http'
@@ -26,6 +26,9 @@ function loadUpload() {
   }
 }
 export function ImportPage() {
+  const [params] = useSearchParams()
+  const supplyId = z.uuid().safeParse(params.get('return_supply'))
+  const supplyQuery = supplyId.success ? `?return_supply=${supplyId.data}` : ''
   const [pending, setPending] = useState(loadUpload)
   const [discardUpload, setDiscardUpload] = useState(false)
   const [kind, setKind] = useState<'photos' | 'excel'>(() => {
@@ -71,7 +74,7 @@ export function ImportPage() {
       localStorage.setItem('wardrobe.recentImport', result.import_batch_id)
       accepted.current = true
       setFiles([])
-      navigate(`/imports/${result.import_batch_id}`)
+      navigate(`/imports/${result.import_batch_id}${supplyQuery}`)
     },
   })
   function choose(list: FileList | null) {
@@ -89,7 +92,11 @@ export function ImportPage() {
   }
   return (
     <div className="subpage">
-      <PageHeader title="录入衣服" backTo="/wardrobe" backLabel="返回衣橱" />
+      <PageHeader
+        title="录入衣服"
+        backTo={supplyId.success ? `/wardrobe/organization/plans/${supplyId.data}` : '/wardrobe'}
+        backLabel={supplyId.success ? '返回补充计划' : '返回衣橱'}
+      />
       <p className="muted">先预览、再确认。只有你确认的单品才会进入衣橱。</p>
       <StepProgress label="录入步骤" steps={['选择文件', '检查修改', '确认入库']} current={0} />
       <div className="import-choices">
@@ -299,7 +306,7 @@ export function ImportPage() {
       </Sheet>
       {recent && (
         <p>
-          <Link className="text-link" to={`/imports/${recent}`}>
+          <Link className="text-link" to={`/imports/${recent}${supplyQuery}`}>
             继续上次审核 →
           </Link>
         </p>

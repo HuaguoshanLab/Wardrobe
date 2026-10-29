@@ -14,6 +14,7 @@ from app.domain.taxonomy import TAXONOMY
 from app.jobs.queue import check_lease
 from app.schemas.outfits import Intent, ItemSnapshot, ModelOutfits, OutfitContext, OutfitResult
 from app.schemas.wardrobe import Attributes
+from app.services.garment_state import eligible
 from app.services.jobs import append_event, get_job
 from app.services.outfits.sessions import get_session
 from app.services.wardrobe import asset
@@ -45,10 +46,7 @@ def commit_result(job_id: UUID, token: UUID) -> None:
         )
         original = {UUID(str(c["id"])): c for c in context.candidates}
         if len(rows) != len(wanted) or any(
-            g.deleted_at
-            or g.attributes.get("availability") != "available"
-            or g.version != original[g.id]["version"]
-            for g in rows
+            not eligible(g) or g.version != original[g.id]["version"] for g in rows
         ):
             raise AppError("CONSTRAINT_CONFLICT", "生成期间衣服已修改或不可用，请重新核对条件")
         if output.outfits:

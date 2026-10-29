@@ -781,10 +781,422 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/garments/{garment_id}/lifecycle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_garments__garment_id__lifecycle_get"];
+        put?: never;
+        /** Apply */
+        post: operations["apply_api_v1_garments__garment_id__lifecycle_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/garment-subtypes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Subtypes */
+        get: operations["subtypes_api_v1_garment_subtypes_get"];
+        put?: never;
+        /** Create Subtype */
+        post: operations["create_subtype_api_v1_garment_subtypes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inventory/configs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Configs */
+        get: operations["configs_api_v1_inventory_configs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inventory/estimate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview */
+        post: operations["preview_api_v1_inventory_estimate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inventory/{season}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read */
+        get: operations["read_api_v1_inventory__season__get"];
+        put?: never;
+        /** Save */
+        post: operations["save_api_v1_inventory__season__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/garment-subtypes/suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Suggestions */
+        get: operations["suggestions_api_v1_garment_subtypes_suggestions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/garment-subtypes/{subtype_id}/impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Subtype Impact */
+        get: operations["subtype_impact_api_v1_garment_subtypes__subtype_id__impact_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/garment-subtypes/{subtype_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Subtype Patch */
+        patch: operations["subtype_patch_api_v1_garment_subtypes__subtype_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/supply-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listing */
+        get: operations["listing_api_v1_supply_plans_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/supply-plans/{plan_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read */
+        get: operations["read_api_v1_supply_plans__plan_id__get"];
+        put?: never;
+        /** Save */
+        post: operations["save_api_v1_supply_plans__plan_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/supply-plans/{plan_id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Link */
+        post: operations["link_api_v1_supply_plans__plan_id__link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/supply-plans/{plan_id}/cancel-remaining": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_api_v1_supply_plans__plan_id__cancel_remaining_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Board */
+        get: operations["board_api_v1_organization_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/{garment_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide */
+        post: operations["decide_api_v1_organization__garment_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/{garment_id}/exit-impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Preview */
+        get: operations["preview_api_v1_organization__garment_id__exit_impact_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/{garment_id}/process": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Process */
+        post: operations["process_api_v1_organization__garment_id__process_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/{garment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Garment Decisions */
+        get: operations["garment_decisions_api_v1_organization__garment_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/seasonal-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listing */
+        get: operations["listing_api_v1_seasonal_sessions_get"];
+        put?: never;
+        /** Create */
+        post: operations["create_api_v1_seasonal_sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/seasonal-sessions/{sid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read */
+        get: operations["read_api_v1_seasonal_sessions__sid__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/seasonal-sessions/{sid}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Progress */
+        post: operations["progress_api_v1_seasonal_sessions__sid__progress_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/seasonal-sessions/{sid}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Actions */
+        post: operations["actions_api_v1_seasonal_sessions__sid__actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/seasonal-sessions/{sid}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete */
+        post: operations["complete_api_v1_seasonal_sessions__sid__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActionInput */
+        ActionInput: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            operation: components["schemas"]["LifecycleInput"];
+        };
+        /** ActionResult */
+        ActionResult: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            operation: components["schemas"]["LifecycleInput"];
+            /** Success */
+            success: boolean;
+            /** Message */
+            message: string;
+            garment?: components["schemas"]["GarmentView"] | null;
+        };
         /** AdjustInput */
         AdjustInput: {
             /** Expected Version */
@@ -878,6 +1290,16 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /** BatchInput */
+        BatchInput: {
+            /** Items */
+            items: components["schemas"]["ActionInput"][];
+        };
+        /** BatchResult */
+        BatchResult: {
+            /** Items */
+            items: components["schemas"]["ActionResult"][];
+        };
         /** BatchView */
         BatchView: {
             /**
@@ -913,6 +1335,37 @@ export interface components {
         Body_validate_api_v1_restores_validate_post: {
             /** File */
             file: string;
+        };
+        /** Candidate */
+        Candidate: {
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /** Garment Version */
+            garment_version: number;
+            /** Name */
+            name: string;
+            /** Image Url */
+            image_url: string;
+            /** Reason Key */
+            reason_key: string;
+            /** Reason */
+            reason: string;
+            /** Decision Version */
+            decision_version: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "suggested" | "observe" | "pending" | "keep" | "repair" | "done" | "undecided";
+            /** Note */
+            note: string;
+            /** Current */
+            current: boolean;
+            /** Archived */
+            archived: boolean;
         };
         /** Capabilities */
         Capabilities: {
@@ -956,6 +1409,18 @@ export interface components {
              * @enum {string}
              */
             source: "qweather" | "manual";
+        };
+        /** CompleteInput */
+        CompleteInput: {
+            /** Expected Version */
+            expected_version: number;
+            /** Preview Token */
+            preview_token: string;
+            /**
+             * Acknowledge Unresolved
+             * @default false
+             */
+            acknowledge_unresolved: boolean;
         };
         /** ConditionPreview */
         ConditionPreview: {
@@ -1001,6 +1466,40 @@ export interface components {
             /** Rows */
             rows: components["schemas"]["ConfirmOutcome"][];
         };
+        /** Coverage */
+        Coverage: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Season
+             * @enum {string}
+             */
+            season: "spring" | "summer" | "autumn" | "winter";
+            /** Name */
+            name: string;
+        };
+        /** DecisionInput */
+        DecisionInput: {
+            /** Expected Version */
+            expected_version: number;
+            /** Garment Version */
+            garment_version: number;
+            /** Reason Key */
+            reason_key: string;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "observe" | "pending" | "keep" | "undecided";
+        };
         /** Deleted */
         Deleted: {
             /**
@@ -1010,6 +1509,39 @@ export interface components {
             id: string;
             /** Message */
             message: string;
+        };
+        /** DemandSpec */
+        DemandSpec: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Category */
+            category: string;
+            /** Subtype Ids */
+            subtype_ids?: string[];
+            /** Occasion Codes */
+            occasion_codes?: string[];
+            /** Tag Ids */
+            tag_ids?: string[];
+            /** Lower */
+            lower?: number | null;
+            /** Upper */
+            upper?: number | null;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+            /**
+             * Enabled
+             * @default true
+             */
+            enabled: boolean;
+            estimate?: components["schemas"]["RotationInputs"] | null;
         };
         /** DiagnosticInput */
         DiagnosticInput: {
@@ -1040,6 +1572,15 @@ export interface components {
             provider_mode: "fake";
             /** Message */
             message: string;
+        };
+        /** Envelope[BatchResult] */
+        Envelope_BatchResult_: {
+            data: components["schemas"]["BatchResult"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
         };
         /** Envelope[BatchView] */
         Envelope_BatchView_: {
@@ -1080,6 +1621,24 @@ export interface components {
         /** Envelope[Deleted] */
         Envelope_Deleted_: {
             data: components["schemas"]["Deleted"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[EstimateView] */
+        Envelope_EstimateView_: {
+            data: components["schemas"]["EstimateView"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[ExitImpact] */
+        Envelope_ExitImpact_: {
+            data: components["schemas"]["ExitImpact"];
             /**
              * Request Id
              * Format: uuid
@@ -1149,6 +1708,15 @@ export interface components {
              */
             request_id: string;
         };
+        /** Envelope[InventoryView] */
+        Envelope_InventoryView_: {
+            data: components["schemas"]["InventoryView"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
         /** Envelope[JobAccepted] */
         Envelope_JobAccepted_: {
             data: components["schemas"]["JobAccepted"];
@@ -1167,6 +1735,15 @@ export interface components {
              */
             request_id: string;
         };
+        /** Envelope[LifecycleHistory] */
+        Envelope_LifecycleHistory_: {
+            data: components["schemas"]["LifecycleHistory"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
         /** Envelope[LocationView] */
         Envelope_LocationView_: {
             data: components["schemas"]["LocationView"];
@@ -1179,6 +1756,24 @@ export interface components {
         /** Envelope[MessageList] */
         Envelope_MessageList_: {
             data: components["schemas"]["MessageList"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[OrganizationView] */
+        Envelope_OrganizationView_: {
+            data: components["schemas"]["OrganizationView"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[PlanView] */
+        Envelope_PlanView_: {
+            data: components["schemas"]["PlanView"];
             /**
              * Request Id
              * Format: uuid
@@ -1221,9 +1816,63 @@ export interface components {
              */
             request_id: string;
         };
+        /** Envelope[SeasonalPage] */
+        Envelope_SeasonalPage_: {
+            data: components["schemas"]["SeasonalPage"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[SeasonalView] */
+        Envelope_SeasonalView_: {
+            data: components["schemas"]["SeasonalView"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
         /** Envelope[SessionView] */
         Envelope_SessionView_: {
             data: components["schemas"]["SessionView"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[SubtypeImpact] */
+        Envelope_SubtypeImpact_: {
+            data: components["schemas"]["SubtypeImpact"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[SubtypeView] */
+        Envelope_SubtypeView_: {
+            data: components["schemas"]["SubtypeView"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[SupplyPage] */
+        Envelope_SupplyPage_: {
+            data: components["schemas"]["SupplyPage"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[SupplyView] */
+        Envelope_SupplyView_: {
+            data: components["schemas"]["SupplyView"];
             /**
              * Request Id
              * Format: uuid
@@ -1275,6 +1924,18 @@ export interface components {
              */
             request_id: string;
         };
+        /** Envelope[dict[str, list[str]]] */
+        Envelope_dict_str__list_str___: {
+            /** Data */
+            data: {
+                [key: string]: string[];
+            };
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
         /** Envelope[dict[str, object]] */
         Envelope_dict_str__object__: {
             /** Data */
@@ -1291,6 +1952,26 @@ export interface components {
         Envelope_list_City__: {
             /** Data */
             data: components["schemas"]["City"][];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[list[PlanView]] */
+        Envelope_list_PlanView__: {
+            /** Data */
+            data: components["schemas"]["PlanView"][];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[list[SubtypeView]] */
+        Envelope_list_SubtypeView__: {
+            /** Data */
+            data: components["schemas"]["SubtypeView"][];
             /**
              * Request Id
              * Format: uuid
@@ -1344,6 +2025,96 @@ export interface components {
              * Format: uuid
              */
             request_id: string;
+        };
+        /** EstimateInput */
+        EstimateInput: {
+            /** Weekly Days */
+            weekly_days: number;
+            /** Laundry Days */
+            laundry_days: number;
+            /** Drying Days */
+            drying_days: number;
+            /** Repeat Wears */
+            repeat_wears: number;
+            /** Spare */
+            spare: number;
+            /** Category */
+            category: string;
+            /** Occasion Codes */
+            occasion_codes?: string[];
+        };
+        /** EstimateView */
+        EstimateView: {
+            /** Lower */
+            lower: number;
+            /** Explanation */
+            explanation: string;
+        };
+        /** EventView */
+        EventView: {
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version: 1;
+            /**
+             * Job Id
+             * Format: uuid
+             */
+            job_id: string;
+            /** Seq */
+            seq: number;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "status" | "progress" | "result" | "error";
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /** Payload */
+            payload: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+        };
+        /** ExitImpact */
+        ExitImpact: {
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /** Garment Version */
+            garment_version: number;
+            /** Token */
+            token: string;
+            /** Rows */
+            rows: components["schemas"]["ExitImpactRow"][];
+            /** Invalid Sources */
+            invalid_sources: components["schemas"]["SourceView"][];
+        };
+        /** ExitImpactRow */
+        ExitImpactRow: {
+            source: components["schemas"]["SourceView"];
+            /** Lower */
+            lower: number | null;
+            /** Upper */
+            upper: number | null;
+            /** Before Confirmed */
+            before_confirmed: number;
+            /** After Confirmed */
+            after_confirmed: number;
+            /** Before Pending */
+            before_pending: number;
+            /** After Pending */
+            after_pending: number;
+            /** Conclusion */
+            conclusion: string;
+            /** Difference */
+            difference: number | null;
         };
         /** FavoriteCreate */
         FavoriteCreate: {
@@ -1436,6 +2207,14 @@ export interface components {
              * @enum {string}
              */
             display_variant: "original" | "cutout";
+            lifecycle: components["schemas"]["LifecycleProfile"];
+            /**
+             * Ownership
+             * @enum {string}
+             */
+            ownership: "owned" | "retired";
+            /** Subtype Id */
+            subtype_id: string | null;
             /**
              * Id
              * Format: uuid
@@ -1519,6 +2298,94 @@ export interface components {
              */
             interrupted_rows: number;
         };
+        /** InventoryCount */
+        InventoryCount: {
+            /**
+             * Row Id
+             * Format: uuid
+             */
+            row_id: string;
+            /**
+             * Planned
+             * @default 0
+             */
+            planned: number;
+            /** Matched Owned */
+            matched_owned: number;
+            /** Confirmed */
+            confirmed: number;
+            /** Pending */
+            pending: number;
+            /** Unavailable */
+            unavailable: number;
+            /** Available */
+            available: number;
+            /** Needs Attention */
+            needs_attention: number;
+            /** Shared */
+            shared: number;
+            /**
+             * Conclusion
+             * @enum {string}
+             */
+            conclusion: "unset" | "review" | "shortage" | "enough" | "excess" | "invalid" | "disabled";
+            /** Difference */
+            difference: number | null;
+            /** Rule Errors */
+            rule_errors: string[];
+            /** Members */
+            members: components["schemas"]["InventoryMember"][];
+        };
+        /** InventoryGarment */
+        InventoryGarment: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Image Url */
+            image_url: string;
+            /** Version */
+            version: number;
+        };
+        /** InventoryMember */
+        InventoryMember: {
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /**
+             * Bucket
+             * @enum {string}
+             */
+            bucket: "confirmed" | "pending" | "excluded";
+            /** Reasons */
+            reasons: string[];
+            /** Covered By */
+            covered_by?: components["schemas"]["Coverage"][];
+        };
+        /** InventoryView */
+        InventoryView: {
+            plan: components["schemas"]["PlanView"];
+            /**
+             * Stats At
+             * Format: date-time
+             */
+            stats_at: string;
+            /** Config Versions */
+            config_versions: {
+                [key: string]: number;
+            };
+            /** Total Owned */
+            total_owned: number;
+            /** Counts */
+            counts: components["schemas"]["InventoryCount"][];
+            /** Garments */
+            garments: components["schemas"]["InventoryGarment"][];
+        };
         /** ItemSnapshot */
         ItemSnapshot: {
             /**
@@ -1595,6 +2462,124 @@ export interface components {
             updated_at: string;
         };
         JsonValue: unknown;
+        /** LifecycleHistory */
+        LifecycleHistory: {
+            /** Last Exit Event Id */
+            last_exit_event_id: string | null;
+            /** Items */
+            items: components["schemas"]["EventView"][];
+            /** Next Cursor */
+            next_cursor: number | null;
+            /** Wear Days */
+            wear_days: number;
+            /** First Worn On */
+            first_worn_on: string | null;
+            /** Last Worn On */
+            last_worn_on: string | null;
+        };
+        /** LifecycleInput */
+        LifecycleInput: {
+            /** Expected Version */
+            expected_version: number;
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "profile" | "condition" | "storage" | "availability" | "repair_start" | "repair_complete" | "decision" | "retire" | "restore" | "correct";
+            /**
+             * Occurred On
+             * Format: date
+             */
+            occurred_on: string;
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+            /** Changes */
+            changes?: {
+                [key: string]: components["schemas"]["JsonValue"];
+            };
+            /** Related Event Id */
+            related_event_id?: string | null;
+            /** Impact Token */
+            impact_token?: string | null;
+        };
+        /** LifecycleProfile */
+        LifecycleProfile: {
+            /** Source */
+            source?: ("purchased" | "gift" | "other") | null;
+            /** Acquired On */
+            acquired_on?: string | null;
+            /** Price */
+            price?: string | null;
+            /** Location */
+            location?: string | null;
+            /**
+             * Condition
+             * @default unknown
+             * @enum {string}
+             */
+            condition: "unknown" | "good" | "worn" | "needs_repair" | "damaged";
+            /**
+             * Fit
+             * @default unknown
+             * @enum {string}
+             */
+            fit: "unknown" | "fits" | "unfit" | "not_applicable";
+            /**
+             * Storage
+             * @default daily
+             * @enum {string}
+             */
+            storage: "daily" | "stored";
+            /** Unavailable Reason */
+            unavailable_reason?: ("washing" | "repair" | "other") | null;
+            /**
+             * Decision
+             * @default undecided
+             * @enum {string}
+             */
+            decision: "undecided" | "keep" | "pending";
+            /**
+             * Decision Reason
+             * @default
+             */
+            decision_reason: string;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+            /** Exit Reason */
+            exit_reason?: ("gifted" | "sold" | "recycled" | "discarded" | "other") | null;
+            /** Exited On */
+            exited_on?: string | null;
+        };
+        /** LinkInput */
+        LinkInput: {
+            /** Expected Version */
+            expected_version: number;
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /** Garment Version */
+            garment_version: number;
+        };
+        /** LinkedGarment */
+        LinkedGarment: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Archived */
+            archived: boolean;
+        };
         /** LocationPatch */
         LocationPatch: {
             city: components["schemas"]["City"] | null;
@@ -1665,6 +2650,20 @@ export interface components {
              */
             created_at: string;
         };
+        /** OrganizationView */
+        OrganizationView: {
+            /** Shortages */
+            shortages: components["schemas"]["Shortage"][];
+            /** Candidates */
+            candidates: components["schemas"]["Candidate"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+            /**
+             * Stats At
+             * Format: date-time
+             */
+            stats_at: string;
+        };
         /** OutfitResult */
         OutfitResult: {
             /**
@@ -1683,6 +2682,55 @@ export interface components {
             unmet_requirements?: string[];
             /** Question */
             question?: string | null;
+        };
+        /** PlanInput */
+        PlanInput: {
+            /**
+             * City
+             * @default
+             */
+            city: string;
+            /**
+             * Period
+             * @default
+             */
+            period: string;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+            /** Rows */
+            rows?: components["schemas"]["DemandSpec"][];
+            /** Expected Version */
+            expected_version: number;
+        };
+        /** PlanView */
+        PlanView: {
+            /**
+             * City
+             * @default
+             */
+            city: string;
+            /**
+             * Period
+             * @default
+             */
+            period: string;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+            /** Rows */
+            rows?: components["schemas"]["DemandSpec"][];
+            /**
+             * Season
+             * @enum {string}
+             */
+            season: "spring" | "summer" | "autumn" | "winter";
+            /** Version */
+            version: number;
         };
         /** Preferences */
         Preferences: {
@@ -1710,6 +2758,42 @@ export interface components {
             preferences: components["schemas"]["Preferences"];
             /** Version */
             version: number;
+        };
+        /** ProcessInput */
+        ProcessInput: {
+            /** Garment Version */
+            garment_version: number;
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "repair" | "gifted" | "sold" | "recycled" | "discarded" | "other";
+            /**
+             * Occurred On
+             * Format: date
+             */
+            occurred_on: string;
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+            /** Impact Token */
+            impact_token?: string | null;
+        };
+        /** ProgressInput */
+        ProgressInput: {
+            /** Expected Version */
+            expected_version: number;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "review" | "targets" | "actions" | "summary";
+            /** Items */
+            items?: components["schemas"]["ReviewInput"][];
+            /** Target Token */
+            target_token?: string | null;
         };
         /** Requirements */
         Requirements: {
@@ -1759,6 +2843,23 @@ export interface components {
             /** Job Id */
             job_id?: string | null;
         };
+        /** ReviewInput */
+        ReviewInput: {
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /** Garment Version */
+            garment_version: number;
+            /** Reviewed */
+            reviewed: boolean;
+            /**
+             * Todo
+             * @default
+             */
+            todo: string;
+        };
         /** RevisionView */
         RevisionView: {
             /**
@@ -1799,6 +2900,19 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** RotationInputs */
+        RotationInputs: {
+            /** Weekly Days */
+            weekly_days: number;
+            /** Laundry Days */
+            laundry_days: number;
+            /** Drying Days */
+            drying_days: number;
+            /** Repeat Wears */
+            repeat_wears: number;
+            /** Spare */
+            spare: number;
         };
         /** RowPatch */
         RowPatch: {
@@ -1860,6 +2974,154 @@ export interface components {
             /** Confirmed Garment Id */
             confirmed_garment_id: string | null;
         };
+        /** SeasonalBrief */
+        SeasonalBrief: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Season
+             * @enum {string}
+             */
+            season: "spring" | "summer" | "autumn" | "winter";
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "all" | "season";
+            /** Categories */
+            categories: string[];
+            /** Version */
+            version: number;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "review" | "targets" | "actions" | "summary";
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Completed At */
+            completed_at: string | null;
+        };
+        /** SeasonalCreate */
+        SeasonalCreate: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Season
+             * @enum {string}
+             */
+            season: "spring" | "summer" | "autumn" | "winter";
+            /**
+             * Scope
+             * @default season
+             * @enum {string}
+             */
+            scope: "all" | "season";
+            /** Categories */
+            categories?: string[];
+        };
+        /** SeasonalItemView */
+        SeasonalItemView: {
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            original: components["schemas"]["GarmentView"];
+            current: components["schemas"]["GarmentView"] | null;
+            /** Reviewed Version */
+            reviewed_version: number | null;
+            /** Stale */
+            stale: boolean;
+            /** Todo */
+            todo: string;
+        };
+        /** SeasonalPage */
+        SeasonalPage: {
+            /** Items */
+            items: components["schemas"]["SeasonalBrief"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /** SeasonalSummary */
+        SeasonalSummary: {
+            /**
+             * Stats At
+             * Format: date-time
+             */
+            stats_at: string;
+            /** Rules Token */
+            rules_token: string;
+            inventory: components["schemas"]["InventoryView"];
+            /** Items */
+            items: components["schemas"]["SeasonalItemView"][];
+            /** Actions */
+            actions: components["schemas"]["ActionResult"][];
+            /** Reviewed */
+            reviewed: number;
+            /** Total */
+            total: number;
+            /** Unresolved */
+            unresolved: string[];
+            /** Outside Scope */
+            outside_scope: number;
+        };
+        /** SeasonalView */
+        SeasonalView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Season
+             * @enum {string}
+             */
+            season: "spring" | "summer" | "autumn" | "winter";
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "all" | "season";
+            /** Categories */
+            categories: string[];
+            /** Version */
+            version: number;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "review" | "targets" | "actions" | "summary";
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Completed At */
+            completed_at: string | null;
+            /** Items */
+            items: components["schemas"]["SeasonalItemView"][];
+            inventory: components["schemas"]["InventoryView"];
+            /** Actions */
+            actions: components["schemas"]["ActionResult"][];
+            /** Target Token */
+            target_token: string;
+            /** Targets Confirmed */
+            targets_confirmed: boolean;
+            /** Preview Token */
+            preview_token: string;
+            preview: components["schemas"]["SeasonalSummary"];
+            summary: components["schemas"]["SeasonalSummary"] | null;
+        };
         /** SessionCreate */
         SessionCreate: {
             requirements?: components["schemas"]["Requirements"];
@@ -1903,6 +3165,30 @@ export interface components {
             /** Removed Lock Ids */
             removed_lock_ids?: string[];
         };
+        /** Shortage */
+        Shortage: {
+            source: components["schemas"]["SourceView"];
+            /** Difference */
+            difference: number;
+            /** Planned */
+            planned: number;
+            /** Needs Attention */
+            needs_attention: number;
+        };
+        /** SourceView */
+        SourceView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Season */
+            season: string;
+            /** Name */
+            name: string;
+            /** Active */
+            active: boolean;
+        };
         /** StepRetry */
         StepRetry: {
             /**
@@ -1910,6 +3196,141 @@ export interface components {
              * @enum {string}
              */
             step: "conversion" | "analysis" | "cutout";
+        };
+        /** SubtypeImpact */
+        SubtypeImpact: {
+            subtype: components["schemas"]["SubtypeView"];
+            /** Garment Count */
+            garment_count: number;
+            /** Owned Count */
+            owned_count: number;
+            /** Rows */
+            rows: components["schemas"]["SubtypeReference"][];
+            /** Token */
+            token: string;
+        };
+        /** SubtypeInput */
+        SubtypeInput: {
+            /** Category */
+            category: string;
+            /** Name */
+            name: string;
+        };
+        /** SubtypePatch */
+        SubtypePatch: {
+            /** Expected Version */
+            expected_version: number;
+            /** Name */
+            name: string;
+            /** Active */
+            active: boolean;
+            /** Impact Token */
+            impact_token: string;
+        };
+        /** SubtypeReference */
+        SubtypeReference: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Season */
+            season: string;
+            /** Name */
+            name: string;
+            /** Enabled */
+            enabled: boolean;
+        };
+        /** SubtypeView */
+        SubtypeView: {
+            /** Category */
+            category: string;
+            /** Name */
+            name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Active
+             * @default true
+             */
+            active: boolean;
+            /**
+             * Version
+             * @default 1
+             */
+            version: number;
+        };
+        /** SupplyInput */
+        SupplyInput: {
+            /** Expected Version */
+            expected_version: number;
+            /** Name */
+            name: string;
+            /** Quantity */
+            quantity: number;
+            /** Budget */
+            budget?: number | string | null;
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+            /**
+             * Status
+             * @default planned
+             * @enum {string}
+             */
+            status: "planned" | "purchased";
+            /** Source Ids */
+            source_ids?: string[];
+        };
+        /** SupplyPage */
+        SupplyPage: {
+            /** Items */
+            items: components["schemas"]["SupplyView"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /** SupplyView */
+        SupplyView: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Version */
+            version: number;
+            /** Name */
+            name: string;
+            /** Quantity */
+            quantity: number;
+            /** Budget */
+            budget: string | null;
+            /** Reason */
+            reason: string;
+            /** Notes */
+            notes: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "planned" | "purchased" | "completed" | "cancelled";
+            /** Cancelled Quantity */
+            cancelled_quantity: number;
+            /** Remaining */
+            remaining: number;
+            /** Sources */
+            sources: components["schemas"]["SourceView"][];
+            /** Linked */
+            linked: components["schemas"]["LinkedGarment"][];
         };
         /** TagInput */
         TagInput: {
@@ -1934,6 +3355,11 @@ export interface components {
             name: string;
             /** Version */
             version: number;
+        };
+        /** VersionInput */
+        VersionInput: {
+            /** Expected Version */
+            expected_version: number;
         };
         /** WearCreate */
         WearCreate: {
@@ -2063,36 +3489,6 @@ export interface components {
              * @default []
              */
             errors: string[];
-        };
-        /** EventView */
-        EventView: {
-            /**
-             * Schema Version
-             * @default 1
-             * @constant
-             */
-            schema_version: 1;
-            /**
-             * Job Id
-             * Format: uuid
-             */
-            job_id: string;
-            /** Seq */
-            seq: number;
-            /**
-             * Type
-             * @enum {string}
-             */
-            type: "status" | "progress" | "result" | "error";
-            /**
-             * Occurred At
-             * Format: date-time
-             */
-            occurred_at: string;
-            /** Payload */
-            payload: {
-                [key: string]: components["schemas"]["JsonValue"];
-            };
         };
     };
     responses: never;
@@ -2720,6 +4116,7 @@ export interface operations {
                 occasion?: string | null;
                 availability?: string | null;
                 tag_id?: string | null;
+                ownership?: "owned" | "retired" | "all";
             };
             header?: never;
             path?: never;
@@ -5988,6 +7385,1892 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_JobAccepted_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    history_api_v1_garments__garment_id__lifecycle_get: {
+        parameters: {
+            query?: {
+                cursor?: number | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                garment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_LifecycleHistory_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    apply_api_v1_garments__garment_id__lifecycle_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                garment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LifecycleInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_GarmentView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    subtypes_api_v1_garment_subtypes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_SubtypeView__"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    create_subtype_api_v1_garment_subtypes_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubtypeInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SubtypeView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    configs_api_v1_inventory_configs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_list_PlanView__"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    preview_api_v1_inventory_estimate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EstimateInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_EstimateView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    read_api_v1_inventory__season__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                season: "spring" | "summer" | "autumn" | "winter";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_InventoryView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    save_api_v1_inventory__season__post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                season: "spring" | "summer" | "autumn" | "winter";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_PlanView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    suggestions_api_v1_garment_subtypes_suggestions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_dict_str__list_str___"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    subtype_impact_api_v1_garment_subtypes__subtype_id__impact_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subtype_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SubtypeImpact_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    subtype_patch_api_v1_garment_subtypes__subtype_id__patch: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                subtype_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubtypePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SubtypeView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listing_api_v1_supply_plans_get: {
+        parameters: {
+            query?: {
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SupplyPage_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    read_api_v1_supply_plans__plan_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SupplyView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    save_api_v1_supply_plans__plan_id__post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SupplyInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SupplyView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    link_api_v1_supply_plans__plan_id__link_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LinkInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SupplyView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    cancel_api_v1_supply_plans__plan_id__cancel_remaining_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SupplyView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    board_api_v1_organization_get: {
+        parameters: {
+            query?: {
+                state?: "active" | "all" | "observe" | "pending" | "keep" | "repair" | "done";
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_OrganizationView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    decide_api_v1_organization__garment_id__decision_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                garment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_GarmentView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    preview_api_v1_organization__garment_id__exit_impact_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                garment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ExitImpact_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    process_api_v1_organization__garment_id__process_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                garment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProcessInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_GarmentView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    garment_decisions_api_v1_organization__garment_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                garment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_OrganizationView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listing_api_v1_seasonal_sessions_get: {
+        parameters: {
+            query?: {
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SeasonalPage_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    create_api_v1_seasonal_sessions_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SeasonalCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SeasonalView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    read_api_v1_seasonal_sessions__sid__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SeasonalView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    progress_api_v1_seasonal_sessions__sid__progress_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgressInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SeasonalView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    actions_api_v1_seasonal_sessions__sid__actions_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_BatchResult_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    complete_api_v1_seasonal_sessions__sid__complete_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                sid: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompleteInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_SeasonalView_"];
                 };
             };
             /** @description Not Found */

@@ -56,9 +56,12 @@ def garments(
     occasion: str | None = None,
     availability: str | None = None,
     tag_id: UUID | None = None,
+    ownership: Literal["owned", "retired", "all"] = "owned",
 ) -> Envelope[GarmentList]:
     return Envelope(
-        data=list_garments(limit, cursor, q, category, season, occasion, availability, tag_id),
+        data=list_garments(
+            limit, cursor, q, category, season, occasion, availability, tag_id, ownership
+        ),
         request_id=request_id(request),
     )
 

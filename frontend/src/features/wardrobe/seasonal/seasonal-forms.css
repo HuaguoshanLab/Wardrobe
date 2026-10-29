@@ -1,0 +1,125 @@
+.seasonal-form {
+  display: grid;
+  gap: 20px;
+}
+
+.seasonal-form fieldset {
+  display: grid;
+  gap: 20px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.seasonal-form legend {
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.seasonal-page input:not([type='checkbox']),
+.seasonal-page textarea,
+.seasonal-page select {
+  width: 100%;
+  max-width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 12px;
+  font: inherit;
+  color: var(--foreground);
+}
+
+.seasonal-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.seasonal-review-form {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.seasonal-page .seasonal-check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  line-height: 1.6;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.seasonal-page .seasonal-check input {
+  appearance: auto;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+}
+
+.seasonal-pick-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.seasonal-pick {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.seasonal-pick:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--soft);
+}
+
+.seasonal-pick img {
+  width: 44px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.seasonal-pick span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.seasonal-pick strong,
+.seasonal-pick small {
+  display: block;
+}
+
+.seasonal-pick small {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.seasonal-confirm {
+  padding: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 12px;
+  margin-block: 16px;
+}
+
+.seasonal-confirm li {
+  margin-block: 8px;
+  overflow-wrap: anywhere;
+}
+
+.seasonal-page button:focus-visible,
+.seasonal-page a:focus-visible,
+.seasonal-page input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}

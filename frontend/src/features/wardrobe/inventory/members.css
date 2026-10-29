@@ -1,0 +1,54 @@
+.inventory-member-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.inventory-member-tabs .button {
+  flex: 1;
+  padding-inline: 8px;
+}
+.inventory-member-tabs [aria-pressed='true'] {
+  background: var(--soft);
+  border-color: var(--primary);
+}
+.inventory-members {
+  display: grid;
+  gap: 16px;
+}
+.inventory-members > .muted {
+  font-size: 14px;
+  margin: 0;
+}
+.inventory-member {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+}
+.inventory-member img,
+.inventory-member .garment-image-fallback {
+  width: 64px;
+  height: 80px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--soft);
+}
+.inventory-member > div {
+  flex: 1;
+  min-width: 0;
+}
+.inventory-member > svg {
+  flex-shrink: 0;
+}
+.inventory-member strong {
+  overflow-wrap: anywhere;
+}
+.inventory-member p,
+.inventory-member small {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}

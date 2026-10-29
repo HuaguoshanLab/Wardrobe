@@ -146,6 +146,18 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: 'wardrobe/seasonal',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/seasonal/list')).SeasonalList,
+        }),
+      },
+      {
+        path: 'wardrobe/seasonal/:id',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/seasonal/page')).SeasonalPage,
+        }),
+      },
+      {
         index: true,
         lazy: async () => ({ Component: (await import('../features/profile/home')).HomePage }),
       },
@@ -192,6 +204,12 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('./settings')).ServiceSettings }),
       },
       {
+        path: 'wardrobe/:id/lifecycle',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/lifecycle-page')).LifecyclePage,
+        }),
+      },
+      {
         path: 'wardrobe/:id',
         lazy: async () => ({ Component: (await import('../features/wardrobe/page')).GarmentPage }),
       },
@@ -202,6 +220,51 @@ export const router = createBrowserRouter([
       {
         path: 'imports/:id',
         lazy: async () => ({ Component: (await import('../features/imports/review')).ReviewPage }),
+      },
+      {
+        path: 'wardrobe/organization',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/organization/page')).OrganizationPage,
+        }),
+      },
+      {
+        path: 'wardrobe/organization/plans/:id',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/organization/supply-detail'))
+            .SupplyDetailPage,
+        }),
+      },
+      {
+        path: 'wardrobe/organization/plans/:id/edit',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/organization/supply-editor'))
+            .SupplyEditorPage,
+        }),
+      },
+      {
+        path: 'wardrobe/organization/garments/:id',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/organization/decision-page')).DecisionPage,
+        }),
+      },
+      {
+        path: 'wardrobe/inventory',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/inventory/page')).InventoryPage,
+        }),
+      },
+      {
+        path: 'wardrobe/inventory/subtypes',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/inventory/subtypes'))
+            .InventorySubtypesPage,
+        }),
+      },
+      {
+        path: 'wardrobe/inventory/:season/edit',
+        lazy: async () => ({
+          Component: (await import('../features/wardrobe/inventory/editor')).InventoryEditorPage,
+        }),
       },
       {
         path: 'wardrobe',

@@ -16,13 +16,15 @@ import {
 } from './api'
 import { GarmentEditor } from './garment-editor'
 import { GarmentImage } from './image'
+import { garmentReturn } from './return-context'
+import { DetailActions } from './detail-actions'
 import './wardrobe-controls.css'
 import './detail.css'
 
 export function GarmentPage() {
   const { id } = useParams()
-  const state = useLocation().state as { wardrobeSearch?: string } | null
-  const returnTo = state?.wardrobeSearch ? `/wardrobe?${state.wardrobeSearch}` : '/wardrobe'
+  const state = useLocation().state
+  const { to: returnTo, label: backLabel } = garmentReturn(state)
   const navigate = useNavigate()
   const client = useQueryClient()
   const query = useQuery({
@@ -83,7 +85,7 @@ export function GarmentPage() {
   if (!item)
     return (
       <>
-        <PageHeader title="单品详情" backTo={returnTo} backLabel="返回衣橱" />
+        <PageHeader title="单品详情" backTo={returnTo} backLabel={backLabel} />
         {query.error ? (
           <p role="alert">
             {query.error.message}
@@ -117,7 +119,7 @@ export function GarmentPage() {
       <PageHeader
         title={editing ? '编辑单品' : '单品详情'}
         backTo={returnTo}
-        backLabel="返回衣橱"
+        backLabel={backLabel}
       />
       {notice && (
         <p role="status" className="detail-notice">
@@ -206,11 +208,15 @@ export function GarmentPage() {
             <h1>{name}</h1>
             <div className="detail-status">
               <span className={`availability ${item.availability}`}>
-                {item.availability === 'available' ? '可穿' : '暂不可用'}
+                {item.ownership === 'retired'
+                  ? '已退出衣橱'
+                  : item.availability === 'available'
+                    ? '可穿'
+                    : '暂不可用'}
               </span>
               <Button
                 variant="outline"
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || item.ownership === 'retired'}
                 onClick={() =>
                   mutation.mutate({
                     value: {
@@ -226,17 +232,17 @@ export function GarmentPage() {
             <p className="muted detail-status-hint">
               暂不可用的单品不会参与新搭配，已有穿搭记录会保留。
             </p>
-            <Button
+            <DetailActions
+              item={item}
+              returnState={state}
               disabled={mutation.isPending}
-              onClick={() => {
+              onEdit={() => {
                 setEditing(item)
                 setChanges({})
                 setNotice('')
                 mutation.reset()
               }}
-            >
-              编辑单品信息
-            </Button>
+            />
             <section className="detail-attributes">
               <h2>单品档案</h2>
               <dl>

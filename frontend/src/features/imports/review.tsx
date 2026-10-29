@@ -1,6 +1,7 @@
 import './workflow.css'
+import { z } from 'zod'
 import { useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useSearchParams } from 'react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from '../../components/ui/button'
 import { Sheet } from '../../components/ui/sheet'
@@ -19,6 +20,9 @@ export function ReviewPage() {
   return <ReviewBatch key={id} id={id!} />
 }
 function ReviewBatch({ id }: { id: string }) {
+  const [params] = useSearchParams()
+  const supplyId = z.uuid().safeParse(params.get('return_supply'))
+  const supplyQuery = supplyId.success ? `?return_supply=${supplyId.data}` : ''
   const client = useQueryClient()
   const taxonomy = useQuery({ queryKey: ['taxonomies'], queryFn: getTaxonomy })
   const [selected, setSelected] = useState<string[]>([])
@@ -65,7 +69,7 @@ function ReviewBatch({ id }: { id: string }) {
   if (!query.data)
     return (
       <section>
-        <PageHeader title="审核衣服" backTo="/imports" backLabel="返回录入入口" />
+        <PageHeader title="审核衣服" backTo={`/imports${supplyQuery}`} backLabel="返回录入入口" />
         <div className="panel">
           <p role={query.isError ? 'alert' : 'status'}>
             {query.error?.message ?? '正在读取本批衣服…'}
@@ -102,7 +106,7 @@ function ReviewBatch({ id }: { id: string }) {
   const busy = confirm.blocked || action.isPending
   return (
     <section className="import-review">
-      <PageHeader title="审核衣服" backTo="/imports" backLabel="返回录入入口" />
+      <PageHeader title="审核衣服" backTo={`/imports${supplyQuery}`} backLabel="返回录入入口" />
       <p className="muted">
         {batch.source === 'photos' ? '照片' : 'Excel'}导入 · 只有确认的单品才会加入衣橱
       </p>
@@ -150,11 +154,19 @@ function ReviewBatch({ id }: { id: string }) {
             <Link className="button" to="/wardrobe">
               查看衣橱
             </Link>
-            <Link className="button button-outline" to="/imports">
+            <Link className="button button-outline" to={`/imports${supplyQuery}`}>
               继续录入
             </Link>
           </div>
         </div>
+      )}
+      {supplyId.success && (
+        <Link
+          className="button button-outline"
+          to={`/wardrobe/organization/plans/${supplyId.data}`}
+        >
+          返回补充计划，关联已入库单品
+        </Link>
       )}
       {confirm.feedback}
       {confirm.result && (
@@ -207,7 +219,7 @@ function ReviewBatch({ id }: { id: string }) {
             查看全部
           </Button>
           {!batch.rows.length && !processing && (
-            <Link className="text-link" to="/imports">
+            <Link className="text-link" to={`/imports${supplyQuery}`}>
               修正文件后重新上传
             </Link>
           )}

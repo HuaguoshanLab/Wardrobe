@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import Field, JsonValue
 
 from app.schemas.common import Schema
+from app.schemas.lifecycle import LifecycleProfile
 
 
 class Attributes(Schema):
@@ -23,6 +24,9 @@ class Attributes(Schema):
 
 
 class GarmentView(Attributes):
+    lifecycle: LifecycleProfile
+    ownership: Literal["owned", "retired"]
+    subtype_id: UUID | None
     id: UUID
     image_asset_id: UUID
     is_demo: bool

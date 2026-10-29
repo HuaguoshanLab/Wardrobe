@@ -85,6 +85,8 @@ flowchart LR
 | Taxonomy / Tag | 品类、统一属性词表、预设/自定义标签 | 基础词表有稳定代码；自定义标签独立 |
 | Garment | owner_id、品类、可选属性、状态、媒体引用、version | 图片及品类必填；软删除；默认 available |
 | custom_tag_ids（P2） | Garment JSONB 内标签 UUID 关系 | 服务校验存在性、删除同步移除；未建独立 GarmentTag 表，演进边界见 P2 |
+| GarmentSubtype / LifecycleEvent | 稳定子类引用、追加生命周期事件与前后状态 | W1 迁移；单品共享 version，退出不删除档案及历史图片，见 [W1](docs/W1.md) |
+| InventoryPlan / InventoryDemand | 四季版本化配置、有序稳定需求 ID、规则与目标 JSONB、软删除 | W2 迁移；统计由完整单品派生，同一只读快照计算计数和明细，见 [W2](docs/W2.md) |
 | MediaAsset | 存储键、哈希、MIME、尺寸、原件/衍生关系 | 存储键由后端生成；原件不可被转换覆盖 |
 | ImportBatch / ImportRow | 来源、草稿、version、touched_fields、校验、处理状态、已确认衣服 ID | 晚到 AI 不能覆盖人工修改；一个有效行最多创建一件衣服 |
 | OutfitSession | 当前需求、锁定条件、选定结果、current_job_id、候选列表、version | 映射单独的 LangGraph thread_id；首页从当前会话指针恢复 |
@@ -99,9 +101,18 @@ flowchart LR
 
 数据库在外键、唯一约束和事务层落实幂等与关系完整性。所有权预留仅是结构准备，不能宣称首版已实现多用户安全隔离。
 
+W2 的 `domain/inventory` 负责纯匹配和数量规则，`services/inventory` 在 REPEATABLE READ 事务中读取完整配置和单品，`inventory_config` 负责整季版本、幂等与规则校验；`subtypes` 维护稳定引用与修改影响令牌。前端位于 `features/wardrobe/inventory/`，复用单品编辑、公共面板及操作恢复。统计不写库存、不触发模型。
+
+W3 新增 `supply_plans`、`supply_sources`、`supply_links`、`organization_decisions`：来源保留软删除需求外键及采纳时快照，核销以唯一 garment_id 保留历史事实，决定按单品/原因独立版本。`supply` 负责采购计划与核销，`organization_context` 派生建议，`organization_decisions` 保存人工决定，`organization_process` 计算跨季影响并复用 W1 同事务动作。前端位于 `features/wardrobe/organization/`；具体契约见 [W3](docs/W3.md)。`db/registry` 显式加载全部业务模型，迁移和独立备份控制进程共用，不依赖 API 导入顺序。
+
+W4 新增 `seasonal_sessions`、`seasonal_items`、`seasonal_actions`：固定范围与核对版本、独立动作回执、不可变总结分别持久化。`seasonal_view` 生成只读证据，`seasonal` 管理进度与完成，`seasonal_actions` 在统一衣橱锁和逐项 SAVEPOINT 内复用 W1 动作；前端位于 `features/wardrobe/seasonal/`。完成记录读取自身快照，不再读取当前衣橱。契约与备份版本见 [W4](docs/W4.md)。
+
+
 ### 删除与图片生命周期
 
-Garment 删除后从当前衣橱和候选查询排除。快照保留当时的图片引用，且该引用禁止被衣服删除级联清理。原图/去背景显示选择发生变化时，新的快照引用新的选择，旧快照不变。
+W1 增加 ownership、lifecycle JSONB 和 subtype_id；生命周期服务与基础编辑共用单品版本及行锁，搭配使用统一持有/可用判断。新资料与子类不加入模型候选。详情见 [W1](docs/W1.md)。
+
+Garment 退出后默认当前衣橱与搭配候选排除，档案筛选仍能读取；删除后从当前衣橱和候选查询排除。快照保留当时的图片引用，且该引用禁止被衣服删除级联清理。原图/去背景显示选择发生变化时，新的快照引用新的选择，旧快照不变。
 
 临时导入资产和无人引用的媒体可按明确的保留策略清理。垃圾回收必须检查衣服、导入行、快照及备份过程中的引用；首版可保守不自动删除，不能为了省空间破坏历史。
 
