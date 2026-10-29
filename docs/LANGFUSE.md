@@ -41,11 +41,13 @@ docker compose --env-file .env.langfuse -f compose.langfuse.yaml stop
 | `WARDROBE_LANGFUSE_BASE_URL` | 空；必须明确配置，不自动回退到云端 |
 | `WARDROBE_LANGFUSE_PUBLIC_KEY` / `SECRET_KEY` | 项目级凭据 |
 | `WARDROBE_LANGFUSE_ENVIRONMENT` | local；验收使用 acceptance，自动化使用 test |
-| `WARDROBE_LANGFUSE_CAPTURE_TEXT` | false；开启后仅采集有界、过滤后的用户调整文本和模型回复文本 |
+| `WARDROBE_LANGFUSE_CAPTURE_TEXT` | false；开启后采集有界、过滤后的搭配输入摘要和模型回复文本 |
 | `WARDROBE_LANGFUSE_PRICE_PROFILE` | disabled；初始化本地配置选择 `bailian_beijing_20261028` |
 | `WARDROBE_LANGFUSE_CNY_PER_USD` | 未配置；明确提供换算率后才写原生美元 cost_details |
 
 关闭输入输出全文采集时仍记录 Token、耗时、提示词版本、错误码和允许的结构化摘要。不序列化整个函数参数、图状态、HTTP 请求体或异常堆栈。原图、Base64、精确定位、租约令牌、密钥不进入观测载荷。调试文本并非匿名化保证；开启前需确认允许记录用户自由文本，不应将任意敏感文本当安全数据。
+
+2026-10-29 用户要求开启本机正文采集，已将忽略的 `.env.langfuse-worker` 中 `WARDROBE_LANGFUSE_CAPTURE_TEXT` 设置为 `true` 并重建 worker；初始化默认值仍为 false。搭配 Input 已修复为标记 `capture_scope=input_summary` 的摘要，包含 step、message、纠错说明、白名单搭配条件、去除位置的天气摘要、候选/锁定/基础单品数量及调整意图；即使点击生成没有聊天文本，也有非空摘要。它不是完整模型输入。识别图片不采集，因此识别 Input 仍可能显示 undefined。Output 记录模型回复文本；输入输出分别过滤并截断至 8,000 字符，不包含完整系统提示词、衣橱上下文或图片。历史记录不会补齐。验证见 [正文采集记录](history/2026-10-29-langfuse-capture.md)。
 
 ## 链路与恢复
 

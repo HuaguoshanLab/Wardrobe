@@ -15,6 +15,7 @@ from langfuse import Langfuse, propagate_attributes
 from langfuse._client.span import LangfuseObservationWrapper
 from langfuse.types import TraceContext
 from opentelemetry.sdk.trace import TracerProvider
+from pydantic import JsonValue
 
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError
@@ -193,6 +194,15 @@ def session(session_id: str | None) -> Iterator[None]:
                 context.__exit__(None, None, None)
             except Exception:
                 warning("SESSION_END_FAILED")
+
+
+def model_input(request: Mapping[str, JsonValue], step: str, settings: Settings) -> None:
+    if not settings.langfuse_capture_text:
+        return
+    try:
+        current().update(input_text=privacy.outfit_input(request, step))
+    except Exception:
+        warning("INPUT_CAPTURE_FAILED")
 
 
 def model_response(raw: object, settings: Settings) -> None:

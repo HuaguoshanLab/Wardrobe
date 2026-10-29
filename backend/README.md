@@ -90,6 +90,8 @@ P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qwea
 
 可选 SDK 与 worker 埋点已加入，搭配/识别请求直接通过 HTTPX，模型观测由适配器显式记录。关闭时保持原业务流程；配置、独立部署和费用口径见 [LANGFUSE](../docs/LANGFUSE.md)，部署和验证证据见 [本轮记录](../docs/history/2026-10-28-langfuse.md)。
 
+2026-10-29：开启文本采集后的搭配 Input 使用白名单摘要，覆盖没有聊天文字的按钮生成；观测测试及应用内完整生成验证见 [正文采集记录](../docs/history/2026-10-29-langfuse-capture.md)。
+
 ## P5 控制器
 
 本机开发另开终端运行 `uv run python -m app.backup.worker`。API、worker、controller 必须共享 WARDROBE_CONTROL_ROOT、媒体根和数据库；Compose 已挂载 control_data。备份控制记录独立于业务库，验证需要 CREATEDB 权限。不可把生产库当恢复测试目标；隔离命令及证据见 [P5 记录](../docs/history/2026-10-26-p5.md)。

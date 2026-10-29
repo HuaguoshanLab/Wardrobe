@@ -1,5 +1,6 @@
 """Allowlisted metadata and bounded opt-in text; never serialize model request bodies."""
 
+import json
 import re
 from collections.abc import Mapping
 
@@ -54,6 +55,47 @@ def text(value: object) -> str:
     value = re.sub(r"https?://[^\s\"']+", "[url omitted]", value)
     value = re.sub(r"(?i)bearer\s+\S+|\b(?:sk|pk)-[\w-]+", "[credential omitted]", value)
     return value[:8000]
+
+
+def outfit_input(request: Mapping[str, JsonValue], step: str) -> str:
+    """An explicit summary, not the model's complete prompt or wardrobe snapshot."""
+    context = request.get("context")
+    context = context if isinstance(context, dict) else {}
+
+    def select_fields(value: JsonValue, keys: tuple[str, ...]) -> dict[str, JsonValue]:
+        if not isinstance(value, dict):
+            return {}
+        result: dict[str, JsonValue] = {}
+        for key in keys:
+            item = value.get(key)
+            if item is None or isinstance(item, (bool, int, float)):
+                result[key] = item
+            elif isinstance(item, str):
+                result[key] = item[:1000]
+            elif isinstance(item, list):
+                result[key] = [v[:100] for v in item[:30] if isinstance(v, str)]
+        return result
+
+    def count(key: str) -> int:
+        value = context.get(key)
+        return len(value) if isinstance(value, list) else 0
+
+    summary = {
+        "capture_scope": "input_summary",
+        "step": step,
+        **select_fields(dict(request), ("message", "correction")),
+        "requirements": select_fields(
+            context.get("requirements"), ("occasion_codes", "style_codes", "season_codes", "notes")
+        ),
+        "weather": select_fields(
+            context.get("weather"), ("source", "temperature_c", "feels_like_c", "condition")
+        ),
+        "candidate_count": count("candidates"),
+        "locked_count": count("locked_garment_ids"),
+        "base_item_count": count("base_items"),
+        "intent": select_fields(request.get("intent"), ("scope", "target_item_ids", "question")),
+    }
+    return json.dumps(summary, ensure_ascii=False)
 
 
 def usage(raw: object) -> dict[str, int]:

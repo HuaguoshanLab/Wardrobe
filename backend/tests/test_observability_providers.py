@@ -81,3 +81,68 @@ def test_fake_is_not_a_billable_generation(telemetry):
     spans = exported(telemetry)
     assert spans[0].name == "recognition.fake"
     assert spans[0].attributes["langfuse.observation.type"] == "span"
+
+
+@respx.mock
+@pytest.mark.parametrize("capture", [False, True])
+@pytest.mark.parametrize("message", ["", "只换上衣"])
+def test_input_capture_for_button_and_chat_requests(telemetry, capture, message):
+    settings = SETTINGS.model_copy(update={"langfuse_capture_text": capture})
+    context = {
+        "message": message,
+        "context": {
+            "requirements": {"occasion_codes": ["daily"], "notes": "sk-secret-example"},
+            "weather": {"temperature_c": 22, "city": {"latitude": 12.345678}},
+            "candidates": [{"id": "private-candidate", "image": "data:image/png;base64,PRIVATE"}],
+            "locked_garment_ids": [],
+            "base_items": [],
+            "lease_token": "private-lease",
+        },
+    }
+    route = respx.post(URL).mock(
+        return_value=httpx.Response(
+            200, json={"choices": [{"message": {"content": '{"outfits":[]}'}}]}
+        )
+    )
+    with patch("app.providers.qwen.get_settings", return_value=settings):
+        assert invoke(context, "outfits", 10) == {"outfits": []}
+    attrs = dict(generation(telemetry).attributes)
+    if capture:
+        summary = json.loads(attrs["langfuse.observation.input"])
+        assert summary["capture_scope"] == "input_summary"
+        assert summary["message"] == message
+        assert summary["candidate_count"] == 1
+        assert summary["requirements"]["occasion_codes"] == ["daily"]
+        assert summary["weather"]["temperature_c"] == 22
+        assert "langfuse.observation.output" in attrs
+    else:
+        assert "langfuse.observation.input" not in attrs
+        assert "langfuse.observation.output" not in attrs
+    for forbidden in [
+        "private-candidate",
+        "PRIVATE",
+        "private-lease",
+        "12.345678",
+        "sk-secret-example",
+    ]:
+        assert forbidden not in json.dumps(attrs)
+    # Telemetry must not change the model request or cause another provider call.
+    sent = json.loads(route.calls[0].request.content)
+    assert json.loads(sent["messages"][1]["content"])["context"] == context["context"]
+    assert route.call_count == 1
+
+
+@respx.mock
+def test_input_capture_failure_does_not_block_model(telemetry):
+    settings = SETTINGS.model_copy(update={"langfuse_capture_text": True})
+    route = respx.post(URL).mock(
+        return_value=httpx.Response(
+            200, json={"choices": [{"message": {"content": '{"outfits":[]}'}}]}
+        )
+    )
+    with (
+        patch("app.providers.qwen.get_settings", return_value=settings),
+        patch("app.observability.privacy.outfit_input", side_effect=ValueError("bad telemetry")),
+    ):
+        assert invoke({}, "outfits", 10) == {"outfits": []}
+    assert route.call_count == 1

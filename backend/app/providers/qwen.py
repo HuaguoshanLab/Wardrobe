@@ -8,7 +8,7 @@ from pydantic import JsonValue
 
 from app.core.config import get_settings
 from app.core.errors import AppError
-from app.observability.runtime import current, model_response, observation
+from app.observability.runtime import model_input, model_response, observation
 from app.providers.outfit_evidence import explanation_evidence
 from app.schemas.outfits import Intent, ModelOutfits
 
@@ -98,9 +98,7 @@ def invoke(context: dict[str, JsonValue], step: str, timeout: float) -> dict[str
         version=PROMPT_VERSION,
         fields={"provider_mode": "qwen", "prompt_version": PROMPT_VERSION, "step": step},
     ):
-        if settings.langfuse_capture_text:
-            # Explicit text only; never the entire request or headers.
-            current().update(input_text=str(context.get("message") or ""))
+        model_input(context, step, settings)
         try:
             return asyncio.run(asyncio.wait_for(_request(body), timeout=min(timeout, 120)))
         except (httpx.TransportError, TimeoutError) as exc:
