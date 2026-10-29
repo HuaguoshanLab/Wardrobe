@@ -113,4 +113,4 @@ docker compose --profile test run --build --rm test
 
 可选本地 Langfuse 的部署、登录凭据位置、追踪字段及费用估算口径见 [观测运行指南](docs/LANGFUSE.md)。观测数据使用独立存储，不包含在衣橱业务备份中。
 
-先读 [AGENTS](AGENTS.md)，再读 [DEVELOPMENT](docs/DEVELOPMENT.md) 的“下一任务”。当前等待实际使用反馈，收到具体问题后再修复，不自动继续旧验收计划或扩展功能。文档中的“已确认需求”“工程默认”“待验证”和“已实现”必须区分。切勿重新引入已经取消的 CSV 导入、默认自动生成或自动偏好学习。
+先读 [AGENTS](AGENTS.md)，再读 [DEVELOPMENT](docs/DEVELOPMENT.md) 的“下一任务”。2026-10-28 用户要求按 [P7 进阶计划](docs/plans/P7-advanced.md) 逐项完整实施；目前仅完成计划，下一实现任务是 P7.1 穿搭轮换，不自动继续旧验收计划或提前铺开后续阶段。文档中的“已确认需求”“工程默认”“待验证”和“已实现”必须区分。切勿重新引入已经取消的 CSV 导入、默认自动生成或自动偏好学习。
