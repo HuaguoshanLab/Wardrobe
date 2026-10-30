@@ -122,11 +122,17 @@ def patch_row(batch_id: UUID, row_id: UUID, patch: RowPatch) -> RowView:
             raise AppError("ROW_FINALIZED", "该行已确认或已移除")
         if row.version != patch.expected_version:
             raise AppError("VERSION_CONFLICT", "审核行已更新，请保留草稿并重新读取")
-        row.draft = ImportDraft.model_validate({**row.draft, **patch.changes}).model_dump(
-            mode="json"
-        )
-        row.touched_fields = sorted(set(row.touched_fields) | set(patch.changes))
-        row.errors = {k: v for k, v in row.errors.items() if k not in patch.changes}
+        changes = dict(patch.changes)
+        if (
+            "category" in changes
+            and changes["category"] != row.draft.get("category")
+            and row.draft.get("subtype_name")
+            and "subtype_name" not in changes
+        ):
+            changes["subtype_name"] = None
+        row.draft = ImportDraft.model_validate({**row.draft, **changes}).model_dump(mode="json")
+        row.touched_fields = sorted(set(row.touched_fields) | set(changes))
+        row.errors = {k: v for k, v in row.errors.items() if k not in changes}
         row.skipped = patch.skip
         row.version += 1
         db.flush()

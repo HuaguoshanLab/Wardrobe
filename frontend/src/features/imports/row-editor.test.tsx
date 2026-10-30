@@ -149,3 +149,73 @@ it('initial facts preserve unknowns, reject invalid money and save zero without 
     }),
   )
 })
+
+it('changing category clears the old subtype and lets the user supply a new one', async () => {
+  saved = undefined
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  const router = createMemoryRouter([
+    {
+      path: '*',
+      element: (
+        <RowEditor
+          batchId={id}
+          row={{ ...row, draft: { ...row.draft, category: 'top', subtype_name: 'T恤' } }}
+          onClose={() => {}}
+        />
+      ),
+    },
+  ])
+  render(
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>,
+  )
+  const user = userEvent.setup()
+  await screen.findByRole('option', { name: '鞋' })
+  await user.selectOptions(screen.getByLabelText('品类'), 'shoes')
+  expect(screen.getByLabelText('子类', { exact: true })).toHaveValue('')
+  expect(screen.getByRole('status')).toHaveTextContent('原子类已清空')
+  await user.type(screen.getByLabelText('子类', { exact: true }), '休闲鞋')
+  await user.click(screen.getByRole('button', { name: '保存修改' }))
+  await waitFor(() =>
+    expect(saved).toEqual({
+      expected_version: 1,
+      changes: { category: 'shoes', subtype_name: '休闲鞋' },
+    }),
+  )
+})
+
+it('can explicitly reset rejected Excel values already displayed as unknown', async () => {
+  saved = undefined
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  const router = createMemoryRouter([
+    {
+      path: '*',
+      element: (
+        <RowEditor
+          batchId={id}
+          row={{
+            ...row,
+            draft: { ...row.draft, category: 'top' },
+            processing_errors: { price: '购入金额（元）字段不合法', fit: '合身情况字段不合法' },
+          }}
+          onClose={() => {}}
+        />
+      ),
+    },
+  ])
+  render(
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>,
+  )
+  const user = userEvent.setup()
+  await screen.findByRole('option', { name: '上装' })
+  expect(screen.getByLabelText('购入金额（元）')).toHaveValue('')
+  await user.click(screen.getByRole('button', { name: '重置购入金额（元）' }))
+  await user.click(screen.getByRole('button', { name: '重置合身情况' }))
+  await user.click(screen.getByRole('button', { name: '保存修改' }))
+  await waitFor(() =>
+    expect(saved).toEqual({ expected_version: 1, changes: { price: null, fit: 'unknown' } }),
+  )
+})

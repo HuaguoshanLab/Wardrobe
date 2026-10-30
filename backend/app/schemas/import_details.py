@@ -21,6 +21,14 @@ class ImportDetails(Schema):
     storage: Literal["daily", "stored"] = "daily"
     notes: str = Field(default="", max_length=2000)
 
+    @field_validator("price")
+    @classmethod
+    def canonical_price(cls, value: Decimal | None) -> Decimal | None:
+        if value is None:
+            return None
+        # Validation above rejects excess nonzero decimals; this never rounds invalid input.
+        return (abs(value) if value == 0 else value).quantize(Decimal("0.01"))
+
     @field_validator("subtype_name")
     @classmethod
     def clean_name(cls, value: str | None) -> str | None:

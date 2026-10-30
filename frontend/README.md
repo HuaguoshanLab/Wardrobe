@@ -96,7 +96,7 @@ P3 条件草稿按北京时间日期/城市保存在本浏览器；查询不自�
 IMPORT_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8100 npx playwright test -c playwright.import.config.ts
 ```
 
-前置检查核对专用项目、数据卷、内部网络及无真实凭据；场景会创建测试衣服和盘点需求，只能指向该隔离环境。覆盖桌面与 320×568 模拟手机的审核、草稿保留、金额校验、确认、生命周期与盘点，不代表真机验收。环境启动和实际验证记录见 [导入交付记录](../docs/history/2026-10-30-import-organization.md)。
+前置检查核对专用项目、数据卷、内部网络及无真实凭据；场景会创建测试衣服和盘点需求，只能指向该隔离环境。新增流程自动用 `backend/.venv/bin/python` 生成合成 Excel，先安装后端锁定依赖。覆盖桌面与 320×568 模拟手机的照片上传、改品类清子类、非法字段重置、确认响应丢失恢复、草稿保留、生命周期与盘点，共 8 项，不代表真机验收。环境启动见 [导入交付记录](../docs/history/2026-10-30-import-organization.md)，最新修复与验证见 [流程检查记录](../docs/history/2026-10-30-import-flow-audit.md)。
 
 ## P5 页面与恢复验证
 

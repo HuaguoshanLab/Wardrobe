@@ -10,8 +10,8 @@ if (
 export default defineConfig({
   ...config,
   use: { ...config.use, actionTimeout: 15000 },
-  testMatch: ['import-details-isolated.scenario.ts'],
+  testMatch: ['import-details-isolated.scenario.ts', 'import-audit-isolated.scenario.ts'],
   outputDir: '../data/acceptance/import-organization/browser-results',
   globalSetup: './e2e/import-preflight.ts',
-  timeout: 120000,
+  timeout: 240000,
 })

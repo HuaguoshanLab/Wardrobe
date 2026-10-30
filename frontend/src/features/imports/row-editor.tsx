@@ -7,6 +7,7 @@ import { api } from '../../lib/http'
 import { rowSchema, getBatch, type ImportRow, type ImportDraft } from './api'
 import { importDetailsSchema } from './details-schema'
 import { ImportDetailsEditor } from './details-editor'
+import { ImportFieldErrors } from './field-errors'
 import { LeaveGuard } from './leave-guard'
 
 export function RowEditor({
@@ -27,6 +28,7 @@ export function RowEditor({
   const [refreshing, setRefreshing] = useState(false)
   const [refreshError, setRefreshError] = useState('')
   const [detailErrors, setDetailErrors] = useState<Record<string, string>>({})
+  const [subtypeReset, setSubtypeReset] = useState(false)
   const client = useQueryClient()
   const mutation = useMutation({
     mutationFn: () =>
@@ -103,7 +105,14 @@ export function RowEditor({
         <GarmentEditor
           initial={snapshot.draft}
           changes={changes}
-          onChange={setChanges}
+          onChange={(next) => {
+            const current = { ...snapshot.draft, ...changes }
+            const category = { ...snapshot.draft, ...next }.category
+            if (category !== current.category && current.subtype_name) {
+              setChanges({ ...next, subtype_name: null })
+              setSubtypeReset(true)
+            } else setChanges(next)
+          }}
           busy={mutation.isPending || refreshing}
           onSave={() => {
             const parsed = importDetailsSchema.safeParse({ ...snapshot.draft, ...changes })
@@ -118,6 +127,12 @@ export function RowEditor({
           }}
           onCancel={close}
         >
+          <ImportFieldErrors row={snapshot} changes={changes} onChange={setChanges} />
+          {subtypeReset && (
+            <p role="status" className="notice">
+              品类已修改，原子类已清空，请按新品类重新填写；不确定可留空。
+            </p>
+          )}
           <ImportDetailsEditor
             errors={detailErrors}
             value={{ ...snapshot.draft, ...changes }}

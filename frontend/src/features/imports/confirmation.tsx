@@ -98,6 +98,8 @@ export function useConfirmation(batchId: string, rows: ImportRow[], onSuccess: (
                 {row.image_url && <img src={row.image_url} alt="" />}
                 <span>
                   第 {row.row_number} 行 · {row.draft.name || row.filename}
+                  <br />
+                  <small>子类：{row.draft.subtype_name || '未填写'}</small>
                 </span>
               </li>
             ))}

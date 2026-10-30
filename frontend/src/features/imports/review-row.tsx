@@ -2,8 +2,12 @@ import { Link } from 'react-router'
 import { Button } from '../../components/ui/button'
 import { statusLabel, type ImportRow } from './api'
 
-export function needsSourceFix(row: ImportRow) {
-  return !row.image_asset_id && row.conversion_status === 'failed'
+export function needsSourceFix(
+  row: Pick<ImportRow, 'image_asset_id' | 'conversion_status' | 'processing_errors'>,
+) {
+  return (
+    !!row.processing_errors.structure || (!row.image_asset_id && row.conversion_status === 'failed')
+  )
 }
 export function ReviewRow({
   row,
@@ -59,6 +63,7 @@ export function ReviewRow({
       <td>
         <strong>{row.draft.name || row.filename}</strong>
         <p>{fields.category?.[row.draft.category ?? ''] ?? row.draft.category ?? '品类未填写'}</p>
+        <p>子类：{row.draft.subtype_name || '未填写'}</p>
         <small>
           {row.draft.seasons.map((value) => fields.seasons?.[value] ?? value).join(' / ') ||
             '季节未知'}{' '}
@@ -71,6 +76,12 @@ export function ReviewRow({
             </span>
           </p>
         )}
+        {!finalized &&
+          row.analysis_notes.map((note, index) => (
+            <p className="notice" key={index}>
+              {note}
+            </p>
+          ))}
       </td>
       <td>
         <span className={`import-state import-state-${row.row_status}`}>
@@ -104,9 +115,7 @@ export function ReviewRow({
             <br />
             去背景：{statusLabel[row.cutout_status] ?? row.cutout_status}
           </p>
-          {row.analysis_notes.map((note, index) => (
-            <p key={index}>{note}</p>
-          ))}
+          {finalized && row.analysis_notes.map((note, index) => <p key={index}>{note}</p>)}
           {Object.entries(row.processing_errors).map(([step, error]) => (
             <p className="error" key={step}>
               {String(error)}

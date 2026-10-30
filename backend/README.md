@@ -101,3 +101,5 @@ P3 服务为 app/services/profile.py、weather.py；适配器 app/providers/qwea
 P6 当前版本逐项回归使用 [独立回归 Compose](../scripts/compose.regression.json) 的 `regression_suite_test` 数据库；与浏览器使用的 `regression_test` 和业务库均隔离。新增精确场景见 `tests/test_p6_acceptance.py`，运行命令及证据见[回归记录](../docs/history/2026-10-27-p6-regression.md)。Fake/模拟 HTTP 通过不代表外部服务与真机通过。
 
 2026-10-30：真实千问子类识别已逐项修复并部署 garment-vision-v5；8 张最终版复验、44 项定向测试与数据保留证据见 [子类真实验收](../docs/history/2026-10-30-recognition-subtypes.md)。
+
+2026-10-30：导入全流程检查修复改品类残留子类和金额响应格式，补充审核纠错与完整浏览器流程。冻结导入基线后端 258 项、叠加 P7.2 的发布候选相关 78 项通过；实际隔离命令、前端验证和部署数据保留证据见 [流程检查记录](../docs/history/2026-10-30-import-flow-audit.md)。

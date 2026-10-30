@@ -97,7 +97,8 @@
         "WARDROBE_RECOGNITION_MODE": "fake",
         "WARDROBE_MEDIA_ROOT": "/data/media",
         "WARDROBE_CONTROL_ROOT": "/data/control",
-        "LANGGRAPH_STRICT_MSGPACK": "true"
+        "LANGGRAPH_STRICT_MSGPACK": "true",
+        "OMP_NUM_THREADS": "1"
       },
       "volumes": [
         "media_data:/data/media",
@@ -173,7 +174,8 @@
         "WARDROBE_MEDIA_ROOT": "/tmp/regression-media",
         "WARDROBE_CONTROL_ROOT": "/tmp/regression-control",
         "LANGGRAPH_STRICT_MSGPACK": "true",
-        "WARDROBE_TEST_DATABASE": "1"
+        "WARDROBE_TEST_DATABASE": "1",
+        "OMP_NUM_THREADS": "1"
       },
       "volumes": [
         "../backend/app:/app/app:ro",
