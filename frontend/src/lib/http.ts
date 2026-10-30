@@ -2,6 +2,14 @@ import { z } from 'zod'
 
 const errorSchema = z.object({ error: z.object({ code: z.string(), message: z.string() }) })
 
+export class ApiError extends Error {
+  readonly status: number
+  constructor(message: string, status: number) {
+    super(message)
+    this.status = status
+  }
+}
+
 export async function api<T>(path: string, schema: z.ZodType<T>, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api/v1${path}`, {
     ...init,
@@ -13,7 +21,10 @@ export async function api<T>(path: string, schema: z.ZodType<T>, init?: RequestI
   const body: unknown = await response.json()
   if (!response.ok) {
     const parsed = errorSchema.safeParse(body)
-    throw new Error(parsed.success ? parsed.data.error.message : `请求失败 (${response.status})`)
+    throw new ApiError(
+      parsed.success ? parsed.data.error.message : `请求失败 (${response.status})`,
+      response.status,
+    )
   }
   return z.object({ data: schema, request_id: z.uuid() }).parse(body).data
 }

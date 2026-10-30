@@ -23,7 +23,7 @@ from app.schemas.outfits import ItemSnapshot
 
 DataSet = dict[str, list[dict[str, JsonValue]]]
 
-REVISION = "0010_seasonal"
+REVISION = "0011_manual_outfits"
 CHECKPOINT_TABLES = [
     "checkpoint_migrations",
     "checkpoints",
@@ -35,7 +35,7 @@ CHECKPOINT_TABLES = [
 def compatibility() -> dict[str, str | int]:
     return {
         "format_version": 1,
-        "app_version": "0.6.1-import",
+        "app_version": "0.7.2-rotation",
         "alembic_revision": REVISION,
         "checkpoint_adapter": version("langgraph-checkpoint-postgres"),
     }

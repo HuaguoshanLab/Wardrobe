@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Sheet } from '../../components/ui/sheet'
 import { getTaxonomy } from '../wardrobe'
-import type { Revision } from '../outfits'
+import { RotationEvidence, type Revision } from '../outfits'
 import { RecordImage } from './preview'
 
 const labels = {
@@ -69,6 +69,7 @@ export function Snapshot({ revision }: { revision: Revision }) {
         </div>
         {!owned.length && <p className="muted">这套搭配没有衣橱单品。</p>}
       </div>
+      <RotationEvidence revision={revision} />
       <div className="record-weather">
         <span>当时天气</span>
         <strong>

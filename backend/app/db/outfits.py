@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from pydantic import JsonValue
-from sqlalchemy import DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -24,20 +24,29 @@ class OutfitSession(Base):
 
 class OutfitRevision(Base):
     __tablename__ = "outfit_revisions"
-    __table_args__ = (UniqueConstraint("run_id", "position"),)
+    __table_args__ = (
+        UniqueConstraint("run_id", "position"),
+        CheckConstraint(
+            "(source = 'generated' AND session_id IS NOT NULL AND run_id IS NOT NULL "
+            "AND provider_mode IS NOT NULL) OR (source = 'manual' AND session_id IS NULL "
+            "AND run_id IS NULL AND provider_mode IS NULL)",
+            name="ck_outfit_revision_source",
+        ),
+    )
+    source: Mapped[str] = mapped_column(default="generated", server_default="generated")
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-    session_id: Mapped[UUID] = mapped_column(ForeignKey("outfit_sessions.id"))
+    session_id: Mapped[UUID | None] = mapped_column(ForeignKey("outfit_sessions.id"))
     hidden_from_history_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     history_version: Mapped[int] = mapped_column(default=1, server_default="1")
     parent_revision_id: Mapped[UUID | None] = mapped_column(ForeignKey("outfit_revisions.id"))
-    run_id: Mapped[UUID] = mapped_column(ForeignKey("jobs.id"))
+    run_id: Mapped[UUID | None] = mapped_column(ForeignKey("jobs.id"))
     position: Mapped[int]
     items: Mapped[list[dict[str, JsonValue]]] = mapped_column(JSONB)
     reason: Mapped[str]
     unmet_requirements: Mapped[list[str]] = mapped_column(JSONB)
     weather_snapshot: Mapped[dict[str, JsonValue]] = mapped_column(JSONB)
     request_snapshot: Mapped[dict[str, JsonValue]] = mapped_column(JSONB)
-    provider_mode: Mapped[str]
+    provider_mode: Mapped[str | None]
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 

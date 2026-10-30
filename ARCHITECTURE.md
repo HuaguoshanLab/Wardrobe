@@ -91,7 +91,7 @@ flowchart LR
 | ImportBatch / ImportRow | 来源、草稿、version、touched_fields、校验、处理状态、已确认衣服 ID | 晚到 AI 不能覆盖人工修改；一个有效行最多创建一件衣服 |
 | OutfitSession | 当前需求、锁定条件、选定结果、current_job_id、候选列表、version | 映射单独的 LangGraph thread_id；首页从当前会话指针恢复 |
 | OutfitMessage | 会话、已发送文本、角色、Job/revision 引用 | 保存最终回复和澄清；流式片段不当独立消息 |
-| OutfitRevision | 生成批次/父版本、单品快照、说明、未满足条件、hidden_from_history_at | 内容不可变；历史隐藏独立；一批最多三套；调整创建新版本 |
+| OutfitRevision | source、生成批次/父版本、单品快照、说明、未满足条件、hidden_from_history_at | 内容不可变；生成每批最多三套；手动保存不绑定生成会话/Job；修改创建新版本 |
 | OutfitItemSnapshot | 当时属性、当时展示图引用、可选 garment_id | 删除或修改 Garment 不修改此快照 |
 | Favorite | 对某 OutfitRevision 的收藏与名称 | 收藏固定版本；不是“当前最新搭配”的浮动引用 |
 | WearRecord | 日期、OutfitRevision、备注 | 用户明确记录；生成和收藏不自动写日历 |
@@ -107,6 +107,8 @@ W3 新增 `supply_plans`、`supply_sources`、`supply_links`、`organization_dec
 
 W4 新增 `seasonal_sessions`、`seasonal_items`、`seasonal_actions`：固定范围与核对版本、独立动作回执、不可变总结分别持久化。`seasonal_view` 生成只读证据，`seasonal` 管理进度与完成，`seasonal_actions` 在统一衣橱锁和逐项 SAVEPOINT 内复用 W1 动作；前端位于 `features/wardrobe/seasonal/`。完成记录读取自身快照，不再读取当前衣橱。契约与备份版本见 [W4](docs/W4.md)。
 
+
+P7.1 通过 `services/outfits/manual.py` 同事务写入手动快照、可选穿着和操作回执；与生成提交共享 `snapshots.py` 的不可变属性及媒体引用规则。前端位于 `features/collections/manual/`，实际穿着聚合仍由 W1 维护；迁移与契约见 [P7.1](docs/P7-1.md)。
 
 ### 删除与图片生命周期
 
@@ -237,3 +239,5 @@ AI 接续任务时先读概览和当前进度，再按需求 ID/接口/业务域
 - [rembg 支持范围](https://github.com/danielgatis/rembg)
 
 第三方接口与收费会变化，接入时重新核实。本文不承诺未知账号权限、机器性能、模型效果或长期免费额度。
+
+P7.2：`services/outfits/rotation.py` 负责全量实际穿着聚合，`domain/rotation.py` 负责纯函数评分与事实说明，提交事务冻结统计，模型读取有界摘要，校验后排序；无新增表。字段与兼容策略见 [P7.2](docs/P7-2.md)。

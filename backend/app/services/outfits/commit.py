@@ -5,19 +5,19 @@ from sqlalchemy import select
 
 from app.core.errors import AppError
 from app.db.models import utcnow
-from app.db.outfits import OutfitImage, OutfitMessage, OutfitRevision
+from app.db.outfits import OutfitMessage, OutfitRevision
 from app.db.session import session_factory
 from app.db.wardrobe import Garment
 from app.domain.outfit_explanations import EXPLANATION_VERSION, explain, summary
 from app.domain.outfits import validate_proposals
+from app.domain.rotation import assessment
 from app.domain.taxonomy import TAXONOMY
 from app.jobs.queue import check_lease
 from app.schemas.outfits import Intent, ItemSnapshot, ModelOutfits, OutfitContext, OutfitResult
-from app.schemas.wardrobe import Attributes
 from app.services.garment_state import eligible
 from app.services.jobs import append_event, get_job
 from app.services.outfits.sessions import get_session
-from app.services.wardrobe import asset
+from app.services.outfits.snapshots import snapshot
 
 
 def commit_result(job_id: UUID, token: UUID) -> None:
@@ -82,33 +82,7 @@ def commit_result(job_id: UUID, token: UUID) -> None:
                 if gid in preserved:
                     items.append(preserved[gid])
                     continue
-                garment = garments[gid]
-                media = asset(db, garment.image_asset_id)
-                key = (
-                    media.cutout_key
-                    if garment.attributes.get("display_variant") == "cutout"
-                    else media.display_key
-                )
-                if not key:
-                    raise AppError("CONSTRAINT_CONFLICT", "展示图片不可用")
-                image = OutfitImage(id=uuid4(), media_asset_id=media.id, storage_key=key)
-                db.add(image)
-                attrs = Attributes.model_validate(garment.attributes).model_dump(mode="json")
-                attrs["tag_names"] = [
-                    context.tags.get(str(t), "")
-                    for t in Attributes.model_validate(garment.attributes).custom_tag_ids
-                ]
-                items.append(
-                    ItemSnapshot(
-                        item_id=uuid4(),
-                        slot=str(garment.attributes["category"]),
-                        source="wardrobe",
-                        garment_id=gid,
-                        display_asset_id=image.id,
-                        image_url=f"/api/v1/outfit-images/{image.id}",
-                        attributes=attrs,
-                    )
-                )
+                items.append(snapshot(db, garments[gid], context.tags))
             if intent and intent.scope == "replace_items":
                 items.extend(
                     i
@@ -155,6 +129,7 @@ def commit_result(job_id: UUID, token: UUID) -> None:
                     "prompt_version": job.input_snapshot["prompt_version"],
                     "model": job.input_snapshot["model"],
                     "explanation_version": EXPLANATION_VERSION,
+                    "rotation": assessment(proposal.garment_ids, context, intent),
                 },
                 provider_mode=str(job.input_snapshot["provider_mode"]),
             )

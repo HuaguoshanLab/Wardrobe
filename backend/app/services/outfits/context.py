@@ -57,6 +57,7 @@ def prepare_context(job_id: UUID, token: UUID) -> dict[str, JsonValue]:
         )
         context: dict[str, JsonValue] = {
             "requirements": requirements.model_dump(mode="json"),
+            "rotation": data.get("rotation"),
             "preferences": preferences.model_dump(mode="json"),
             "preference_version": pref.preference_version,
             "city": pref.city,

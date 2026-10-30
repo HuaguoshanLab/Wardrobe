@@ -84,6 +84,13 @@ export function WardrobePage() {
           <p>衣服、鞋和配饰，按你的方式整理。</p>
         </div>
         <div className="wardrobe-heading-actions">
+          <Link
+            className="button button-outline"
+            to="/collections/manual"
+            state={{ manualReturn: `/wardrobe?${searchParams}` }}
+          >
+            手动搭配
+          </Link>
           <Tags />
           <Link className="button button-primary" to="/imports">
             <Plus size={18} aria-hidden="true" />

@@ -2,6 +2,7 @@ from itertools import product
 from uuid import UUID
 
 from app.domain.outfits import target_constraints
+from app.domain.rotation import score
 from app.schemas.outfits import Intent, ModelOutfits, OutfitContext, Proposal, Suggestion
 
 
@@ -60,6 +61,7 @@ def fake_outfits(context: OutfitContext, intent: Intent | None) -> ModelOutfits:
                     break
         if not combinations and candidates:
             combinations = [list(required) or [next(iter(candidates))]]
+    combinations.sort(key=lambda ids: score(ids, context, intent))
     outfits = []
     for ids in combinations:
         if len(set(ids)) != len(ids):

@@ -1,0 +1,39 @@
+.manual-success {
+  max-width: 600px;
+  margin: 48px auto;
+  text-align: center;
+}
+.manual-success-mark {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--primary);
+}
+.manual-success h2 {
+  font-size: 26px;
+}
+.manual-saved-images {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 0;
+  border-block: 1px solid var(--border);
+  margin: 24px 0;
+}
+.manual-saved-images > img,
+.manual-saved-images > .record-image-empty {
+  width: 90px;
+  height: 110px;
+  object-fit: contain;
+}
+.manual-success-actions {
+  display: grid;
+  gap: 12px;
+  max-width: 320px;
+  margin: 24px auto 0;
+}

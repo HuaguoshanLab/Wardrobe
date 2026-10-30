@@ -10,6 +10,7 @@ from app.api import (
     inventory,
     jobs,
     lifecycle,
+    manual_outfits,
     organization,
     outfits,
     profile,
@@ -65,3 +66,5 @@ app.include_router(inventory.router, prefix="/api/v1", tags=["inventory"])
 app.include_router(organization.router, prefix="/api/v1", tags=["organization"])
 
 app.include_router(seasonal.router, prefix="/api/v1")
+
+app.include_router(manual_outfits.router, prefix="/api/v1", tags=["manual-outfits"])

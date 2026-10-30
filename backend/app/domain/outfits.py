@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from app.core.errors import AppError
+from app.domain.rotation import rank
 from app.domain.taxonomy import TAXONOMY
 from app.schemas.outfits import Intent, ModelOutfits, OutfitContext, Proposal
 
@@ -108,4 +109,4 @@ def validate_proposals(
             unmet.append("部分单品保暖程度未知，无法保证适合当前温度")
         proposal.unmet_requirements = list(dict.fromkeys(unmet))
         accepted.append(proposal)
-    return ModelOutfits(outfits=accepted, message=result.message)
+    return ModelOutfits(outfits=rank(accepted, context, intent), message=result.message)

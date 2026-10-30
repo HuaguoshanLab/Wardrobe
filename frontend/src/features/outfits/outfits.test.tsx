@@ -12,6 +12,7 @@ const sid = '00000000-0000-4000-8000-000000000011'
 const jid = '00000000-0000-4000-8000-000000000012'
 const envelope = (data: unknown) => ({ data, request_id: '00000000-0000-4000-8000-000000000001' })
 const requirements = {
+  rotation_mode: 'normal' as const,
   occasion_codes: [],
   style_codes: null,
   season_codes: [],

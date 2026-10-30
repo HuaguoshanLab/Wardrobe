@@ -13,6 +13,7 @@ const sid = '00000000-0000-4000-8000-000000000001'
 const ids = ['00000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-000000000003']
 const revisions: Revision[] = ids.map((id, index) => ({
   id,
+  source: 'generated',
   session_id: sid,
   parent_revision_id: null,
   run_id: sid,
@@ -42,6 +43,7 @@ const session = (): OutfitSession => ({
   id: sid,
   version: 1 + patches.length,
   requirements: {
+    rotation_mode: 'normal' as const,
     occasion_codes: [],
     season_codes: [],
     style_codes: null,

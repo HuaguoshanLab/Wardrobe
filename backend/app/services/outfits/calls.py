@@ -7,6 +7,7 @@ from app.core.errors import AppError
 from app.db.models import utcnow
 from app.db.outfits import ModelCall
 from app.db.session import session_factory
+from app.domain.outfits import target_constraints
 from app.jobs.queue import check_lease
 from app.observability.runtime import observation
 from app.providers import qwen
@@ -71,6 +72,11 @@ def model_call(
                     else fake_outfits(context, intent)
                 ).model_dump(mode="json")
         else:
+            required, excluded = (
+                target_constraints(context, intent)
+                if intent
+                else (set(context.locked_garment_ids), set())
+            )
             with observation("model.attempt", fields={"step": step, "attempt": attempt}):
                 result = qwen.invoke(
                     {
@@ -78,6 +84,10 @@ def model_call(
                         "message": message,
                         "intent": intent.model_dump(mode="json") if intent else None,
                         "correction": correction,
+                        "hard_constraints": {
+                            "required_in_every_outfit": [str(gid) for gid in sorted(required)],
+                            "excluded_from_every_outfit": [str(gid) for gid in sorted(excluded)],
+                        },
                     },
                     step,
                     remaining,

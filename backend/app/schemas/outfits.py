@@ -7,6 +7,7 @@ from pydantic import Field, JsonValue, model_validator
 from app.domain.taxonomy import TAXONOMY
 from app.schemas.common import Schema
 from app.schemas.profile import Requirements
+from app.schemas.rotation import RotationSnapshot
 
 
 class SessionCreate(Schema):
@@ -93,15 +94,16 @@ class ItemSnapshot(Schema):
 
 class RevisionView(Schema):
     id: UUID
-    session_id: UUID
+    source: Literal["generated", "manual"] = "generated"
+    session_id: UUID | None
     parent_revision_id: UUID | None
-    run_id: UUID
+    run_id: UUID | None
     items: list[ItemSnapshot]
     reason: str
     unmet_requirements: list[str]
     weather_snapshot: dict[str, JsonValue]
     request_snapshot: dict[str, JsonValue]
-    provider_mode: str
+    provider_mode: str | None
     created_at: datetime
 
 
@@ -134,6 +136,7 @@ class MessageList(Schema):
 
 
 class OutfitContext(Schema):
+    rotation: RotationSnapshot | None = None
     requirements: Requirements
     preferences: dict[str, JsonValue]
     preference_version: int

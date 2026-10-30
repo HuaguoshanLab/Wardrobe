@@ -30,6 +30,7 @@ export function RecordPreview({ revision }: { revision: Revision }) {
       {!!suggestions.length && (
         <span className="record-suggestion-label">含 {suggestions.length} 项未拥有建议</span>
       )}
+      {revision.source === 'manual' && <span className="record-simulation">手动搭配</span>}
       {revision.provider_mode === 'fake' && <span className="record-simulation">模拟搭配</span>}
     </div>
   )

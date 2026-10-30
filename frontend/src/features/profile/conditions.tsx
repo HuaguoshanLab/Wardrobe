@@ -8,9 +8,11 @@ import { Button } from '../../components/ui/button'
 import { api } from '../../lib/http'
 import { getTaxonomy } from '../wardrobe'
 import { Choices } from './choices'
+import { RotationChoice } from './rotation-choice'
 import { previewConditions, requirementsSchema, type Requirements } from './api'
 
 const empty: Requirements = {
+  rotation_mode: 'normal',
   occasion_codes: [],
   style_codes: null,
   season_codes: [],
@@ -176,6 +178,10 @@ export function ConditionsPanel({
             options={taxonomy.data?.fields.occasion_codes ?? {}}
             value={values.occasion_codes}
             onChange={(v) => form.setValue('occasion_codes', v)}
+          />
+          <RotationChoice
+            value={values.rotation_mode}
+            onChange={(mode) => form.setValue('rotation_mode', mode)}
           />
           <label>
             本次补充要求

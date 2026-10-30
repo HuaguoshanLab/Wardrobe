@@ -1160,6 +1160,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/manual-outfits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Save Manual */
+        post: operations["save_manual_api_v1_manual_outfits_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1712,6 +1729,15 @@ export interface components {
         /** Envelope[LocationView] */
         Envelope_LocationView_: {
             data: components["schemas"]["LocationView"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[ManualOutfitResult] */
+        Envelope_ManualOutfitResult_: {
+            data: components["schemas"]["ManualOutfitResult"];
             /**
              * Request Id
              * Format: uuid
@@ -2625,6 +2651,42 @@ export interface components {
             /** Version */
             version: number;
         };
+        /** ManualItem */
+        ManualItem: {
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /** Expected Version */
+            expected_version: number;
+        };
+        /** ManualOutfitInput */
+        ManualOutfitInput: {
+            /** Items */
+            items: components["schemas"]["ManualItem"][];
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "save" | "wear";
+            /** Parent Revision Id */
+            parent_revision_id?: string | null;
+            /** Worn On */
+            worn_on?: string | null;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+            /** Acknowledged Unavailable Ids */
+            acknowledged_unavailable_ids?: string[];
+        };
+        /** ManualOutfitResult */
+        ManualOutfitResult: {
+            revision: components["schemas"]["RevisionView"];
+            wear?: components["schemas"]["WearView"] | null;
+        };
         /** ManualWeather */
         ManualWeather: {
             /** Temperature C */
@@ -2830,6 +2892,12 @@ export interface components {
         };
         /** Requirements */
         Requirements: {
+            /**
+             * Rotation Mode
+             * @default normal
+             * @enum {string}
+             */
+            rotation_mode: "normal" | "avoid_recent" | "less_worn";
             /** Occasion Codes */
             occasion_codes?: string[];
             /** Style Codes */
@@ -2901,17 +2969,17 @@ export interface components {
              */
             id: string;
             /**
-             * Session Id
-             * Format: uuid
+             * Source
+             * @default generated
+             * @enum {string}
              */
-            session_id: string;
+            source: "generated" | "manual";
+            /** Session Id */
+            session_id: string | null;
             /** Parent Revision Id */
             parent_revision_id: string | null;
-            /**
-             * Run Id
-             * Format: uuid
-             */
-            run_id: string;
+            /** Run Id */
+            run_id: string | null;
             /** Items */
             items: components["schemas"]["ItemSnapshot"][];
             /** Reason */
@@ -2927,7 +2995,7 @@ export interface components {
                 [key: string]: components["schemas"]["JsonValue"];
             };
             /** Provider Mode */
-            provider_mode: string;
+            provider_mode: string | null;
             /**
              * Created At
              * Format: date-time
@@ -9304,6 +9372,77 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_SeasonalView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    save_manual_api_v1_manual_outfits_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualOutfitInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_ManualOutfitResult_"];
                 };
             };
             /** @description Not Found */

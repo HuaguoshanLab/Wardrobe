@@ -1,10 +1,11 @@
 from uuid import UUID, uuid4
+from zoneinfo import ZoneInfo
 
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.errors import AppError
-from app.db.models import Job
+from app.db.models import Job, utcnow
 from app.db.outfits import OutfitMessage, OutfitSession
 from app.db.session import session_factory
 from app.providers.qwen import PROMPT_VERSION
@@ -13,6 +14,7 @@ from app.schemas.outfits import AdjustInput, GenerateInput
 from app.schemas.profile import Requirements
 from app.services.jobs import append_event, get_job
 from app.services.operations import receipt, save_receipt
+from app.services.outfits.rotation import rotation_snapshot
 from app.services.outfits.sessions import (
     check_idle,
     check_tags,
@@ -78,6 +80,11 @@ def submit(
             input_snapshot={
                 **content,
                 "requirements": row.requirements,
+                "rotation": rotation_snapshot(
+                    db, utcnow().astimezone(ZoneInfo("Asia/Shanghai")).date()
+                ).model_dump(mode="json")
+                if row.requirements.get("rotation_mode", "normal") != "normal"
+                else None,
                 "locked_garment_ids": row.locked_garment_ids,
                 "base_revision_id": str(row.selected_revision_id)
                 if row.selected_revision_id

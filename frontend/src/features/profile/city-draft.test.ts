@@ -31,7 +31,7 @@ it('changing the city carries only the originating conditions and resets old wea
   const target = `wardrobe.conditions.${day()}.${JSON.stringify(city)}.none`
   expect(JSON.parse(localStorage.getItem(target)!)).toEqual({
     ...draft,
-    requirements: { ...draft.requirements, weather_override: null },
+    requirements: { ...draft.requirements, rotation_mode: 'normal', weather_override: null },
     manual: false,
     temperature: '',
     condition: '',

@@ -283,6 +283,12 @@ export const router = createBrowserRouter([
         }),
       },
       {
+        path: 'collections/manual',
+        lazy: async () => ({
+          Component: (await import('../features/collections/manual/page')).ManualPage,
+        }),
+      },
+      {
         path: 'collections/:revisionId',
         lazy: async () => ({
           Component: (await import('../features/collections/revision')).RevisionPage,

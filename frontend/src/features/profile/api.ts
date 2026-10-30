@@ -49,6 +49,7 @@ export const weatherSchema = z.object({
   errors: z.array(z.string()),
 }) satisfies z.ZodType<components['schemas']['WeatherResult']>
 export const requirementsSchema = z.object({
+  rotation_mode: z.enum(['normal', 'avoid_recent', 'less_worn']).default('normal'),
   occasion_codes: z.array(z.string()),
   style_codes: z.array(z.string()).nullable(),
   season_codes: z.array(z.string()),

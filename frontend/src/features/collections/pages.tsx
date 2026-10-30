@@ -117,6 +117,13 @@ export function CollectionsPage() {
         <div>
           <h1>穿搭记录</h1>
           <p>留住喜欢的搭配，记下穿过的日常。</p>
+          <Link
+            className="button button-outline"
+            to={`/collections/manual${view === 'calendar' ? `?date=${date}` : ''}`}
+            state={{ manualReturn: returnTo }}
+          >
+            手动搭配 / 记穿着
+          </Link>
         </div>
       </div>
       <div className="records-tabs" role="group" aria-label="记录类型">
@@ -215,7 +222,7 @@ export function CollectionsPage() {
             </h2>
             <p>
               {view === 'history'
-                ? '生成和调整过的搭配，会自动保存在这里。'
+                ? '生成、调整和手动保存的搭配，都会留在这里。'
                 : view === 'favorites'
                   ? '在搭配上点击收藏，下次就能快速找到。'
                   : '只记录实际穿过的搭配，也可以补记以前的日期。'}

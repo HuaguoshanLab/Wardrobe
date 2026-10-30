@@ -54,7 +54,16 @@ export function ConditionsPage() {
               storageKey={`${key}.${outfits.session?.id ?? 'none'}`}
               onGenerate={outfits.generate}
               busy={outfits.busy}
-              submitted={restoreSubmitted ? outfits.session?.requirements : undefined}
+              submitted={
+                outfits.session
+                  ? {
+                      ...outfits.session.requirements,
+                      weather_override: restoreSubmitted
+                        ? outfits.session.requirements.weather_override
+                        : null,
+                    }
+                  : undefined
+              }
               weather={
                 <WeatherPanel
                   key={key}

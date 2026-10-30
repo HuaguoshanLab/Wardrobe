@@ -88,7 +88,7 @@ P2 Garment 响应不暴露 owner_id/deleted_at，补充 image_url、has_cutout�
 
 ### OutfitRevision
 
-包含 `id`、`session_id`、`parent_revision_id`、`run_id`、`items`、`reason`、`unmet_requirements`、`weather_snapshot`、`request_snapshot`、`created_at`、`provider_mode`。首版 `run_id` 等于本次搭配 Job 的 ID，不再新增一套含义重叠的运行 ID；LangGraph `thread_id` 独立映射会话。
+包含 `id`、`source`、`session_id`、`parent_revision_id`、`run_id`、`items`、`reason`、`unmet_requirements`、`weather_snapshot`、`request_snapshot`、`created_at`、`provider_mode`。`source=generated` 时会话/运行/Provider 非空，`run_id` 等于搭配 Job ID；`source=manual` 时三者均为 null，不伪造模型执行。手动保存、不可用补记、幂等和兼容契约见 [P7.1](P7-1.md)。LangGraph `thread_id` 独立映射会话。
 
 - 每个 item 有稳定的 `item_id` 和服装位置 `slot`；衣橱单品使用 `source: wardrobe`、有效 `garment_id`、当时属性和当时实际展示的不可变 `display_asset_id` 快照。不能只存衣服当前会变化的图片选择。
 - 衣橱外建议使用 `source: suggestion`、`garment_id: null`、文字说明及品类；展示“未拥有”，不伪造单品照片或购物链接。
@@ -123,7 +123,7 @@ P2 Garment 响应不暴露 owner_id/deleted_at，补充 image_url、has_cutout�
 
 ### 请求、能力与词表
 
-- `requirements` 包含可选的 `occasion_codes`、`style_codes`、`season_codes`、`custom_tag_ids`、`notes` 和 `weather_override`；按钮和聊天最终都归一化到经过校验的结构。请求明确条件优先于长期偏好，未知值不能偷偷变成确定条件。
+- `requirements` 包含可选的 `occasion_codes`、`style_codes`、`season_codes`、`custom_tag_ids`、`notes`、`weather_override` 和 `rotation_mode`；按钮和聊天最终都归一化到经过校验的结构。请求明确条件优先于长期偏好，未知值不能偷偷变成确定条件。
 - 基础品类、季节、场合、风格及属性取值使用同一份带版本的词表生成 API 和模板；P2 词表由 backend/app/domain/taxonomy.py 维护。无法识别的受控值报行级错误，不能静默丢弃或降级成自定义标签；自定义标签规范化去重。
 - 偏好以明确类型维护风格、版型、冷热倾向、颜色偏好及补充说明，P3 已固定字段和取值，见第 8 节；不能用任意 JSON 直接塞进提示词替代协议。
 - `GET /capabilities` 返回模型/天气/去背景的配置与可用状态（允许 unknown）、维护状态和 `data_epoch`；查询不触发模型，不暴露凭据。Fake 模式必须显式配置且对用户可见，不能因真实服务失败自动切换。
@@ -160,6 +160,7 @@ P2 Garment 响应不暴露 owner_id/deleted_at，补充 image_url、has_cutout�
 | `GET /outfit-sessions/{id}/messages` | 读取会话消息 | 游标分页；关联任务，刷新不重复发送 |
 | `POST /outfit-sessions/{id}/generate` | 显式生成 | 幂等、最多三套，返回 job_id |
 | `POST /outfit-sessions/{id}/adjust` | 显式调整 | 指定 base_revision 与锁定集合，返回 job_id |
+| `POST /manual-outfits` | 手动保存或直接记穿着 | 版本/状态校验、原子快照和可选 WearRecord，见 [P7.1](P7-1.md) |
 | `GET /outfit-revisions` | 历史列表 | 固定版本、分页 |
 | `GET/DELETE /outfit-revisions/{id}` | 详情/删除历史入口 | 收藏或日历仍引用时保留底层快照并告知用户 |
 | `GET/POST /favorites` | 收藏列表/收藏版本 | 收藏 revision_id；重复收藏去重 |
@@ -308,3 +309,5 @@ P5：历史列表用包装对象返回不可变 revision 和历史 version；DEL
 P6 识别：能力增加 recognition（fake/configured/unconfigured）；ImportRow 增加 analysis_notes 字符串数组；ImportResult 增加 interrupted_rows（旧结果缺省 0）。每行识别最多一次 HTTP 请求、120 秒；批次最多 20 行/20 次，显式单行重试新 Job 最多一次，无自动纠错或传输重试。未知行标 interrupted，其余行继续，父 Job 保存汇总并标 interrupted。模型只输出受限属性及不确定性提示，人工字段、状态、显示方式及标签 ID 不由识别修改；完整运行边界见 [P6 识别](P6-recognition.md)。
 
 导入初始生命周期字段和模板演进见 [导入资料契约](IMPORT-DETAILS.md)。
+
+P7.2 的模式默认值、冻结统计、结果依据、模型边界及兼容规则见 [P7.2 契约](P7-2.md)。

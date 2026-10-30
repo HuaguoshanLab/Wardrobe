@@ -100,7 +100,7 @@ IMPORT_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8100 npx playwright t
 
 ## P5 页面与恢复验证
 
-`/collections` 和 `/calendar` 提供历史、收藏及实际穿着操作；`/collections/:revisionId` 提供固定快照和复用入口。设置页可备份、下载、上传验证和明确确认覆盖。普通 E2E 只导出和验证，不覆盖运行库；覆盖流程单独用 `playwright.restore.config.ts` 在 8099 隔离栈验证，运行要求见 [P5 记录](../docs/history/2026-10-26-p5.md)。
+`/collections/manual` 提供手动组搭配、直接记穿着及草稿/请求恢复；详情修改创建新版本，见 [P7.1](../docs/P7-1.md)。`/collections` 和 `/calendar` 提供历史、收藏及实际穿着操作；`/collections/:revisionId` 提供固定快照和复用入口。设置页可备份、下载、上传验证和明确确认覆盖。普通 E2E 只导出和验证，不覆盖运行库；覆盖流程单独用 `playwright.restore.config.ts` 在 8099 隔离栈验证，运行要求见 [P5 记录](../docs/history/2026-10-26-p5.md)。
 
 恢复控制 ID 使用独立 localStorage 命名空间保留；业务草稿、待发操作和 Query 缓存仍在 data_epoch 变化时清除。恢复上传网络失败后需重选同一文件再重发原键，服务器校验内容哈希；刷新不会自动上传或应用恢复。
 
@@ -147,3 +147,5 @@ W3：`/wardrobe/organization` 提供补充计划和观察处理两页签；计�
 W4：`/wardrobe/seasonal` 创建与继续整理，`/wardrobe/seasonal/:id` 提供核对、目标、处理、总结四步；固定范围、待办和版本核对持久化，动作必须明确选择并确认，完成总结不重复执行。`seasonal-isolated.scenario.ts` 验证中断、跨页变化、部分失败、丢失响应与冻结总结，仅运行于隔离 Fake 栈；`seasonal-ui.spec.ts` 与 `seasonal-design.spec.ts` 拦截写请求，可用于部署后只读检查；后者覆盖分组/搜索恢复、草稿保护、保留选择、独立确认面板和总结阻塞入口。规则见 [W4](../docs/W4.md)。
 
 W1～W4 整体检查已补充空原因提交、手工目标与估算独立校验，以及换季外出编辑后刷新/保存返回的回归；后端同时修复决定双向同步和待办保护。证据见 [整体检查记录](../docs/history/2026-10-29-w1-w4-audit.md)。
+
+P7.2 穿搭轮换已实现：模式、实际记录统计、任务冻结、结果依据与兼容规则见 [P7.2](../docs/P7-2.md)，当前验证部署状态见 [开发记录](../docs/history/2026-10-30-p7-2.md)。 模式选择卡片、结论摘要与展开依据已完成 UI 优化和部署，验证见 [界面记录](../docs/history/2026-10-30-p7-2-ui.md)。

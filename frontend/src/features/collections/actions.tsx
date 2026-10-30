@@ -14,6 +14,7 @@ export function useRecordActions() {
   const [discard, setDiscard] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [refreshError, setRefreshError] = useState('')
+  const [destination, setDestination] = useState('')
   const focus = useRef<HTMLElement | null>(null)
   const form = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
@@ -21,9 +22,15 @@ export function useRecordActions() {
     setAction(null)
     setDirty(false)
     setDiscard(false)
-    if (path === '/outfit-sessions') navigate(`/outfits/${sessionSchema.parse(value).id}`)
+    if (path === '/outfit-sessions') setDestination(`/outfits/${sessionSchema.parse(value).id}`)
   })
   const blocker = useBlocker(!!action && (dirty || op.sending))
+  // Navigate after the successful form has closed and the pending guard has updated.
+  useEffect(() => {
+    if (!destination || action || op.sending) return
+    setDestination('')
+    void navigate(destination)
+  }, [destination, action, op.sending, navigate])
   useEffect(() => {
     if (!dirty && !op.sending) return
     const handler = (event: BeforeUnloadEvent) => event.preventDefault()

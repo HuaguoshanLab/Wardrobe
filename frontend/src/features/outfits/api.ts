@@ -15,15 +15,16 @@ const itemSchema = z.object({
 })
 export const revisionSchema = z.object({
   id: z.uuid(),
-  session_id: z.uuid(),
+  source: z.enum(['generated', 'manual']).default('generated'),
+  session_id: z.uuid().nullable(),
   parent_revision_id: z.uuid().nullable(),
-  run_id: z.uuid(),
+  run_id: z.uuid().nullable(),
   items: z.array(itemSchema),
   reason: z.string(),
   unmet_requirements: z.array(z.string()),
   weather_snapshot: z.record(z.string(), z.json()),
   request_snapshot: z.record(z.string(), z.json()),
-  provider_mode: z.string(),
+  provider_mode: z.string().nullable(),
   created_at: z.string(),
 }) satisfies z.ZodType<components['schemas']['RevisionView']>
 export const messageSchema = z.object({

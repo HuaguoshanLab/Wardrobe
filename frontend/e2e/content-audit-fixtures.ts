@@ -7,6 +7,7 @@ const slots = ['top', 'bottom', 'shoes', 'outerwear', 'bag', 'hat', 'scarf', 'be
 export function revision(count = 3): Revision {
   return {
     id: id(1),
+    source: 'generated',
     session_id: id(2),
     run_id: id(3),
     parent_revision_id: null,

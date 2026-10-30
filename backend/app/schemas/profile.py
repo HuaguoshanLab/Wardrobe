@@ -37,6 +37,7 @@ class PreferencesPatch(Schema):
 
 
 class Requirements(Schema):
+    rotation_mode: Literal["normal", "avoid_recent", "less_worn"] = "normal"
     occasion_codes: list[str] = Field(default_factory=list, max_length=8)
     style_codes: list[str] | None = Field(default=None, max_length=8)
     season_codes: list[str] = Field(default_factory=list, max_length=4)

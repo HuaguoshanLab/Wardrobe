@@ -5,3 +5,5 @@ export { revisionSchema, sessionSchema, type Revision } from './api'
 
 export { OutfitStatus } from './task-status'
 export { OutfitLookbook } from './lookbook'
+
+export { RotationEvidence } from './rotation-evidence'

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useLocation, useParams } from 'react-router'
+import { Link, useLocation, useParams } from 'react-router'
 import { Button } from '../../components/ui/button'
 import { PageHeader } from '../../components/ui/page-header'
 import { getAllFavorites, getRevision, recordDay, isPastDay } from './api'
@@ -52,6 +52,7 @@ export function RevisionPage() {
               <span className="eyebrow">{recordDay(revision.created_at)}</span>
               <h1>{favorite?.name || '留住这一天的搭配'}</h1>
             </div>
+            {revision.source === 'manual' && <span className="record-simulation">手动搭配</span>}
             {revision.provider_mode === 'fake' && (
               <span className="record-simulation">模拟搭配</span>
             )}
@@ -88,6 +89,15 @@ export function RevisionPage() {
             </Button>
           </div>
           <div className="record-secondary-actions">
+            {revision.source === 'manual' && (
+              <Link
+                className="button button-outline"
+                to={`/collections/manual?from=${revision.id}`}
+                state={{ manualReturn: returnTo }}
+              >
+                修改为新搭配
+              </Link>
+            )}
             <Button
               variant="outline"
               disabled={actions.busy}

@@ -258,3 +258,18 @@ it('automatically preserves unsent notes and incomplete manual weather without a
   expect(screen.getByLabelText('手动温度（℃）')).toHaveValue(null)
   expect(requests).toHaveLength(0)
 })
+
+it('rotation drafts default old data to normal, survive reload and submit only explicitly', async () => {
+  const user = userEvent.setup()
+  const view = mount(<ConditionsPanel storageKey="rotation-draft" />)
+  expect(screen.getByRole('radio', { name: /正常推荐/ })).toBeChecked()
+  await user.click(screen.getByRole('radio', { name: /优先近期少穿/ }))
+  expect(requests).toHaveLength(0)
+  view.unmount()
+  mount(<ConditionsPanel storageKey="rotation-draft" />)
+  expect(screen.getByRole('radio', { name: /优先近期少穿/ })).toBeChecked()
+  expect(requests).toHaveLength(0)
+  await user.click(screen.getByRole('button', { name: '核对条件' }))
+  await screen.findByText('条件已核对，未生成搭配')
+  expect(requests[0].rotation_mode).toBe('less_worn')
+})

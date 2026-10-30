@@ -12,6 +12,7 @@ import './lookbook-stage.css'
 import { OutfitStatus } from './task-status'
 import './outfits.css'
 import './lookbook.css'
+import { RotationEvidence } from './rotation-evidence'
 
 export function OutfitLookbook({
   controller: c,
@@ -97,6 +98,7 @@ export function OutfitLookbook({
                   timeZone: 'Asia/Shanghai',
                 })}
               </span>
+              {revision.source === 'manual' && <span className="badge">手动搭配</span>}
               {revision.provider_mode === 'fake' && <span className="badge">Fake 模拟</span>}
             </div>
             <div
@@ -225,6 +227,7 @@ export function OutfitLookbook({
                 </aside>
               </div>
             </div>
+            <RotationEvidence revision={revision} />
             <div className="stage-feedback" ref={setFeedbackContainer} />
             <p className="stage-hint">
               {revisions.length > 1 ? '左右滑动浏览 · ' : ''}轻触单品查看
