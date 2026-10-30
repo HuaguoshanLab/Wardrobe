@@ -88,6 +88,16 @@ P3 条件草稿按北京时间日期/城市保存在本浏览器；查询不自�
 
 实际验收证据见 [P3](../docs/P3.md)、[P1](../docs/P1.md)、[P2](../docs/P2.md) 与 [开发记录](../docs/DEVELOPMENT.md)。
 
+## 导入资料补齐验证
+
+审核草稿支持初始生命周期资料，Excel v2 兼容 v1，AI 仅增加子类预填。字段与人工保护见 [导入契约](../docs/IMPORT-DETAILS.md)。使用 [导入专用 Compose](../scripts/compose.import-regression.json) 的 Fake 环境（8100）；从 frontend 执行：
+
+```sh
+IMPORT_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8100 npx playwright test -c playwright.import.config.ts
+```
+
+前置检查核对专用项目、数据卷、内部网络及无真实凭据；场景会创建测试衣服和盘点需求，只能指向该隔离环境。覆盖桌面与 320×568 模拟手机的审核、草稿保留、金额校验、确认、生命周期与盘点，不代表真机验收。环境启动和实际验证记录见 [导入交付记录](../docs/history/2026-10-30-import-organization.md)。
+
 ## P5 页面与恢复验证
 
 `/collections` 和 `/calendar` 提供历史、收藏及实际穿着操作；`/collections/:revisionId` 提供固定快照和复用入口。设置页可备份、下载、上传验证和明确确认覆盖。普通 E2E 只导出和验证，不覆盖运行库；覆盖流程单独用 `playwright.restore.config.ts` 在 8099 隔离栈验证，运行要求见 [P5 记录](../docs/history/2026-10-26-p5.md)。

@@ -2,6 +2,10 @@ import { z } from 'zod'
 import type { components } from '../../generated/api'
 import { api } from '../../lib/http'
 import { attributesSchema } from '../wardrobe'
+import { importDetailsSchema } from './details-schema'
+
+export const importDraftSchema = attributesSchema.extend(importDetailsSchema.shape)
+export type ImportDraft = z.infer<typeof importDraftSchema>
 
 export const rowSchema = z.object({
   id: z.uuid(),
@@ -10,7 +14,7 @@ export const rowSchema = z.object({
   image_asset_id: z.uuid().nullable(),
   image_url: z.string().nullable(),
   has_cutout: z.boolean(),
-  draft: attributesSchema,
+  draft: importDraftSchema,
   version: z.int(),
   touched_fields: z.array(z.string()),
   validation_errors: z.array(z.string()),

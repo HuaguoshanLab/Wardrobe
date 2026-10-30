@@ -1228,41 +1228,6 @@ export interface components {
                 [key: string]: components["schemas"]["JsonValue"];
             };
         };
-        /** Attributes */
-        Attributes: {
-            /** Category */
-            category?: string | null;
-            /** Name */
-            name?: string | null;
-            /** Color Codes */
-            color_codes?: string[];
-            /** Seasons */
-            seasons?: string[];
-            /** Occasion Codes */
-            occasion_codes?: string[];
-            /** Style Codes */
-            style_codes?: string[];
-            /** Material */
-            material?: string | null;
-            /** Thickness */
-            thickness?: string | null;
-            /** Warmth */
-            warmth?: string | null;
-            /** Custom Tag Ids */
-            custom_tag_ids?: string[];
-            /**
-             * Availability
-             * @default available
-             * @enum {string}
-             */
-            availability: "available" | "unavailable";
-            /**
-             * Display Variant
-             * @default original
-             * @enum {string}
-             */
-            display_variant: "original" | "cutout";
-        };
         /** BackupResult */
         BackupResult: {
             /** Backup Id */
@@ -2279,6 +2244,74 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** ImportDraft */
+        ImportDraft: {
+            /** Subtype Name */
+            subtype_name?: string | null;
+            /** Source */
+            source?: ("purchased" | "gift" | "other") | null;
+            /** Acquired On */
+            acquired_on?: string | null;
+            /** Price */
+            price?: string | null;
+            /** Location */
+            location?: string | null;
+            /**
+             * Condition
+             * @default unknown
+             * @enum {string}
+             */
+            condition: "unknown" | "good" | "worn" | "needs_repair" | "damaged";
+            /**
+             * Fit
+             * @default unknown
+             * @enum {string}
+             */
+            fit: "unknown" | "fits" | "unfit" | "not_applicable";
+            /**
+             * Storage
+             * @default daily
+             * @enum {string}
+             */
+            storage: "daily" | "stored";
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+            /** Category */
+            category?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Color Codes */
+            color_codes?: string[];
+            /** Seasons */
+            seasons?: string[];
+            /** Occasion Codes */
+            occasion_codes?: string[];
+            /** Style Codes */
+            style_codes?: string[];
+            /** Material */
+            material?: string | null;
+            /** Thickness */
+            thickness?: string | null;
+            /** Warmth */
+            warmth?: string | null;
+            /** Custom Tag Ids */
+            custom_tag_ids?: string[];
+            /**
+             * Availability
+             * @default available
+             * @enum {string}
+             */
+            availability: "available" | "unavailable";
+            /**
+             * Display Variant
+             * @default original
+             * @enum {string}
+             */
+            display_variant: "original" | "cutout";
+        };
         /** ImportResult */
         ImportResult: {
             /**
@@ -2945,7 +2978,7 @@ export interface components {
             image_url: string | null;
             /** Has Cutout */
             has_cutout: boolean;
-            draft: components["schemas"]["Attributes"];
+            draft: components["schemas"]["ImportDraft"];
             /** Version */
             version: number;
             /** Touched Fields */

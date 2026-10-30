@@ -14,6 +14,7 @@ class RecognizedAttributes(Schema):
         max_length=40,
         json_schema_extra={"enum": [*TAXONOMY["category"], None]},
     )
+    subtype_name: str | None = Field(default=None, max_length=40)
     name: str | None = Field(default=None, max_length=100)
     color_codes: list[str] = Field(
         default_factory=list,
@@ -43,6 +44,8 @@ class RecognizedAttributes(Schema):
             values = value if isinstance(value, list) else [value] if value is not None else []
             if any(item not in TAXONOMY[field] for item in values):
                 raise ValueError("unknown controlled value")
+        if self.subtype_name and not self.category:
+            raise ValueError("subtype requires a known category")
         return self
 
 

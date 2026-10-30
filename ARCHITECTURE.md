@@ -38,7 +38,7 @@
 | 天气 | 和风天气 QWeather | 中国大陆城市搜索、天气、手动降级 |
 | SSE | sse-starlette | 服务端事件发送 |
 | 图片 | Pillow、pillow-heif、rembg/u2netp（本地 CPU） | 原图保留、衍生图、去背景 |
-| Excel | `.xlsx` v1 模板；openpyxl、defusedxml | 嵌入图、行映射与字段校验 |
+| Excel | `.xlsx` v2 模板，兼容 v1；openpyxl、defusedxml | 嵌入图、行映射与字段校验；新可选资料见 [导入契约](docs/IMPORT-DETAILS.md) |
 | 后台任务 | 独立 worker、PostgreSQL Job 表与 SKIP LOCKED | P1 已验证领取、租约、幂等及中断；决策见 P1/D-09 |
 | 文件 | 本地文件系统与持久化挂载 | 图片、临时导入和备份 |
 | 工具 | uv、Ruff、mypy | 依赖、格式及类型检查 |
@@ -130,6 +130,7 @@ Excel → 模板/嵌入图/字段解析 ─┐
 - Excel 入口按已填属性导入，不默认触发识别，也不自动覆盖标签；基础类型转换与字段验证可以执行。
 - 两条入口均经过原件保存、标准格式转换和去背景；上图的去背景分支也适用于 Excel 提取的图片。
 - 照片入口一图一行，AI 只预填。单行识别失败不阻塞别的行，可重试或人工填写。
+- 导入草稿采用 ImportDraft，包含基础属性和可选初始档案；确认时分别写入 attributes、lifecycle 和 subtype_id。Excel 版本列映射位于 media/import_columns，子类解析位于 services/import_details；识别候选及跨品类校验独立于生命周期事实，见 [导入资料](docs/IMPORT-DETAILS.md)。
 - 记录人工修改字段和行版本，晚到识别只填仍为空且未被人工触碰的字段；确认后不再改衣服属性。后台衍生图不会覆盖用户已选择的显示方式。
 - 图片转换或去背景失败时展示明确状态，已有可显示的原图/标准图仍可使用。HEIC 原件可能不能由浏览器直接显示，“原图视图”可用保留原貌的标准格式衍生图实现，原始文件仍保存。
 - 云端识别使用必要的标准衍生图，保留原件不代表必须把原件、EXIF 和全部像素发给模型。

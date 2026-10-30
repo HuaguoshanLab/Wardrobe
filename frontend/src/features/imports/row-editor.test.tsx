@@ -101,3 +101,51 @@ it('background polling preserves an unsaved draft and submits its opening versio
     expect(saved).toEqual({ expected_version: 1, changes: { category: 'shoes', name: '我的鞋' } }),
   )
 })
+
+it('initial facts preserve unknowns, reject invalid money and save zero without losing base edits', async () => {
+  saved = undefined
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  const router = createMemoryRouter([
+    {
+      path: '*',
+      element: (
+        <RowEditor
+          batchId={id}
+          row={{ ...row, draft: { ...row.draft, category: 'top' } }}
+          onClose={() => {}}
+        />
+      ),
+    },
+  ])
+  render(
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>,
+  )
+  const user = userEvent.setup()
+  expect(screen.getByLabelText('衣物状况')).toHaveValue('unknown')
+  expect(screen.getByLabelText('合身情况')).toHaveValue('unknown')
+  await user.type(screen.getByLabelText('子类', { exact: true }), '短袖')
+  await user.selectOptions(screen.getByLabelText('衣物状况'), 'good')
+  await user.selectOptions(screen.getByLabelText('合身情况'), 'fits')
+  await user.type(screen.getByLabelText('购入金额（元）'), '-1')
+  await user.click(screen.getByRole('button', { name: '保存修改' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('金额需为非负数')
+  expect(saved).toBeUndefined()
+  await user.clear(screen.getByRole('textbox', { name: '购入金额（元）' }))
+  await user.type(screen.getByRole('textbox', { name: '购入金额（元）' }), '0')
+  await user.type(screen.getByLabelText('名称'), '人工短袖')
+  await user.click(screen.getByRole('button', { name: '保存修改' }))
+  await waitFor(() =>
+    expect(saved).toEqual({
+      expected_version: 1,
+      changes: {
+        subtype_name: '短袖',
+        condition: 'good',
+        fit: 'fits',
+        price: '0',
+        name: '人工短袖',
+      },
+    }),
+  )
+})

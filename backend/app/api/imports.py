@@ -29,7 +29,7 @@ def download_template() -> Response:
     return Response(
         template(),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": 'attachment; filename="wardrobe-template-v1.xlsx"'},
+        headers={"Content-Disposition": 'attachment; filename="wardrobe-template-v2.xlsx"'},
     )
 
 

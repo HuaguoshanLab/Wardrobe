@@ -17,7 +17,9 @@ export const attributesSchema = z.object({
   availability: z.enum(['available', 'unavailable']),
   display_variant: z.enum(['original', 'cutout']),
 })
-const _attributesContract: z.ZodType<components['schemas']['Attributes']> = attributesSchema
+const _attributesContract: z.ZodType<
+  Pick<components['schemas']['GarmentView'], keyof z.infer<typeof attributesSchema>>
+> = attributesSchema
 void _attributesContract
 export type Attributes = z.infer<typeof attributesSchema>
 export const garmentSchema = attributesSchema.extend({

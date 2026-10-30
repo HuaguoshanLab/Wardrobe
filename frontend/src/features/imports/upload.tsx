@@ -212,8 +212,8 @@ export function ImportPage() {
         ) : (
           <>
             <p>
-              使用 v1 模板，最多 100 行、50 MB。图片和品类必填，其他属性可留空，不调用 AI
-              覆盖已有标签。
+              使用 v2 模板（兼容 v1），最多 100 行、50
+              MB。图片和品类必填，支持选填子类、状况、合身及获得收纳资料，不调用 AI 覆盖已有标签。
             </p>
             <a className="button button-outline" href="/api/v1/imports/template" download>
               下载 Excel 模板（含可替换示例）

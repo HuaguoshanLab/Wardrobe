@@ -35,7 +35,7 @@ CHECKPOINT_TABLES = [
 def compatibility() -> dict[str, str | int]:
     return {
         "format_version": 1,
-        "app_version": "0.5.0-w4",
+        "app_version": "0.6.1-import",
         "alembic_revision": REVISION,
         "checkpoint_adapter": version("langgraph-checkpoint-postgres"),
     }

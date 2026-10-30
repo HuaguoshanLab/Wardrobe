@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import Field, JsonValue
 
 from app.schemas.common import Schema
+from app.schemas.import_details import ImportDetails
 from app.schemas.lifecycle import LifecycleProfile
 
 
@@ -21,6 +22,10 @@ class Attributes(Schema):
     custom_tag_ids: list[UUID] = Field(default_factory=list, max_length=30)
     availability: Literal["available", "unavailable"] = "available"
     display_variant: Literal["original", "cutout"] = "original"
+
+
+class ImportDraft(Attributes, ImportDetails):
+    pass
 
 
 class GarmentView(Attributes):
@@ -71,7 +76,7 @@ class RowView(Schema):
     image_asset_id: UUID | None
     image_url: str | None
     has_cutout: bool
-    draft: Attributes
+    draft: ImportDraft
     version: int
     touched_fields: list[str]
     validation_errors: list[str]

@@ -9,3 +9,5 @@
 - 模型仅输出品类、名称、颜色、季节、场合、风格及不确定性提示。材质、厚度、保暖性需用户补充；禁止生成可用状态、显示方式和自定义标签 ID。模型输出是待审核建议。
 - 追加 0006_recognition，包含账本及行级提示；备份精确兼容标识升级，旧 P5 包不直接跨版本覆盖。保留原迁移、数据库和媒体；新版完整备份包含新账本。
 - 视觉请求采用 Base64 image_url、关闭 thinking、JSON Object＋本地严格校验。官方协议依据：[视觉理解](https://help.aliyun.com/en/model-studio/vision)、[结构化输出](https://help.aliyun.com/zh/model-studio/qwen-structured-output)。真实账号权限和效果仍需实测。
+
+2026-10-30：子类输出及人工保护以 [导入资料](../IMPORT-DETAILS.md) 扩展本决策。真实验收后，视觉候选独立排除无法凭照片确认的薄厚/填充物名称，提供夹克外形分类；不改变人工分类。提示 v5 与逐项复验证据见 [子类验收](../history/2026-10-30-recognition-subtypes.md)。

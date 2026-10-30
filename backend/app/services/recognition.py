@@ -15,6 +15,7 @@ from app.media.storage import path_for
 from app.observability.runtime import current, observation
 from app.providers.recognition import PROMPT_VERSION, recognize
 from app.schemas.recognition import RecognitionResult
+from app.services import recognition_subtypes
 from app.services.jobs import get_job
 
 
@@ -58,18 +59,25 @@ def recognize_row(
             settings.recognition_mode == "qwen" and not settings.qwen_configured
         ):
             raise AppError("PROVIDER_NOT_CONFIGURED", "识别服务未配置，请手动填写品类", 503)
+        subtype_choices = recognition_subtypes.catalog(db)
         # The Job row lock serializes insertion. A concurrent replay sees sent and stops.
         db.add(
             RecognitionCall(
                 job_id=job_id,
                 row_id=row_id,
                 state="sent",
-                config={**snapshot, "display_key": display, "row_version": row.version},
+                config={
+                    **snapshot,
+                    "display_key": display,
+                    "row_version": row.version,
+                    "subtypes": subtype_choices,
+                },
             )
         )
     try:
-        result = recognize(path_for(display).read_bytes(), settings)
+        result = recognize(path_for(display).read_bytes(), settings, subtype_choices)
         result = RecognitionResult.model_validate(result)
+        recognition_subtypes.validate(result, subtype_choices)
     except AppError as exc:
         with session_factory().begin() as db:
             call = db.get(RecognitionCall, (job_id, row_id))

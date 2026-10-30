@@ -10,9 +10,10 @@ from app.db.wardrobe import ImportBatch, ImportRow, MediaAsset
 from app.jobs.queue import check_lease
 from app.media.excel import parse_excel
 from app.media.images import cutout, normalize
+from app.media.import_columns import LABELS
 from app.media.storage import path_for, store_bytes
 from app.observability.runtime import current, observation
-from app.schemas.wardrobe import Attributes
+from app.schemas.wardrobe import ImportDraft
 from app.services.import_review import read_batch
 from app.services.jobs import append_event, get_job
 from app.services.operations import owner_id
@@ -45,15 +46,15 @@ def parse_batch(job_id: UUID, token: UUID, batch_id: UUID) -> None:
                 )
                 db.add(media)
                 db.flush()
-            attrs = Attributes().model_dump(mode="json")
+            attrs = ImportDraft().model_dump(mode="json")
             errors: dict[str, JsonValue] = {}
             for field, value in item.attributes.items():
                 try:
-                    attrs = Attributes.model_validate({**attrs, field: value}).model_dump(
+                    attrs = ImportDraft.model_validate({**attrs, field: value}).model_dump(
                         mode="json"
                     )
                 except ValidationError:
-                    errors[field] = f"{field} 字段不合法，请在表格中补充"
+                    errors[field] = f"{LABELS.get(field, field)}字段不合法，请在审核中修正"
             try:
                 attrs["custom_tag_ids"] = [
                     str(get_or_create_tag(db, name).id) for name in item.tags
@@ -165,6 +166,12 @@ def _run_step(job_id: UUID, token: UUID, row_id: UUID, step: str) -> None:
             row.analysis_source = source
             row.analysis_notes = notes
             if not row.confirmed_garment_id:
+                category = row.draft.get("category")
+                if not category and "category" not in row.touched_fields:
+                    category = result.get("category")
+                if result.get("subtype_name") and category != result.get("category"):
+                    result.pop("subtype_name")
+                    row.analysis_notes = [*notes, "品类已人工调整，子类建议未应用，请自行核对。"]
                 current().update(
                     fields={
                         "protected_fields": len(row.touched_fields),

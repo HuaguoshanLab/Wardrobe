@@ -7966,132 +7966,6 @@
         ],
         "title": "AttributePatch"
       },
-      "Attributes": {
-        "properties": {
-          "category": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 40
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Category"
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 100
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name"
-          },
-          "color_codes": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "maxItems": 20,
-            "title": "Color Codes"
-          },
-          "seasons": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "maxItems": 4,
-            "title": "Seasons"
-          },
-          "occasion_codes": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "maxItems": 20,
-            "title": "Occasion Codes"
-          },
-          "style_codes": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "maxItems": 20,
-            "title": "Style Codes"
-          },
-          "material": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 40
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Material"
-          },
-          "thickness": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 40
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Thickness"
-          },
-          "warmth": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 40
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Warmth"
-          },
-          "custom_tag_ids": {
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "type": "array",
-            "maxItems": 30,
-            "title": "Custom Tag Ids"
-          },
-          "availability": {
-            "type": "string",
-            "enum": [
-              "available",
-              "unavailable"
-            ],
-            "title": "Availability",
-            "default": "available"
-          },
-          "display_variant": {
-            "type": "string",
-            "enum": [
-              "original",
-              "cutout"
-            ],
-            "title": "Display Variant",
-            "default": "original"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "Attributes"
-      },
       "BackupResult": {
         "properties": {
           "backup_id": {
@@ -10553,6 +10427,233 @@
         ],
         "title": "ImportAccepted"
       },
+      "ImportDraft": {
+        "properties": {
+          "subtype_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtype Name"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "purchased",
+                  "gift",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "acquired_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acquired On"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "good",
+              "worn",
+              "needs_repair",
+              "damaged"
+            ],
+            "title": "Condition",
+            "default": "unknown"
+          },
+          "fit": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "fits",
+              "unfit",
+              "not_applicable"
+            ],
+            "title": "Fit",
+            "default": "unknown"
+          },
+          "storage": {
+            "type": "string",
+            "enum": [
+              "daily",
+              "stored"
+            ],
+            "title": "Storage",
+            "default": "daily"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Notes",
+            "default": ""
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "color_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Color Codes"
+          },
+          "seasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "title": "Seasons"
+          },
+          "occasion_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Occasion Codes"
+          },
+          "style_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Style Codes"
+          },
+          "material": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Material"
+          },
+          "thickness": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thickness"
+          },
+          "warmth": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warmth"
+          },
+          "custom_tag_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Custom Tag Ids"
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unavailable"
+            ],
+            "title": "Availability",
+            "default": "available"
+          },
+          "display_variant": {
+            "type": "string",
+            "enum": [
+              "original",
+              "cutout"
+            ],
+            "title": "Display Variant",
+            "default": "original"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ImportDraft"
+      },
       "ImportResult": {
         "properties": {
           "import_batch_id": {
@@ -12395,7 +12496,7 @@
             "title": "Has Cutout"
           },
           "draft": {
-            "$ref": "#/components/schemas/Attributes"
+            "$ref": "#/components/schemas/ImportDraft"
           },
           "version": {
             "type": "integer",

@@ -10,14 +10,15 @@ from app.db.session import session_factory
 from app.db.wardrobe import Garment, ImportBatch, ImportRow
 from app.domain.taxonomy import attribute_errors
 from app.schemas.wardrobe import (
-    Attributes,
     BatchView,
     Confirmation,
     ConfirmInput,
     ConfirmOutcome,
+    ImportDraft,
     RowPatch,
     RowView,
 )
+from app.services import import_details
 from app.services.operations import owner_id, receipt, save_receipt
 from app.services.wardrobe import asset, image_url, validate_attributes
 
@@ -40,7 +41,8 @@ def find_row(db: Session, batch_id: UUID, row_id: UUID, *, lock: bool = False) -
 
 
 def view_row(db: Session, row: ImportRow) -> RowView:
-    attrs = Attributes.model_validate(row.draft)
+    draft = ImportDraft.model_validate(row.draft)
+    attrs = import_details.attributes(draft)
     media = asset(db, row.image_asset_id) if row.image_asset_id else None
     errors = (
         validate_attributes(db, attrs, media)
@@ -49,7 +51,10 @@ def view_row(db: Session, row: ImportRow) -> RowView:
     )
     if row.errors.get("structure"):
         errors.append(str(row.errors["structure"]))
-    errors.extend(str(value) for key, value in row.errors.items() if key in Attributes.model_fields)
+    errors.extend(
+        str(value) for key, value in row.errors.items() if key in ImportDraft.model_fields
+    )
+    errors.extend(import_details.subtype_errors(db, draft))
     status: Literal["confirmed", "skipped", "invalid", "ready"] = (
         "confirmed"
         if row.confirmed_garment_id
@@ -77,7 +82,7 @@ def view_row(db: Session, row: ImportRow) -> RowView:
         image_asset_id=row.image_asset_id,
         image_url=image_url(media, attrs.display_variant) if media else None,
         has_cutout=bool(media and media.cutout_key),
-        draft=attrs,
+        draft=draft,
         version=row.version,
         touched_fields=row.touched_fields,
         validation_errors=errors,
@@ -117,7 +122,7 @@ def patch_row(batch_id: UUID, row_id: UUID, patch: RowPatch) -> RowView:
             raise AppError("ROW_FINALIZED", "该行已确认或已移除")
         if row.version != patch.expected_version:
             raise AppError("VERSION_CONFLICT", "审核行已更新，请保留草稿并重新读取")
-        row.draft = Attributes.model_validate({**row.draft, **patch.changes}).model_dump(
+        row.draft = ImportDraft.model_validate({**row.draft, **patch.changes}).model_dump(
             mode="json"
         )
         row.touched_fields = sorted(set(row.touched_fields) | set(patch.changes))
@@ -157,10 +162,20 @@ def confirm(batch_id: UUID, payload: ConfirmInput, key: str) -> Confirmation:
                     if view.row_status != "ready":
                         result.errors = view.validation_errors or ["该行已移除"]
                     else:
+                        try:
+                            subtype_id = import_details.resolve_subtype(db, view.draft)
+                        except AppError as exc:
+                            result.errors = [exc.message]
+                            outcomes.append(result)
+                            continue
                         garment = Garment(
                             owner_id=owner_id(db),
                             image_asset_id=row.image_asset_id,
-                            attributes=row.draft,
+                            attributes=import_details.attributes(view.draft).model_dump(
+                                mode="json"
+                            ),
+                            lifecycle=import_details.profile(view.draft).model_dump(mode="json"),
+                            subtype_id=subtype_id,
                         )
                         db.add(garment)
                         db.flush()

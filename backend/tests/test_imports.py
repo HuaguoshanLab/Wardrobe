@@ -205,7 +205,7 @@ def test_late_recognition_cannot_overwrite_concurrent_manual_edit(clean_db, monk
     row = batch(accepted["import_batch_id"])["rows"][0]
     run_step(job_id, token, UUID(row["id"]), "conversion")
 
-    def late_result(_, settings):
+    def late_result(_, settings, subtypes):
         current = batch(accepted["import_batch_id"])["rows"][0]
         response = client.patch(
             f"/api/v1/imports/{accepted['import_batch_id']}/rows/{row['id']}",
@@ -230,6 +230,14 @@ def test_late_recognition_cannot_overwrite_concurrent_manual_edit(clean_db, monk
 def test_garment_edit_filters_tags_and_version_conflict(clean_db):
     accepted = upload_photos()
     run_job(*claim())
+    current = batch(accepted["import_batch_id"])
+    # This basic-edit scenario starts without a subtype; W1 separately guards mismatches.
+    row = current["rows"][0]
+    cleared = client.patch(
+        f"/api/v1/imports/{current['id']}/rows/{row['id']}",
+        json={"expected_version": row["version"], "changes": {"subtype_name": None}},
+    )
+    assert cleared.status_code == 200
     current = batch(accepted["import_batch_id"])
     result = confirm(current["id"], current["rows"]).json()["data"]["rows"][0]
     path = f"/api/v1/garments/{result['garment_id']}"
@@ -280,7 +288,7 @@ def test_garment_edit_filters_tags_and_version_conflict(clean_db):
 def test_failed_recognition_allows_manual_confirmation(clean_db, monkeypatch):
     from app.core.errors import AppError
 
-    def fail(_, settings):
+    def fail(_, settings, subtypes):
         raise AppError("PROVIDER_NOT_CONFIGURED", "请手动填写品类", 503)
 
     monkeypatch.setattr("app.services.recognition.recognize", fail)

@@ -4,7 +4,9 @@ import { GarmentEditor, type Attributes } from '../wardrobe'
 import { Button } from '../../components/ui/button'
 import { Sheet } from '../../components/ui/sheet'
 import { api } from '../../lib/http'
-import { rowSchema, getBatch, type ImportRow } from './api'
+import { rowSchema, getBatch, type ImportRow, type ImportDraft } from './api'
+import { importDetailsSchema } from './details-schema'
+import { ImportDetailsEditor } from './details-editor'
 import { LeaveGuard } from './leave-guard'
 
 export function RowEditor({
@@ -20,10 +22,11 @@ export function RowEditor({
 }) {
   const [advance, setAdvance] = useState(false)
   const [snapshot, setSnapshot] = useState(row)
-  const [changes, setChanges] = useState<Partial<Attributes>>({})
+  const [changes, setChanges] = useState<Partial<ImportDraft>>({})
   const [discard, setDiscard] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [refreshError, setRefreshError] = useState('')
+  const [detailErrors, setDetailErrors] = useState<Record<string, string>>({})
   const client = useQueryClient()
   const mutation = useMutation({
     mutationFn: () =>
@@ -102,9 +105,29 @@ export function RowEditor({
           changes={changes}
           onChange={setChanges}
           busy={mutation.isPending || refreshing}
-          onSave={() => mutation.mutate()}
+          onSave={() => {
+            const parsed = importDetailsSchema.safeParse({ ...snapshot.draft, ...changes })
+            setDetailErrors(
+              parsed.success
+                ? {}
+                : Object.fromEntries(
+                    parsed.error.issues.map((issue) => [String(issue.path[0]), issue.message]),
+                  ),
+            )
+            if (parsed.success) mutation.mutate()
+          }}
           onCancel={close}
         >
+          <ImportDetailsEditor
+            errors={detailErrors}
+            value={{ ...snapshot.draft, ...changes }}
+            onChange={(next) => {
+              setChanges({ ...changes, ...next })
+              setDetailErrors((current) =>
+                Object.fromEntries(Object.entries(current).filter(([key]) => !(key in next))),
+              )
+            }}
+          />
           <div className="attribute-grid import-editor-options">
             <label>
               状态

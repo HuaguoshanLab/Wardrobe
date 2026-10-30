@@ -70,6 +70,7 @@ def test_vision_request_bounded_image_and_unknowns():
         {"category": "上装"},
         {"color_codes": ["白色"]},
         {"color_codes": ["unknown-color"]},
+        {"occasion_codes": ["casual"]},
         {"availability": "unavailable"},
         {"custom_tag_ids": ["fake-id"]},
         {"material": "wool"},
