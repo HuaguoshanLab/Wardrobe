@@ -1197,6 +1197,23 @@ export interface paths {
         patch: operations["save_feedback_api_v1_wear_records__record_id__feedback_patch"];
         trace?: never;
     };
+    "/api/v1/wardrobe/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Usage */
+        get: operations["usage_api_v1_wardrobe_usage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1911,6 +1928,15 @@ export interface components {
         /** Envelope[Union[SessionView, NoneType]] */
         Envelope_Union_SessionView__NoneType__: {
             data: components["schemas"]["SessionView"] | null;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[UsageReport] */
+        Envelope_UsageReport_: {
+            data: components["schemas"]["UsageReport"];
             /**
              * Request Id
              * Format: uuid
@@ -3292,6 +3318,8 @@ export interface components {
             requirements?: components["schemas"]["Requirements"];
             /** Base Revision Id */
             base_revision_id?: string | null;
+            /** Anchor Garment Id */
+            anchor_garment_id?: string | null;
         };
         /** SessionPatch */
         SessionPatch: {
@@ -3520,6 +3548,78 @@ export interface components {
             name: string;
             /** Version */
             version: number;
+        };
+        /** UsageItem */
+        UsageItem: {
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /** Name */
+            name: string | null;
+            /** Category */
+            category: string | null;
+            /** Image Url */
+            image_url: string | null;
+            /**
+             * Availability
+             * @enum {string}
+             */
+            availability: "available" | "unavailable";
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Wear Days */
+            wear_days: number;
+            /** Last Worn On */
+            last_worn_on: string | null;
+        };
+        /** UsageReport */
+        UsageReport: {
+            /**
+             * Range
+             * @enum {string}
+             */
+            range: "30" | "90" | "all";
+            /**
+             * View
+             * @enum {string}
+             */
+            view: "worn" | "unrecorded";
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Window Start */
+            window_start: string | null;
+            /**
+             * Timezone
+             * @default Asia/Shanghai
+             * @constant
+             */
+            timezone: "Asia/Shanghai";
+            /** Total Garments */
+            total_garments: number;
+            /** Recorded Garments */
+            recorded_garments: number;
+            /** Unrecorded Garments */
+            unrecorded_garments: number;
+            /** Recorded Ratio */
+            recorded_ratio: number | null;
+            /** Items */
+            items: components["schemas"]["UsageItem"][];
+            /** Total Items */
+            total_items: number;
+            /** Offset */
+            offset: number;
+            /** Limit */
+            limit: number;
+            /** Next Offset */
+            next_offset: number | null;
         };
         /** VersionInput */
         VersionInput: {
@@ -9784,6 +9884,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_FeedbackView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    usage_api_v1_wardrobe_usage_get: {
+        parameters: {
+            query?: {
+                range?: "30" | "90" | "all";
+                view?: "worn" | "unrecorded";
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_UsageReport_"];
                 };
             };
             /** @description Not Found */

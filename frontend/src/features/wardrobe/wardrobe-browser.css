@@ -24,7 +24,7 @@
 }
 .wardrobe-management-nav {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   flex-shrink: 0;
   gap: 12px;
   margin-bottom: 16px;
@@ -40,7 +40,8 @@
   background: var(--surface);
   color: var(--primary);
   font-size: 14px;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
 }
 .wardrobe-management-nav strong {
   font-weight: 600;

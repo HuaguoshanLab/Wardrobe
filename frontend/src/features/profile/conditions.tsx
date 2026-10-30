@@ -46,6 +46,7 @@ export function ConditionsPanel({
   storageKey,
   onGenerate,
   busy = false,
+  generateBlocked = false,
   submitted,
   weather,
   weatherSummary,
@@ -53,6 +54,7 @@ export function ConditionsPanel({
   storageKey: string
   onGenerate?: (requirements: Requirements) => void
   busy?: boolean
+  generateBlocked?: boolean
   submitted?: Requirements
   weatherSummary?: ReactNode
   weather?: ReactNode
@@ -88,6 +90,7 @@ export function ConditionsPanel({
     ? values.custom_tag_ids.filter((id) => !tags.data.some((tag) => tag.id === id))
     : []
   function save(data: Requirements, generate = false) {
+    if (generate && generateBlocked) return
     const candidate = {
       ...data,
       weather_override: manual
@@ -254,7 +257,12 @@ export function ConditionsPanel({
           </details>
           <div className="condition-actions">
             {onGenerate && (
-              <Button type="button" onClick={form.handleSubmit((data) => save(data, true))}>
+              <Button
+                type="button"
+                disabled={generateBlocked}
+                aria-describedby={generateBlocked ? 'anchor-blocked-hint' : undefined}
+                onClick={form.handleSubmit((data) => save(data, true))}
+              >
                 <Sparkles size={18} aria-hidden="true" />
                 {busy ? '正在处理搭配…' : '生成搭配'}
               </Button>
@@ -263,6 +271,14 @@ export function ConditionsPanel({
               {preview.isPending ? '正在核对…' : '核对条件'}
             </Button>
           </div>
+          {generateBlocked && (
+            <p id="anchor-blocked-hint" className="form-hint">
+              指定单品尚不能参与搭配，其他条件可以继续填写。
+              <a className="text-link" href="#anchor-notice">
+                查看单品状态
+              </a>
+            </p>
+          )}
           <p className="form-hint">最多 3 套，点击才生成。草稿自动保存在本浏览器。</p>
         </fieldset>
       </form>

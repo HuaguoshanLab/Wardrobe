@@ -8285,6 +8285,132 @@
           }
         }
       }
+    },
+    "/api/v1/wardrobe/usage": {
+      "get": {
+        "tags": [
+          "wardrobe-usage"
+        ],
+        "summary": "Usage",
+        "operationId": "usage_api_v1_wardrobe_usage_get",
+        "parameters": [
+          {
+            "name": "range",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "30",
+                "90",
+                "all"
+              ],
+              "type": "string",
+              "default": "30",
+              "title": "Range"
+            }
+          },
+          {
+            "name": "view",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "worn",
+                "unrecorded"
+              ],
+              "type": "string",
+              "default": "worn",
+              "title": "View"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_UsageReport_"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -9960,6 +10086,25 @@
           "request_id"
         ],
         "title": "Envelope[Union[SessionView, NoneType]]"
+      },
+      "Envelope_UsageReport_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UsageReport"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Request Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "data",
+          "request_id"
+        ],
+        "title": "Envelope[UsageReport]"
       },
       "Envelope_WearList_": {
         "properties": {
@@ -13797,6 +13942,18 @@
               }
             ],
             "title": "Base Revision Id"
+          },
+          "anchor_garment_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor Garment Id"
           }
         },
         "additionalProperties": false,
@@ -14449,6 +14606,205 @@
           "version"
         ],
         "title": "TagView"
+      },
+      "UsageItem": {
+        "properties": {
+          "garment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Garment Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "available",
+              "unavailable"
+            ],
+            "title": "Availability"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "wear_days": {
+            "type": "integer",
+            "title": "Wear Days"
+          },
+          "last_worn_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Worn On"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "garment_id",
+          "name",
+          "category",
+          "image_url",
+          "availability",
+          "created_at",
+          "wear_days",
+          "last_worn_on"
+        ],
+        "title": "UsageItem"
+      },
+      "UsageReport": {
+        "properties": {
+          "range": {
+            "type": "string",
+            "enum": [
+              "30",
+              "90",
+              "all"
+            ],
+            "title": "Range"
+          },
+          "view": {
+            "type": "string",
+            "enum": [
+              "worn",
+              "unrecorded"
+            ],
+            "title": "View"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "window_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window Start"
+          },
+          "timezone": {
+            "type": "string",
+            "const": "Asia/Shanghai",
+            "title": "Timezone",
+            "default": "Asia/Shanghai"
+          },
+          "total_garments": {
+            "type": "integer",
+            "title": "Total Garments"
+          },
+          "recorded_garments": {
+            "type": "integer",
+            "title": "Recorded Garments"
+          },
+          "unrecorded_garments": {
+            "type": "integer",
+            "title": "Unrecorded Garments"
+          },
+          "recorded_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded Ratio"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/UsageItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total_items": {
+            "type": "integer",
+            "title": "Total Items"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "next_offset": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "range",
+          "view",
+          "as_of",
+          "window_start",
+          "total_garments",
+          "recorded_garments",
+          "unrecorded_garments",
+          "recorded_ratio",
+          "items",
+          "total_items",
+          "offset",
+          "limit",
+          "next_offset"
+        ],
+        "title": "UsageReport"
       },
       "VersionInput": {
         "properties": {

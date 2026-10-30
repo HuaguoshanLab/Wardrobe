@@ -43,25 +43,25 @@ afterEach(() => {
   posts = []
 })
 afterAll(() => server.close())
-function Harness() {
+function Harness({ anchor }: { anchor?: string }) {
   const c = useOutfits()
   return (
     <>
-      <button disabled={c.busy} onClick={() => c.generate(requirements)}>
+      <button disabled={c.busy} onClick={() => c.generate(requirements, anchor)}>
         提交本次条件并生成
       </button>
       <OutfitsPanel controller={c} />
     </>
   )
 }
-function mount() {
+function mount(anchor?: string) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   })
   return render(
     <QueryClientProvider client={client}>
       <MemoryRouter>
-        <Harness />
+        <Harness anchor={anchor} />
       </MemoryRouter>
     </QueryClientProvider>,
   )
@@ -131,4 +131,33 @@ it('restoring a terminal job reads results without posting and does not subscrib
   first.unmount()
   mount()
   await screen.findByText('请先上传衣服')
+})
+
+it('creates an anchored session only on explicit generation and recovers the same failed create', async () => {
+  localStorage.clear()
+  let fail = true
+  server.use(
+    http.post('/api/v1/outfit-sessions', async ({ request }) => {
+      posts.push({ body: await request.text(), key: request.headers.get('Idempotency-Key') })
+      return fail ? HttpResponse.error() : HttpResponse.json(envelope(initial))
+    }),
+    http.post('/api/v1/outfit-sessions/:id/generate', () =>
+      HttpResponse.json(envelope({ job_id: jid, status: 'queued' })),
+    ),
+  )
+  const user = userEvent.setup()
+  const first = mount(sid)
+  await waitFor(() => expect(screen.getByText('提交本次条件并生成')).toBeEnabled())
+  expect(posts).toHaveLength(0)
+  await user.click(screen.getByText('提交本次条件并生成'))
+  await screen.findByRole('alert')
+  first.unmount()
+  mount(sid)
+  await screen.findByText('有一项操作尚未确认结果，刷新不会自动重发。')
+  expect(posts).toHaveLength(1)
+  fail = false
+  await user.click(screen.getByText('重发同一搭配操作'))
+  await waitFor(() => expect(posts).toHaveLength(2))
+  expect(posts[1]).toEqual(posts[0])
+  expect(JSON.parse(posts[0].body)).toEqual({ requirements, anchor_garment_id: sid })
 })

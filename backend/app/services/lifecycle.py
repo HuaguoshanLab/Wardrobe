@@ -1,13 +1,11 @@
 from uuid import UUID
 
 from pydantic import ValidationError
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
-from app.db.collections import WearRecord
 from app.db.lifecycle import GarmentSubtype, LifecycleEvent
-from app.db.outfits import OutfitRevision
 from app.db.session import session_factory
 from app.domain.taxonomy import TAXONOMY
 from app.schemas.lifecycle import (
@@ -22,6 +20,7 @@ from app.schemas.wardrobe import GarmentView
 from app.services.garment_state import check_subtype, record, state
 from app.services.operations import receipt, save_receipt
 from app.services.wardrobe import find_garment, garment_view
+from app.services.wear_stats import wear_rollup
 
 FIELDS = {
     "profile": {"source", "acquired_on", "price", "location", "notes", "subtype_id"},
@@ -191,19 +190,10 @@ def history(garment_id: UUID, cursor: int | None, limit: int) -> LifecycleHistor
         if cursor:
             query = query.where(LifecycleEvent.version < cursor)
         rows = list(db.scalars(query.order_by(LifecycleEvent.version.desc()).limit(limit + 1)))
+        stats = wear_rollup(garment_id=garment_id)
         worn = db.execute(
-            select(
-                func.count(func.distinct(WearRecord.worn_on)),
-                func.min(WearRecord.worn_on),
-                func.max(WearRecord.worn_on),
-            )
-            .join(OutfitRevision, WearRecord.revision_id == OutfitRevision.id)
-            .where(
-                OutfitRevision.items.contains(
-                    [{"garment_id": str(garment_id), "source": "wardrobe"}]
-                )
-            )
-        ).one()
+            select(stats.c.wear_days, stats.c.first_worn_on, stats.c.last_worn_on)
+        ).one_or_none()
         last_exit = db.scalar(
             select(LifecycleEvent.id)
             .where(LifecycleEvent.garment_id == garment_id, LifecycleEvent.action == "retire")
@@ -214,9 +204,9 @@ def history(garment_id: UUID, cursor: int | None, limit: int) -> LifecycleHistor
             last_exit_event_id=last_exit,
             items=[EventView.model_validate(r) for r in rows[:limit]],
             next_cursor=rows[limit - 1].version if len(rows) > limit else None,
-            wear_days=worn[0],
-            first_worn_on=worn[1],
-            last_worn_on=worn[2],
+            wear_days=worn[0] if worn else 0,
+            first_worn_on=worn[1] if worn else None,
+            last_worn_on=worn[2] if worn else None,
         )
 
 

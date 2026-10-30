@@ -5,3 +5,5 @@ export { GarmentEditor } from './garment-editor'
 
 export { getGarment, getGarments } from './api'
 export type { Garment } from './api'
+
+export { GarmentImage } from './image'

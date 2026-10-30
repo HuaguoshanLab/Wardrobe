@@ -145,7 +145,10 @@ export function useOutfits(sessionId?: string, returnToResults = false) {
       submit.reset()
       void session.refetch()
     },
-    generate: (requirements: Requirements) => {
+    generate: (requirements: Requirements, anchor?: string) => {
+      if (anchor) {
+        return send('/outfit-sessions', 'POST', { requirements, anchor_garment_id: anchor }, true)
+      }
       const current = session.data
       send(
         current ? `/outfit-sessions/${current.id}` : '/outfit-sessions',

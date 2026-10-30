@@ -40,7 +40,7 @@ uv run alembic check
 
 initialize 顺序执行 Alembic upgrade head、Checkpointer setup 和一次性示例播种，可重复执行。业务迁移位于 migrations/，检查点使用独立 checkpoints schema。不要在 API/worker 普通启动时执行 setup 或 create_all。
 
-新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0011_manual_outfits；手动来源及原子穿着提交、旧版本兼容和恢复限制见 [P7.1](../docs/P7-1.md)；W4 追加整理会话、核对与动作回执，恢复和总结约定见 [W4](../docs/W4.md)；W3 追加补充计划、来源、核销关联和整理决定，跨季退出确认及备份约定见 [W3](../docs/W3.md)；W2 追加季节目标、需求行与子类启用状态，统计/影响/备份约定见 [W2](../docs/W2.md)；W1 生命周期见 [W1](../docs/W1.md)；P6 识别账本和不确定性提示保留；既有迁移、快照和调用记录保留。
+新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0012_wear_feedback；穿后反馈及备份约定见 [P7.3](../docs/P7-3.md)；手动来源及原子穿着提交、旧版本兼容和恢复限制见 [P7.1](../docs/P7-1.md)；W4 追加整理会话、核对与动作回执，恢复和总结约定见 [W4](../docs/W4.md)；W3 追加补充计划、来源、核销关联和整理决定，跨季退出确认及备份约定见 [W3](../docs/W3.md)；W2 追加季节目标、需求行与子类启用状态，统计/影响/备份约定见 [W2](../docs/W2.md)；W1 生命周期见 [W1](../docs/W1.md)；P6 识别账本和不确定性提示保留；既有迁移、快照和调用记录保留。
 
 ## 验证
 
@@ -107,3 +107,5 @@ P6 当前版本逐项回归使用 [独立回归 Compose](../scripts/compose.regr
 P7.2 穿搭轮换已实现：模式、实际记录统计、任务冻结、结果依据与兼容规则见 [P7.2](../docs/P7-2.md)，当前验证部署状态见 [开发记录](../docs/history/2026-10-30-p7-2.md)。
 
 P7.3：穿后反馈、父记录锁/幂等、迁移 `0012_wear_feedback` 及备份兼容见 [P7.3](../docs/P7-3.md)。独立验证配置为 `scripts/compose.p7-3.json`（项目 wardrobe-p7-3，8103），测试数据库与浏览器及正式数据库分离；实际证据见 [阶段记录](../docs/history/2026-10-30-p7-3.md)。
+
+P7.4：`GET /wardrobe/usage` 只读完整聚合与分页，W1 共用去重逻辑；指定单品在显式生成时创建初始锁定，旧回执保持兼容。无新增迁移，协议和验证见 [P7.4](../docs/P7-4.md)。独立栈 `scripts/compose.p7-4.json` 使用 8104 与 Fake Provider，业务浏览器和 pytest 数据库相互隔离。

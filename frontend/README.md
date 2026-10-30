@@ -155,3 +155,7 @@ P7.2 穿搭轮换已实现：模式、实际记录统计、任务冻结、结果
 P7.3：日历记录的「穿后反馈」进入 `/collections/wear/:recordId/feedback`；本地草稿及原请求恢复、显式条件传递和偏好保存见 [P7.3](../docs/P7-3.md)。隔离流程用 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8103 npx playwright test -c playwright.p7-3.config.ts`；已部署页面的只读模拟验收用 `playwright.feedback-ui.config.ts`，不把它当真实写流程。
 
 P7.3 界面已优化为感受选择、保存状态和两种用途预览；切换用途保留各自编辑，条件页空参考可继续重写。组件与浏览器验证、部署证据见 [界面优化记录](../docs/history/2026-10-30-p7-3-ui.md)。
+
+P7.4：衣橱「利用情况」进入 `/wardrobe/usage`，范围/分组/页码存于 URL；从单品进入条件页先核对当前状态，点击生成才锁定。隔离完整流程使用 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8104 npx playwright test -c playwright.p7-4.config.ts`；部署后仅运行 `playwright.usage-ui.config.ts`（统计页四尺寸与指定单品条件页、写请求全部拦截、默认城市模拟为空以免天气缓存写入）。行为与证据见 [P7.4](../docs/P7-4.md)。
+
+P7.4 交互验证覆盖统计卡片筛选、慢网焦点、分页回到列表、指定单品禁用与移除保留草稿，见 [界面优化记录](../docs/history/2026-10-30-p7-4-ui.md)。

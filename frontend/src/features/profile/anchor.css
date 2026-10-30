@@ -1,0 +1,53 @@
+.anchor-notice {
+  margin-block: 16px;
+  scroll-margin-block: 90px 110px;
+}
+.anchor-notice h2 {
+  font-size: 17px;
+  margin: 0 0 16px;
+}
+.anchor-item {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.anchor-image {
+  width: 64px;
+  height: 80px;
+  object-fit: contain;
+  background: var(--soft);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.anchor-item > div {
+  min-width: 0;
+}
+.anchor-item strong {
+  overflow-wrap: anywhere;
+}
+.anchor-availability {
+  color: var(--primary);
+  font-size: 14px;
+  margin: 6px 0 0;
+}
+.anchor-help {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 14px 0;
+}
+.anchor-help[role='alert'] {
+  color: var(--primary);
+  border-left: 3px solid var(--primary);
+  padding-left: 12px;
+}
+.anchor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.anchor-footnote {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 8px 0 0;
+}

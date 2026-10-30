@@ -107,12 +107,24 @@ def read_session(session_id: UUID | None = None) -> SessionView | None:
 
 def create_session(payload: SessionCreate, key: str) -> SessionView:
     with session_factory().begin() as db:
-        digest, old = receipt(db, "outfit-session", key, payload.model_dump(mode="json"))
+        content = payload.model_dump(mode="json")
+        # Preserve hashes of pre-P7.4 pending create requests and saved receipts.
+        if payload.anchor_garment_id is None:
+            content.pop("anchor_garment_id")
+        digest, old = receipt(db, "outfit-session", key, content)
         if old:
             return SessionView.model_validate(old.response)
         db.execute(text("SELECT pg_advisory_xact_lock(51001)"))
         pref = profile(db, lock=True)
         check_tags(db, payload.requirements)
+        anchor = payload.anchor_garment_id
+        if anchor:
+            # Share the garment lock with availability/delete edits during creation.
+            garment = db.scalar(select(Garment).where(Garment.id == anchor).with_for_update())
+            from app.services.garment_state import eligible
+
+            if garment is None or not eligible(garment):
+                raise AppError("CONSTRAINT_CONFLICT", "指定单品已删除、退出或暂不可穿，请重新选择")
         base = get_revision(db, payload.base_revision_id) if payload.base_revision_id else None
         requirements = (
             base.request_snapshot["requirements"]
@@ -124,6 +136,7 @@ def create_session(payload: SessionCreate, key: str) -> SessionView:
             requirements=requirements,
             selected_revision_id=base.id if base else None,
             latest_revision_ids=[str(base.id)] if base else [],
+            locked_garment_ids=[str(anchor)] if anchor else [],
         )
         db.add(row)
         db.flush()
@@ -165,7 +178,7 @@ def patch_session(session_id: UUID, payload: SessionPatch, key: str) -> SessionV
             allowed = (
                 garment_ids(get_revision(db, row.selected_revision_id))
                 if row.selected_revision_id
-                else []
+                else list(row.locked_garment_ids)
             )
             locks = list(dict.fromkeys(map(str, payload.locked_garment_ids)))
             if not set(locks) <= set(allowed) or invalid_ids(db, locks):

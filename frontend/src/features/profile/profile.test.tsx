@@ -273,3 +273,21 @@ it('rotation drafts default old data to normal, survive reload and submit only e
   await screen.findByText('条件已核对，未生成搭配')
   expect(requests[0].rotation_mode).toBe('less_worn')
 })
+
+it('keeps conditions editable when an anchor blocks generation without claiming a running task', async () => {
+  const user = userEvent.setup()
+  mount(
+    <ConditionsPanel
+      storageKey="blocked-anchor"
+      generateBlocked
+      onGenerate={() => {
+        throw new Error('Must not generate')
+      }}
+    />,
+  )
+  expect(screen.getByRole('button', { name: /^生成搭配$/ })).toBeDisabled()
+  expect(screen.queryByRole('button', { name: '正在处理搭配…' })).not.toBeInTheDocument()
+  await user.type(screen.getByLabelText('本次补充要求'), '仍可编辑条件')
+  expect(screen.getByLabelText('本次补充要求')).toHaveValue('仍可编辑条件')
+  expect(requests).toHaveLength(0)
+})

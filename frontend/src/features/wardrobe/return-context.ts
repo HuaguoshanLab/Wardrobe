@@ -14,6 +14,7 @@ export function garmentReturn(state: unknown) {
   const seasonal = seasonalReturn(state)
   if (seasonal) return { to: seasonal, label: '返回本轮整理' }
   for (const [key, prefix, label] of [
+    ['usageReturn', '/wardrobe/usage', '返回利用情况'],
     ['inventoryReturn', '/wardrobe/inventory', '返回盘点'],
     ['organizationReturn', '/wardrobe/organization', '返回整理清单'],
   ]) {

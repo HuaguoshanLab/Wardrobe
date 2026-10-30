@@ -13,6 +13,13 @@ from app.schemas.rotation import RotationSnapshot
 class SessionCreate(Schema):
     requirements: Requirements = Field(default_factory=Requirements)
     base_revision_id: UUID | None = None
+    anchor_garment_id: UUID | None = None
+
+    @model_validator(mode="after")
+    def one_starting_point(self) -> "SessionCreate":
+        if self.base_revision_id and self.anchor_garment_id:
+            raise ValueError("参考搭配与指定单品只能选择一种起点")
+        return self
 
 
 class SessionPatch(Schema):

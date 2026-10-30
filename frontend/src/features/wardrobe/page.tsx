@@ -108,6 +108,9 @@ export function WardrobePage() {
         <Link to="/wardrobe/seasonal">
           <strong>换季整理</strong>
         </Link>
+        <Link to="/wardrobe/usage">
+          <strong>利用情况</strong>
+        </Link>
       </nav>
       <WardrobeFilters
         filters={filters}

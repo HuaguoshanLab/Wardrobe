@@ -17,6 +17,7 @@ from app.api import (
     profile,
     seasonal,
     system,
+    usage,
     wardrobe,
 )
 from app.core.errors import install_error_handlers
@@ -71,3 +72,5 @@ app.include_router(seasonal.router, prefix="/api/v1")
 app.include_router(manual_outfits.router, prefix="/api/v1", tags=["manual-outfits"])
 
 app.include_router(feedback.router, prefix="/api/v1", tags=["wear-feedback"])
+
+app.include_router(usage.router, prefix="/api/v1", tags=["wardrobe-usage"])
