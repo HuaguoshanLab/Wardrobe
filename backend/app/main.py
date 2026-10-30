@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request, Response
 from app.api import (
     backups,
     collections,
+    feedback,
     imports,
     inventory,
     jobs,
@@ -68,3 +69,5 @@ app.include_router(organization.router, prefix="/api/v1", tags=["organization"])
 app.include_router(seasonal.router, prefix="/api/v1")
 
 app.include_router(manual_outfits.router, prefix="/api/v1", tags=["manual-outfits"])
+
+app.include_router(feedback.router, prefix="/api/v1", tags=["wear-feedback"])

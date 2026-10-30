@@ -2,7 +2,7 @@ import { StepProgress } from '../../components/ui/step-progress'
 import './workflow.css'
 import { z } from 'zod'
 import { PageHeader } from '../../components/ui/page-header'
-import { Images, FileSpreadsheet } from 'lucide-react'
+import { UploadGuidance } from './upload-guidance'
 import { useRef, useState } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -91,7 +91,7 @@ export function ImportPage() {
     setSwitchTo(null)
   }
   return (
-    <div className="subpage">
+    <div className="subpage import-upload">
       <PageHeader
         title="录入衣服"
         backTo={supplyId.success ? `/wardrobe/organization/plans/${supplyId.data}` : '/wardrobe'}
@@ -112,17 +112,8 @@ export function ImportPage() {
               else switchKind(value)
             }}
           >
-            {value === 'photos' ? (
-              <Images size={28} aria-hidden="true" />
-            ) : (
-              <FileSpreadsheet size={28} aria-hidden="true" />
-            )}
             <strong>{value === 'photos' ? '批量上传照片' : '导入 Excel'}</strong>
-            <span>
-              {value === 'photos'
-                ? '每张一件 → 识别预填 → 逐行确认'
-                : '图片与标签在同一文件 → 检查修改 → 逐行确认'}
-            </span>
+            <span>{value === 'photos' ? '每张一件，AI 辅助填写' : '按模板整理，批量检查'}</span>
           </button>
         ))}
       </div>
@@ -162,8 +153,15 @@ export function ImportPage() {
           </Button>
         </div>
       </Sheet>
+      {recent && (
+        <Link className="import-resume" to={`/imports/${recent}${supplyQuery}`}>
+          <span>还有上次的审核</span>
+          <strong>继续上次审核 →</strong>
+        </Link>
+      )}
       <section className="panel upload-panel">
-        <h2>{kind === 'photos' ? '选择单品照片' : '选择模板文件'}</h2>
+        {kind === 'excel' && <UploadGuidance kind={kind} capability={capability} />}
+        <h2>{kind === 'photos' ? '选择单品照片' : '上传填好的表格'}</h2>
         <label className="import-file-picker">
           <span>{kind === 'photos' ? '添加照片' : '选择 Excel 文件'}</span>
           <input
@@ -179,63 +177,7 @@ export function ImportPage() {
             }}
           />
         </label>
-        {kind === 'photos' ? (
-          <>
-            <p>
-              支持平铺或挂拍，鞋可一双合拍。JPEG、PNG、WebP、HEIC / HEIF，每次最多 20 张，单张 20
-              MB，总计 200 MB。
-            </p>
-            <p className="notice">
-              {capability.isPending
-                ? '正在读取识别配置，请稍候。'
-                : capability.isError
-                  ? '识别配置读取失败，请重试后再上传照片。'
-                  : capability.data?.recognition === 'fake'
-                    ? 'Fake 识别只模拟填入“上装”，请核对品类。'
-                    : capability.data?.recognition === 'configured'
-                      ? '上传后将标准缩略图发送给千问预填属性，请核对后确认；未知属性可留空。'
-                      : '真实识别未配置，可上传照片并手工填写品类。'}
-              {capability.data?.cutout === 'disabled'
-                ? '图片在本地转换，去背景未启用。'
-                : '图片转换与去背景在本地处理。'}
-            </p>
-            {capability.isError && (
-              <Button
-                variant="outline"
-                disabled={capability.isFetching}
-                onClick={() => void capability.refetch()}
-              >
-                重试读取识别配置
-              </Button>
-            )}
-          </>
-        ) : (
-          <>
-            <p>
-              使用 v2 模板（兼容 v1），最多 100 行、50
-              MB。图片和品类必填，支持选填子类、状况、合身及获得收纳资料，不调用 AI 覆盖已有标签。
-            </p>
-            <a className="button button-outline" href="/api/v1/imports/template" download>
-              下载 Excel 模板（含可替换示例）
-            </a>
-            <details className="import-help">
-              <summary>如何填写模板和放置图片？</summary>
-              <div className="excel-guide">
-                <div>
-                  <span>图片列</span>
-                  <div>图片完整放在本行内</div>
-                </div>
-                <div>
-                  <span>品类列</span>
-                  <div>填写单品品类</div>
-                </div>
-              </div>
-              <p>
-                插入浮动嵌入图片，左上角放在对应行的图片列，调高行高让图片完整落在一行内。暂不支持“置于单元格”图片、公式或外链。
-              </p>
-            </details>
-          </>
-        )}
+        {kind === 'photos' && <UploadGuidance kind={kind} capability={capability} />}
         {files.length > 0 && (
           <>
             <p className="import-file-summary">
@@ -265,23 +207,32 @@ export function ImportPage() {
             上传结果尚未确认，请用同一组文件重试，避免重复创建批次。如需更换文件，请先放弃原上传。
           </p>
         )}
-        <Button
-          disabled={
-            !files.length || mutation.isPending || (kind === 'photos' && recognitionUnknown)
-          }
-          onClick={() => mutation.mutate()}
-        >
-          {mutation.isPending
-            ? '正在上传文件，请稍候…'
-            : pending
-              ? '重试原上传'
-              : kind === 'excel'
-                ? '上传并检查 Excel'
-                : capability.data?.recognition === 'configured' ||
-                    capability.data?.recognition === 'fake'
-                  ? '上传并识别照片'
-                  : '上传并手工审核'}
-        </Button>
+        <div className="import-upload-submit">
+          <p aria-live="polite">
+            {mutation.isPending
+              ? '正在上传，请保持页面打开'
+              : files.length
+                ? `已选 ${files.length} ${kind === 'photos' ? '张照片' : '个表格'}，下一步检查内容`
+                : '先选择文件，再开始检查'}
+          </p>
+          <Button
+            disabled={
+              !files.length || mutation.isPending || (kind === 'photos' && recognitionUnknown)
+            }
+            onClick={() => mutation.mutate()}
+          >
+            {mutation.isPending
+              ? '正在上传文件，请稍候…'
+              : pending
+                ? '重试原上传'
+                : kind === 'excel'
+                  ? '上传并检查 Excel'
+                  : capability.data?.recognition === 'configured' ||
+                      capability.data?.recognition === 'fake'
+                    ? '上传并识别照片'
+                    : '上传并手工审核'}
+          </Button>
+        </div>
       </section>
       <LeaveGuard
         dirty={files.length > 0}
@@ -304,13 +255,6 @@ export function ImportPage() {
           </Button>
         </div>
       </Sheet>
-      {recent && (
-        <p>
-          <Link className="text-link" to={`/imports/${recent}${supplyQuery}`}>
-            继续上次审核 →
-          </Link>
-        </p>
-      )}
     </div>
   )
 }

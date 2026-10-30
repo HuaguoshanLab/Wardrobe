@@ -16,6 +16,7 @@ export default defineConfig({
     'records-ui.spec.ts',
     'settings-ui.spec.ts',
     'imports-ui.spec.ts',
+    'import-design.spec.ts',
     'mobile-polish.spec.ts',
   ],
   timeout: 120000,

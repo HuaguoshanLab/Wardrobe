@@ -33,7 +33,7 @@ export function ReviewRow({
   const finalized = ['confirmed', 'skipped'].includes(row.row_status)
   const sourceFix = needsSourceFix(row)
   return (
-    <tr>
+    <tr data-selected={selected || undefined}>
       <td>
         <label>
           <input
@@ -76,19 +76,28 @@ export function ReviewRow({
             </span>
           </p>
         )}
-        {!finalized &&
-          row.analysis_notes.map((note, index) => (
-            <p className="notice" key={index}>
-              {note}
-            </p>
-          ))}
+        {!finalized && row.analysis_notes.length > 0 && (
+          <div className="import-uncertainty">
+            <strong>建议核对</strong>
+            <ul>
+              {row.analysis_notes.map((note, index) => (
+                <li key={index}>{note}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </td>
       <td>
         <span className={`import-state import-state-${row.row_status}`}>
           {statusLabel[row.row_status]}
         </span>
         {sourceFix ? (
-          <p className="error">需要修正源文件后重新上传</p>
+          <div className="import-source-fix">
+            <p className="error">需要修正源文件后重新上传</p>
+            <Link className="text-link" to="/imports">
+              修正文件后重新上传
+            </Link>
+          </div>
         ) : (
           row.validation_errors.map((error, index) => (
             <p className="error" key={index}>
@@ -135,11 +144,7 @@ export function ReviewRow({
               </Button>
               <details className="import-more">
                 <summary>更多操作</summary>
-                {sourceFix ? (
-                  <Link className="text-link" to="/imports">
-                    修正文件后重新上传
-                  </Link>
-                ) : (
+                {!sourceFix &&
                   (['conversion', 'analysis', 'cutout'] as const)
                     .filter((step) =>
                       ['failed', 'interrupted', 'cancelled'].includes(row[`${step}_status`]),
@@ -154,8 +159,7 @@ export function ReviewRow({
                         重试
                         {step === 'conversion' ? '转换' : step === 'analysis' ? '识别' : '去背景'}
                       </Button>
-                    ))
-                )}
+                    ))}
                 <Button variant="outline" disabled={busy} onClick={() => onAction('skip')}>
                   移除此行
                 </Button>

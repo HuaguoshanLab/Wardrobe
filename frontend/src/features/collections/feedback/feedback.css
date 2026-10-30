@@ -1,0 +1,272 @@
+.feedback-page {
+  max-width: 1080px;
+  margin-inline: auto;
+  padding-bottom: 24px;
+}
+.feedback-context {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin: 20px 0 24px;
+}
+.feedback-context .record-preview-stage {
+  width: 124px;
+  padding: 6px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.feedback-context .record-composition {
+  display: flex;
+  height: 74px;
+  min-height: 0;
+  gap: 4px;
+  overflow-x: auto;
+}
+.feedback-context .record-composition > * {
+  flex: 0 0 34px;
+}
+.feedback-context .record-composition img,
+.feedback-context .record-composition[data-count='3'] > :first-child img {
+  width: 34px;
+  height: 68px;
+  object-fit: contain;
+}
+.feedback-context p {
+  color: var(--muted);
+  margin: 6px 0;
+}
+.feedback-workspace {
+  display: grid;
+  gap: 20px;
+  align-items: start;
+}
+.feedback-main,
+.feedback-context > div,
+.feedback-form label,
+.feedback-transfer label {
+  min-width: 0;
+}
+.feedback-page h2,
+.feedback-page h3 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+.feedback-section-heading {
+  margin-bottom: 20px;
+}
+.feedback-section-heading p {
+  margin: 0;
+}
+.feedback-form label,
+.feedback-transfer label {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 0;
+}
+.feedback-form .plain-fieldset {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  min-width: 0;
+}
+.feedback-form select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.feedback-page .feedback-target {
+  margin: 0 0 8px;
+}
+.feedback-feelings {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.feedback-choices {
+  position: relative;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.feedback-choices legend {
+  padding: 0;
+  font-weight: 600;
+  line-height: 44px;
+  max-width: calc(100% - 64px);
+}
+.feedback-choice-status {
+  position: absolute;
+  right: 0;
+  top: -44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+.feedback-clear.button {
+  border-color: transparent;
+  background: transparent;
+  padding: 8px;
+  min-width: 44px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.feedback-choice-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.feedback-choices label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 10px 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  background: var(--surface);
+  text-align: center;
+}
+.feedback-choices label:has(:checked) {
+  background: color-mix(in srgb, var(--primary) 9%, var(--surface));
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.feedback-choices label:has(:disabled) {
+  opacity: 0.65;
+  cursor: default;
+}
+.feedback-choices label:focus-within {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.feedback-choices input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  min-height: 0;
+  margin: 0;
+  accent-color: var(--primary);
+}
+.feedback-page .feedback-count {
+  margin: -4px 0 0;
+  text-align: right;
+}
+.feedback-save {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+  padding-top: 18px;
+}
+.feedback-save strong {
+  font-size: 14px;
+}
+.feedback-save p {
+  margin: 4px 0 0;
+}
+.feedback-save > button {
+  flex-shrink: 0;
+}
+.feedback-transfer > p {
+  margin: 0 0 16px;
+}
+.feedback-purpose-list {
+  display: grid;
+  gap: 12px;
+}
+.feedback-purpose.button {
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  text-align: left;
+  white-space: normal;
+}
+.feedback-purpose svg {
+  flex-shrink: 0;
+}
+.feedback-purpose span {
+  display: grid;
+  gap: 4px;
+}
+.feedback-purpose small {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 13px;
+}
+.feedback-purpose[aria-expanded='true'] {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+}
+.feedback-preview:not([hidden]) {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+.feedback-preview > button,
+.feedback-preference > button {
+  margin-top: 8px;
+}
+.feedback-use-hint {
+  color: var(--muted);
+  font-size: 14px;
+}
+.feedback-existing {
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.feedback-existing summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  text-decoration: underline;
+}
+.feedback-page textarea {
+  min-height: 110px;
+  width: 100%;
+  resize: vertical;
+}
+.feedback-page p {
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+}
+.feedback-page :is(select, textarea, button, summary) {
+  scroll-margin-block: 90px 110px;
+}
+.feedback-delete {
+  margin-top: 16px;
+}
+@media (min-width: 1100px) {
+  .feedback-workspace {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+}
+@media (max-width: 420px) {
+  .feedback-form.panel,
+  .feedback-transfer.panel {
+    padding: 16px;
+  }
+  .feedback-context {
+    gap: 12px;
+  }
+  .feedback-context .record-preview-stage {
+    width: 124px;
+  }
+  .feedback-choices label {
+    flex-direction: column;
+    font-size: 14px;
+  }
+}
+
+.feedback-context .record-preview-stage > .record-simulation {
+  position: static;
+  display: inline-block;
+  margin-top: 4px;
+}

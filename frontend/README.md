@@ -90,6 +90,8 @@ P3 条件草稿按北京时间日期/城市保存在本浏览器；查询不自�
 
 ## 导入资料补齐验证
 
+导入界面已优化为模板准备/照片选择、实际处理进度、逐件核对、固定栏确认；错误字段重置、分组直达和错误焦点定位保留草稿。`import-design.spec.ts` 与 `imports-ui.spec.ts` 共 14 项只读/模拟浏览器检查，完整业务流程仍用下方隔离配置。实现、逐项验证和发布证据见 [导入界面优化](../docs/history/2026-10-30-import-ui.md)。
+
 审核草稿支持初始生命周期资料，Excel v2 兼容 v1，AI 仅增加子类预填。字段与人工保护见 [导入契约](../docs/IMPORT-DETAILS.md)。使用 [导入专用 Compose](../scripts/compose.import-regression.json) 的 Fake 环境（8100）；从 frontend 执行：
 
 ```sh
@@ -149,3 +151,7 @@ W4：`/wardrobe/seasonal` 创建与继续整理，`/wardrobe/seasonal/:id` 提�
 W1～W4 整体检查已补充空原因提交、手工目标与估算独立校验，以及换季外出编辑后刷新/保存返回的回归；后端同时修复决定双向同步和待办保护。证据见 [整体检查记录](../docs/history/2026-10-29-w1-w4-audit.md)。
 
 P7.2 穿搭轮换已实现：模式、实际记录统计、任务冻结、结果依据与兼容规则见 [P7.2](../docs/P7-2.md)，当前验证部署状态见 [开发记录](../docs/history/2026-10-30-p7-2.md)。 模式选择卡片、结论摘要与展开依据已完成 UI 优化和部署，验证见 [界面记录](../docs/history/2026-10-30-p7-2-ui.md)。
+
+P7.3：日历记录的「穿后反馈」进入 `/collections/wear/:recordId/feedback`；本地草稿及原请求恢复、显式条件传递和偏好保存见 [P7.3](../docs/P7-3.md)。隔离流程用 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8103 npx playwright test -c playwright.p7-3.config.ts`；已部署页面的只读模拟验收用 `playwright.feedback-ui.config.ts`，不把它当真实写流程。
+
+P7.3 界面已优化为感受选择、保存状态和两种用途预览；切换用途保留各自编辑，条件页空参考可继续重写。组件与浏览器验证、部署证据见 [界面优化记录](../docs/history/2026-10-30-p7-3-ui.md)。

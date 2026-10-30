@@ -107,3 +107,77 @@
   font-size: 13px;
   text-align: center;
 }
+
+.import-upload {
+  max-width: 960px;
+}
+.import-upload .import-choice {
+  padding: 16px;
+  margin: 0;
+  border-radius: 12px;
+}
+.import-upload .import-choice strong {
+  font-size: 16px;
+  margin: 0 0 4px;
+}
+.import-upload .import-choice span {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.import-resume {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0;
+  margin-bottom: 16px;
+  color: var(--primary);
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  min-height: 44px;
+}
+.import-resume span {
+  color: var(--muted);
+}
+.import-guidance {
+  margin-bottom: 24px;
+}
+.import-guidance .import-help {
+  margin: 8px 0;
+}
+.import-guidance .notice {
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 12px;
+}
+.import-upload .import-file-picker {
+  min-height: 80px;
+  margin: 12px 0 20px;
+  font-weight: 600;
+}
+.import-upload-submit {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.import-upload-submit p {
+  margin: 0;
+  font-size: 14px;
+}
+.import-upload-submit .button {
+  min-width: 200px;
+}
+@media (max-width: 760px) {
+  .import-upload-submit .button {
+    width: 100%;
+  }
+  .import-upload .import-choice {
+    padding: 12px;
+  }
+}

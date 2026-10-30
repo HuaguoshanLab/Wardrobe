@@ -1,6 +1,6 @@
 # 架构设计
 
-版本：0.7。更新日期：2026-10-26。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实搭配、照片识别与和风账号已有小样本验收；当前证据见 [DEVELOPMENT](docs/DEVELOPMENT.md)。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
+版本：0.7.3。更新日期：2026-10-30。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实搭配、照片识别与和风账号已有小样本验收；当前证据见 [DEVELOPMENT](docs/DEVELOPMENT.md)。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
 
 产品行为见 [PRODUCT](docs/PRODUCT.md)，字段和协议见 [CONTRACTS](docs/CONTRACTS.md)，实施状态见 [DEVELOPMENT](docs/DEVELOPMENT.md)。本文是技术栈和模块边界的主要维护位置。
 
@@ -241,3 +241,5 @@ AI 接续任务时先读概览和当前进度，再按需求 ID/接口/业务域
 第三方接口与收费会变化，接入时重新核实。本文不承诺未知账号权限、机器性能、模型效果或长期免费额度。
 
 P7.2：`services/outfits/rotation.py` 负责全量实际穿着聚合，`domain/rotation.py` 负责纯函数评分与事实说明，提交事务冻结统计，模型读取有界摘要，校验后排序；无新增表。字段与兼容策略见 [P7.2](docs/P7-2.md)。
+
+P7.3：`db/feedback.py` 维护附属于实际穿着记录的版本化主观反馈，`services/feedback.py` 共用父记录行锁与回执事务；前端 `collections/feedback/` 组合记录和用途选择，`profile` 负责显式条件/偏好传递。迁移、级联删除和备份契约见 [P7.3](docs/P7-3.md)。

@@ -1,4 +1,5 @@
 import './conditions.css'
+import { FeedbackSuggestion } from './feedback-suggestion'
 import { Sparkles } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
@@ -178,6 +179,10 @@ export function ConditionsPanel({
             options={taxonomy.data?.fields.occasion_codes ?? {}}
             value={values.occasion_codes}
             onChange={(v) => form.setValue('occasion_codes', v)}
+          />
+          <FeedbackSuggestion
+            notes={values.notes ?? ''}
+            onApply={(notes) => form.setValue('notes', notes)}
           />
           <RotationChoice
             value={values.rotation_mode}

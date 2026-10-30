@@ -1,0 +1,73 @@
+.import-error-fields {
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  border: 0;
+}
+.import-field-errors {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--destructive);
+  border-radius: 12px;
+  background: white;
+  margin-bottom: 16px;
+}
+.import-field-errors h2 {
+  font-size: 16px;
+  margin: 0;
+}
+.import-field-errors > p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.import-field-errors > div {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+.import-field-errors .error {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+.import-editor-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.import-editor-nav button {
+  flex: 1;
+  padding: 8px;
+  min-height: 44px;
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.import-editing-wrap .editor-fields section {
+  padding: 16px;
+  border-radius: 12px;
+}
+.import-editing-wrap h2 {
+  scroll-margin-block: 12px;
+  font-size: 18px;
+}
+.import-editing-wrap .editor-fields p {
+  font-size: 13px;
+}
+.import-editing-wrap .editor-select-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.import-editing-wrap textarea {
+  width: 100%;
+  min-height: 88px;
+  resize: vertical;
+}
+@media (max-width: 360px) {
+  .import-editing-wrap .editor-select-grid {
+    grid-template-columns: 1fr;
+  }
+}

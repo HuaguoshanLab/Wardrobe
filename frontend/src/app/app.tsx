@@ -146,6 +146,12 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: 'collections/wear/:recordId/feedback',
+        lazy: async () => ({
+          Component: (await import('../features/collections/feedback/page')).FeedbackPage,
+        }),
+      },
+      {
         path: 'wardrobe/seasonal',
         lazy: async () => ({
           Component: (await import('../features/wardrobe/seasonal/list')).SeasonalList,

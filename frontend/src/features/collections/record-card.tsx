@@ -63,6 +63,11 @@ export function RecordCard({
           {favorite && ' · 已收藏'}
         </p>
       </Link>
+      {wear && (
+        <Link className="button button-outline" to={`/collections/wear/${wear.id}/feedback`}>
+          穿后反馈
+        </Link>
+      )}
       {wear?.notes && <p className="record-notes">{wear.notes}</p>}
       <div className="record-card-actions">
         <button

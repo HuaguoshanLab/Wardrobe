@@ -181,7 +181,7 @@ test('review isolates source errors and protects editor drafts; actions require 
     return route.fulfill({ json: envelope({ ...rows[0], row_status: 'skipped' }) })
   })
   await page.goto(`/imports/${batchId}`)
-  await expect(page.locator('.import-overview')).toContainText('需处理')
+  await expect(page.getByRole('button', { name: '需处理', exact: true })).toHaveText('需处理 1')
   await page.screenshot({ path: info.outputPath('review-mocked.png'), fullPage: true })
   await page.getByRole('button', { name: '需处理', exact: true }).click()
   await page.getByText('更多操作', { exact: true }).click()

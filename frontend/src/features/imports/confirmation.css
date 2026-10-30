@@ -1,0 +1,60 @@
+.import-confirm-intro {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.import-confirm-list > li {
+  align-items: flex-start;
+  padding: 16px 0;
+}
+.import-confirm-list > li:first-child {
+  padding-top: 0;
+}
+.import-confirm-list > li > img {
+  width: 76px;
+  height: 88px;
+  flex-shrink: 0;
+}
+.import-confirm-item {
+  min-width: 0;
+}
+.import-confirm-item > strong {
+  display: block;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+.import-confirm-item > small {
+  color: var(--muted);
+}
+.import-confirm-item > p {
+  margin: 4px 0;
+}
+.import-confirm-notes {
+  margin-top: 8px;
+  font-size: 13px;
+}
+.import-confirm-notes summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.import-confirm-notes ul {
+  padding-left: 16px;
+}
+.import-confirm-notes li {
+  display: list-item;
+  border: 0;
+  padding: 0;
+  font-size: 13px;
+}
+.import-confirm-actions {
+  display: flex;
+  gap: 12px;
+}
+.import-confirm-actions > .button {
+  flex: 1;
+}

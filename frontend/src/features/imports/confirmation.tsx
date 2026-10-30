@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
-import { Sheet } from '../../components/ui/sheet'
+import { Sheet, SheetFooter } from '../../components/ui/sheet'
+import './confirmation.css'
 import { Button } from '../../components/ui/button'
 import { api } from '../../lib/http'
 import { operationId } from '../../lib/id'
@@ -11,7 +12,12 @@ const pendingSchema = z.object({
   key: z.string(),
   payload: z.object({ rows: z.array(z.object({ row_id: z.uuid(), expected_version: z.int() })) }),
 })
-export function useConfirmation(batchId: string, rows: ImportRow[], onSuccess: () => void) {
+export function useConfirmation(
+  batchId: string,
+  rows: ImportRow[],
+  onSuccess: () => void,
+  fields: Record<string, Record<string, string>> = {},
+) {
   const key = `wardrobe.confirm.${batchId}`
   const client = useQueryClient()
   const [pending, setPending] = useState<z.infer<typeof pendingSchema> | null>(() => {
@@ -58,14 +64,19 @@ export function useConfirmation(batchId: string, rows: ImportRow[], onSuccess: (
     },
     feedback: pending && (
       <div className="notice" role="status">
-        <strong>上次入库结果尚未确认 · {pending.payload.rows.length} 件</strong>
-        <p>
-          待确认对象：
-          {targets
-            .map((row) => `第 ${row.row_number} 行 ${row.draft.name || row.filename}`)
-            .join('、') || '原请求中的单品'}
-          。重试只发送原请求，不能改成当前新选择。
-        </p>
+        <strong>
+          {mutation.isPending ? '正在确认入库' : '上次入库结果尚未确认'} ·{' '}
+          {pending.payload.rows.length} 件
+        </strong>
+        {!mutation.isPending && (
+          <p>
+            待确认对象：
+            {targets
+              .map((row) => `第 ${row.row_number} 行 ${row.draft.name || row.filename}`)
+              .join('、') || '原请求中的单品'}
+            。重试只发送原请求，不能改成当前新选择。
+          </p>
+        )}
         {mutation.error && (
           <p role="alert" className="error">
             {mutation.error.message}
@@ -73,7 +84,7 @@ export function useConfirmation(batchId: string, rows: ImportRow[], onSuccess: (
         )}
         <div className="actions">
           <Button disabled={mutation.isPending} onClick={() => mutation.mutate(pending)}>
-            重试上次确认
+            {mutation.isPending ? '正在确认…' : '重试上次确认'}
           </Button>
           <Button variant="outline" disabled={mutation.isPending} onClick={() => setDiscard(true)}>
             读取最新结果
@@ -91,54 +102,82 @@ export function useConfirmation(batchId: string, rows: ImportRow[], onSuccess: (
             if (!open) setReview(null)
           }}
         >
-          <p>请确认图片和品类已核对。其他属性可留空，入库后仍可在衣橱中编辑。</p>
+          <p className="import-confirm-intro">
+            最后核对图片与品类。确认后正式加入衣橱，其余资料仍可编辑。
+          </p>
           <ul className="import-confirm-list">
             {review?.map((row) => (
               <li key={row.id}>
                 {row.image_url && <img src={row.image_url} alt="" />}
-                <span>
-                  第 {row.row_number} 行 · {row.draft.name || row.filename}
-                  <br />
-                  <small>子类：{row.draft.subtype_name || '未填写'}</small>
-                </span>
+                <div className="import-confirm-item">
+                  <small>第 {row.row_number} 行</small>
+                  <strong>{row.draft.name || row.filename}</strong>
+                  <p>
+                    {fields.category?.[row.draft.category ?? ''] ??
+                      row.draft.category ??
+                      '品类未填写'}{' '}
+                    · {row.draft.availability === 'available' ? '可穿' : '暂不可用'}
+                  </p>
+                  <p>子类：{row.draft.subtype_name || '未填写'}</p>
+                  <small>
+                    {row.draft.seasons
+                      .map((value) => fields.seasons?.[value] ?? value)
+                      .join(' / ') || '季节未知'}
+                  </small>
+                  {row.analysis_notes.length > 0 && (
+                    <details className="import-confirm-notes">
+                      <summary>识别提醒 · {row.analysis_notes.length} 项</summary>
+                      <ul>
+                        {row.analysis_notes.map((note, index) => (
+                          <li key={index}>{note}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
-          <div className="actions">
-            <Button variant="outline" onClick={() => setReview(null)}>
-              继续核对
-            </Button>
-            <Button
-              onClick={() => {
-                if (!review || pending) return
-                const valid = review.every((item) =>
-                  rows.some(
-                    (row) =>
-                      row.id === item.id &&
-                      row.version === item.version &&
-                      row.row_status === 'ready',
-                  ),
-                )
-                if (!valid) {
-                  setError('选中内容已更新，请关闭面板后重新核对。')
-                  return
-                }
-                mutation.mutate({
-                  key: operationId(),
-                  payload: {
-                    rows: review.map((row) => ({ row_id: row.id, expected_version: row.version })),
-                  },
-                })
-              }}
-            >
-              确认入库
-            </Button>
-          </div>
-          {error && (
-            <p className="error" role="alert">
-              {error}
-            </p>
-          )}
+          <SheetFooter>
+            {error && (
+              <p className="error" role="alert">
+                {error}
+              </p>
+            )}
+            <div className="import-confirm-actions">
+              <Button variant="outline" onClick={() => setReview(null)}>
+                继续核对
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!review || pending) return
+                  const valid = review.every((item) =>
+                    rows.some(
+                      (row) =>
+                        row.id === item.id &&
+                        row.version === item.version &&
+                        row.row_status === 'ready',
+                    ),
+                  )
+                  if (!valid) {
+                    setError('选中内容已更新，请关闭面板后重新核对。')
+                    return
+                  }
+                  mutation.mutate({
+                    key: operationId(),
+                    payload: {
+                      rows: review.map((row) => ({
+                        row_id: row.id,
+                        expected_version: row.version,
+                      })),
+                    },
+                  })
+                }}
+              >
+                确认入库
+              </Button>
+            </div>
+          </SheetFooter>
         </Sheet>
         <Sheet
           title="读取最新入库结果？"

@@ -10,6 +10,7 @@ from app.db.models import Base
 def business_metadata() -> MetaData:
     for module in (
         "collections",
+        "feedback",
         "inventory",
         "lifecycle",
         "organization",

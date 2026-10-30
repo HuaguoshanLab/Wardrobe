@@ -164,7 +164,10 @@ export function RecordActionForm({
       )}
       {action.kind === 'remove-favorite' && <p>取消收藏后，搭配历史和穿着记录仍会保留。</p>}
       {action.kind === 'remove-wear' && (
-        <p>删除 {action.wear.worn_on} 的这条穿着记录，搭配历史和收藏仍会保留。</p>
+        <p>
+          删除 {action.wear.worn_on}{' '}
+          的这条穿着记录及其穿后反馈；搭配历史、收藏和已独立保存的长期偏好仍会保留。
+        </p>
       )}
       {action.kind === 'reuse' && (
         <p>

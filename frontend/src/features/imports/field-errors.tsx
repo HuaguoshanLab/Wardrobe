@@ -55,9 +55,9 @@ export function ImportFieldErrors({
   )
   if (!fields.length) return null
   return (
-    <section aria-label="导入字段错误">
-      <h2>这些字段需要处理</h2>
-      <p>原文件中的错误值未采用。请重新填写，或明确重置为未知/默认值后保存。</p>
+    <section className="import-field-errors" aria-label="导入字段错误">
+      <h2>先处理 {fields.length} 个字段</h2>
+      <p>原表格中的错误值未采用。重新填写，或重置后保存即可继续。</p>
       {fields.map((field) => (
         <div key={field}>
           <p role="alert" className="error">

@@ -1,4 +1,6 @@
+import { ReviewOverview } from './review-overview'
 import './workflow.css'
+import './review-design.css'
 import { z } from 'zod'
 import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
@@ -39,10 +41,15 @@ function ReviewBatch({ id }: { id: string }) {
     void client.invalidateQueries({ queryKey: ['import', id] })
     void client.invalidateQueries({ queryKey: ['garments'] })
   }
-  const confirm = useConfirmation(id, query.data?.rows ?? [], () => {
-    setSelected([])
-    refresh()
-  })
+  const confirm = useConfirmation(
+    id,
+    query.data?.rows ?? [],
+    () => {
+      setSelected([])
+      refresh()
+    },
+    taxonomy.data?.fields ?? {},
+  )
   const action = useMutation({
     mutationFn: async ({ row, step }: { row: ImportRow; step: string }) => {
       if (step === 'skip')
@@ -107,32 +114,7 @@ function ReviewBatch({ id }: { id: string }) {
   return (
     <section className="import-review">
       <PageHeader title="审核衣服" backTo={`/imports${supplyQuery}`} backLabel="返回录入入口" />
-      <p className="muted">
-        {batch.source === 'photos' ? '照片' : 'Excel'}导入 · 只有确认的单品才会加入衣橱
-      </p>
-      <div className="import-overview">
-        <div>
-          <strong>{batch.rows.length}</strong>
-          <span>本批件数</span>
-        </div>
-        <div>
-          <strong>{counts.ready}</strong>
-          <span>待确认</span>
-        </div>
-        <div>
-          <strong>{counts.invalid}</strong>
-          <span>需处理</span>
-        </div>
-        <div>
-          <strong>{counts.confirmed}</strong>
-          <span>已入库</span>
-        </div>
-      </div>
-      {processing && (
-        <p className="notice" role="status">
-          正在处理图片与属性。已就绪的单品可先核对，刷新不会重复识别。
-        </p>
-      )}
+      <ReviewOverview batch={batch} processing={processing} complete={complete} />
       {batch.job_error && (
         <p role="alert" className="error">
           {batch.job_error}。已有单品仍可核对；源文件问题请修正后重新上传。
@@ -195,14 +177,19 @@ function ReviewBatch({ id }: { id: string }) {
       <div className="import-filters" role="group" aria-label="审核状态筛选">
         {(
           [
-            ['pending', '待审核'],
-            ['invalid', '需处理'],
-            ['confirmed', '已入库'],
-            ['all', '全部'],
+            ['pending', '待审核', counts.ready + counts.invalid],
+            ['invalid', '需处理', counts.invalid],
+            ['confirmed', '已入库', counts.confirmed],
+            ['all', '全部', batch.rows.length],
           ] as const
-        ).map(([value, label]) => (
-          <button key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>
-            {label}
+        ).map(([value, label, count]) => (
+          <button
+            key={value}
+            aria-label={label}
+            aria-pressed={filter === value}
+            onClick={() => setFilter(value)}
+          >
+            {label} <span aria-hidden="true">{count}</span>
           </button>
         ))}
       </div>
@@ -266,6 +253,11 @@ function ReviewBatch({ id }: { id: string }) {
       )}
       {!complete && (
         <div className="import-confirm-bar">
+          <p className="import-selection-status" aria-live="polite">
+            {selectedRows.length
+              ? `已选 ${selectedRows.length} 件`
+              : '勾选已核对的单品，再批量入库'}
+          </p>
           <Button
             variant="outline"
             disabled={busy || !readyVisible.length}
