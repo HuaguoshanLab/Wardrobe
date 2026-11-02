@@ -19,9 +19,18 @@ def list_garments(
     availability: str | None,
     tag_id: UUID | None,
     ownership: str = "owned",
+    *,
+    unavailable_reason: str | None = None,
+    exclude_demo: bool = False,
 ) -> GarmentList:
     with session_factory()() as db:
         query = select(Garment).where(Garment.deleted_at.is_(None))
+        if exclude_demo:
+            query = query.where(Garment.is_demo.is_(False))
+        if unavailable_reason:
+            query = query.where(
+                Garment.lifecycle["unavailable_reason"].astext == unavailable_reason
+            )
         if ownership != "all":
             query = query.where(Garment.ownership == ownership)
         for key, value in [("category", category), ("availability", availability)]:

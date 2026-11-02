@@ -17,10 +17,24 @@
   white-space: nowrap;
 }
 .wardrobe-heading-actions {
-  flex-shrink: 0;
+  flex-shrink: 1;
+  flex-wrap: wrap;
+  max-width: 100%;
+  min-width: 0;
 }
 .wardrobe-heading-actions .button {
   white-space: nowrap;
+}
+.wardrobe-daily-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+.wardrobe-daily-nav .button {
+  padding: 8px;
+  font-size: 14px;
 }
 .wardrobe-management-nav {
   display: grid;
@@ -206,7 +220,7 @@
     min-height: 250px;
   }
   .wardrobe-page .page-heading {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 12px;
   }

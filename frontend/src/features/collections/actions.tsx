@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useBlocker, useNavigate } from 'react-router'
 import { Sheet } from '../../components/ui/sheet'
+import { waitForSheetCleanup } from '../../components/ui/sheet-history'
 import { Button } from '../../components/ui/button'
 import { OperationNotice } from '../../components/ui/operation-notice'
 import { useOperation } from '../../lib/use-operation'
@@ -25,11 +26,18 @@ export function useRecordActions() {
     if (path === '/outfit-sessions') setDestination(`/outfits/${sessionSchema.parse(value).id}`)
   })
   const blocker = useBlocker(!!action && (dirty || op.sending))
-  // Navigate after the successful form has closed and the pending guard has updated.
+  // Wait for the sheet's asynchronous history POP as well as the form/guard update.
   useEffect(() => {
     if (!destination || action || op.sending) return
-    setDestination('')
-    void navigate(destination)
+    let cancelled = false
+    void waitForSheetCleanup().then(() => {
+      if (cancelled) return
+      setDestination('')
+      void navigate(destination)
+    })
+    return () => {
+      cancelled = true
+    }
   }, [destination, action, op.sending, navigate])
   useEffect(() => {
     if (!dirty && !op.sending) return

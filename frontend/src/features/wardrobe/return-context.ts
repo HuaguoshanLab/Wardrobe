@@ -10,7 +10,14 @@ export function seasonalReturn(state: unknown) {
   return value && /^\/wardrobe\/seasonal\/[0-9a-f-]{36}(?:[?#].*)?$/i.test(value) ? value : null
 }
 
+export function careReturn(state: unknown) {
+  const value = field(state, 'careReturn')
+  return value && /^\/wardrobe\/care(?:[?#].*)?$/.test(value) ? value : null
+}
+
 export function garmentReturn(state: unknown) {
+  const care = careReturn(state)
+  if (care) return { to: care, label: '返回洗衣与批量管理' }
   const seasonal = seasonalReturn(state)
   if (seasonal) return { to: seasonal, label: '返回本轮整理' }
   for (const [key, prefix, label] of [

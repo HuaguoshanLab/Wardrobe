@@ -1,6 +1,6 @@
 # 架构设计
 
-版本：0.7.4。更新日期：2026-10-30。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实搭配、照片识别与和风账号已有小样本验收；当前证据见 [DEVELOPMENT](docs/DEVELOPMENT.md)。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
+版本：0.7.5。更新日期：2026-10-30。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实搭配、照片识别与和风账号已有小样本验收；当前证据见 [DEVELOPMENT](docs/DEVELOPMENT.md)。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
 
 产品行为见 [PRODUCT](docs/PRODUCT.md)，字段和协议见 [CONTRACTS](docs/CONTRACTS.md)，实施状态见 [DEVELOPMENT](docs/DEVELOPMENT.md)。本文是技术栈和模块边界的主要维护位置。
 
@@ -245,3 +245,5 @@ P7.2：`services/outfits/rotation.py` 负责全量实际穿着聚合，`domain/r
 P7.3：`db/feedback.py` 维护附属于实际穿着记录的版本化主观反馈，`services/feedback.py` 共用父记录行锁与回执事务；前端 `collections/feedback/` 组合记录和用途选择，`profile` 负责显式条件/偏好传递。迁移、级联删除和备份契约见 [P7.3](docs/P7-3.md)。
 
 P7.4：`services/wear_stats.py` 提供 W1 与利用情况共用的实际穿着聚合；`services/usage.py` 在一致数据库快照中读取完整汇总与单页，不新增表。初始单品锁定复用会话现有 JSON 字段，协议与范围见 [P7.4](docs/P7-4.md)。
+
+P7.5：`services/care.py` 组合现有单品列表、W1 生命周期和基础属性写入；整批/单项回执复用 OperationReceipt，逐项 SAVEPOINT 和统一衣橱锁保护并发与部分成功。前端位于 `features/wardrobe/care/`，不维护第二份洗衣库存。见 [P7.5](docs/P7-5.md)。

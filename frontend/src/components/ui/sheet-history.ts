@@ -9,6 +9,12 @@ const stack: Entry[] = []
 let installed = false
 let cleanupPops = 0
 let replacement: { state: unknown; url: string } | null = null
+const cleanupWaiters = new Set<() => void>()
+// Closing a sheet schedules an asynchronous browser POP. A subsequent PUSH must wait.
+export function waitForSheetCleanup(): Promise<void> {
+  if (!cleanupPops) return Promise.resolve()
+  return new Promise((resolve) => cleanupWaiters.add(resolve))
+}
 function attachPending() {
   if (cleanupPops) return
   for (const entry of stack) {
@@ -30,6 +36,10 @@ function handlePop(event: PopStateEvent) {
       history.back()
     }
     attachPending()
+    if (!cleanupPops) {
+      for (const resolve of cleanupWaiters) resolve()
+      cleanupWaiters.clear()
+    }
     return
   }
   const top = stack.at(-1)

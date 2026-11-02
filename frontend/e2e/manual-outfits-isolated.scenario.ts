@@ -99,8 +99,16 @@ test('P7.1: manual save, immutable edit, favorite and explicit reuse without AI'
   ).toEqual(revision)
   await page.getByRole('link', { name: '查看保存的搭配' }).click()
   await page.getByRole('button', { name: '以这套为基础搭配', exact: true }).click()
+  // Reproduce slow asynchronous history cleanup; it must finish before route navigation.
+  await page.evaluate(() => {
+    const back = history.back.bind(history)
+    history.back = () => {
+      window.setTimeout(back, 150)
+    }
+  })
   await page.getByRole('button', { name: '继续搭配', exact: true }).click()
   await expect(page).toHaveURL(/\/outfits\//)
+  await expect.poll(() => page.evaluate(() => !!history.state?.__wardrobeSheet)).toBe(false)
   await expect(page.getByText('手动搭配', { exact: true })).toBeVisible()
   const garment = (await (await request.get(`/api/v1/garments/${id}`)).json()).data
   expect(

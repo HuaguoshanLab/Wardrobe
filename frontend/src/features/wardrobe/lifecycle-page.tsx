@@ -1,4 +1,4 @@
-import { seasonalReturn } from './return-context'
+import { careReturn, seasonalReturn } from './return-context'
 import { useEffect, useRef, useState } from 'react'
 import { useBlocker, useLocation, useParams } from 'react-router'
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -124,8 +124,14 @@ export function LifecyclePage() {
     <section className="lifecycle-page">
       <PageHeader
         title="单品生命周期"
-        backTo={seasonalReturn(returnState) ?? `/wardrobe/${id}`}
-        backLabel={seasonalReturn(returnState) ? '返回本轮整理' : '返回单品'}
+        backTo={careReturn(returnState) ?? seasonalReturn(returnState) ?? `/wardrobe/${id}`}
+        backLabel={
+          careReturn(returnState)
+            ? '返回洗衣与批量管理'
+            : seasonalReturn(returnState)
+              ? '返回本轮整理'
+              : '返回单品'
+        }
         backState={returnState}
       />
       {!item ? (

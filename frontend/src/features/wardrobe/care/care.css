@@ -1,0 +1,213 @@
+.care-page {
+  max-width: 900px;
+  margin-inline: auto;
+}
+.care-page :is(a, button, input, select, summary) {
+  scroll-margin-block: 200px 110px;
+}
+.care-page > .muted {
+  font-size: 14px;
+  margin: 8px 0 16px;
+}
+.care-groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+.care-groups .button {
+  padding-inline: 8px;
+}
+.care-page button[aria-pressed='true'] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+.care-section-title {
+  font-size: 18px;
+  margin: 24px 0 12px;
+}
+.care-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 12px;
+}
+.care-filters label,
+.care-controls > label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  font-size: 14px;
+}
+.care-selection-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0 8px;
+}
+.care-help {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 12px;
+}
+.care-selection-note {
+  font-size: 14px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--primary);
+  background: var(--soft);
+  margin: 12px 0;
+}
+.care-action-bar {
+  position: sticky;
+  top: 56px;
+  z-index: 11;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--primary);
+  border-radius: 14px;
+  background: var(--background);
+  padding: 12px;
+  margin: 16px 0;
+  box-shadow: 0 4px 12px rgb(25 40 31 / 8%);
+}
+.care-action-summary {
+  min-width: 0;
+  flex: 1 1 130px;
+}
+.care-action-summary strong {
+  display: block;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.care-action-summary span {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.care-action-buttons {
+  display: flex;
+  flex: 0 1 auto;
+  gap: 8px;
+}
+.care-action-buttons .button {
+  padding-inline: 12px;
+  font-size: 14px;
+}
+.care-items {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.care-item {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 10px 12px 4px;
+  min-width: 0;
+}
+.care-item[data-selected='true'] {
+  border-color: var(--primary);
+  background: var(--soft);
+}
+.care-item-select {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  min-height: 80px;
+  border-radius: 8px;
+  padding: 4px;
+}
+.care-item-select:has(input:focus-visible) {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.care-item-select:has(input:disabled) {
+  cursor: default;
+}
+.care-item-select input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+}
+.care-item-select > span {
+  min-width: 0;
+}
+.care-item strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+}
+.care-item small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.care-item .care-status {
+  color: var(--primary);
+  margin: 4px 0;
+}
+.care-selected-label {
+  font-weight: 700;
+}
+.care-image {
+  width: 64px;
+  height: 80px;
+  flex-shrink: 0;
+  object-fit: contain;
+  background: var(--background);
+  border-radius: 8px;
+}
+.care-detail {
+  display: flex;
+  width: fit-content;
+  min-height: 44px;
+  align-items: center;
+  margin-left: auto;
+  font-size: 13px;
+}
+.care-empty {
+  text-align: center;
+  margin: 16px 0;
+}
+.care-empty h2 {
+  font-size: 18px;
+}
+.care-empty p {
+  color: var(--muted);
+  font-size: 14px;
+}
+@media (max-width: 420px) {
+  .care-filters {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+  .care-action-buttons {
+    flex: 1 1 100%;
+  }
+  .care-action-buttons .button {
+    flex: 1;
+  }
+  .care-item-select {
+    gap: 8px;
+  }
+  .care-image {
+    width: 52px;
+    height: 72px;
+  }
+  .care-groups .button {
+    font-size: 14px;
+  }
+}
+@media (max-height: 500px) {
+  .care-action-bar {
+    position: static;
+  }
+}

@@ -34,7 +34,11 @@ def rename_tag(tag_id: UUID, payload: TagPatch) -> TagView:
 
 
 def delete_tag(tag_id: UUID, version: int) -> None:
+    from app.services.organization_process import lock_inventory
+
     with session_factory().begin() as db:
+        # Daily batches and tag deletion must not race on JSON tag references.
+        lock_inventory(db)
         tag = db.scalar(select(Tag).where(Tag.id == tag_id).with_for_update())
         if not tag:
             raise AppError("NOT_FOUND", "标签不存在", 404)

@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request, Response
 
 from app.api import (
     backups,
+    care,
     collections,
     feedback,
     imports,
@@ -73,4 +74,5 @@ app.include_router(manual_outfits.router, prefix="/api/v1", tags=["manual-outfit
 
 app.include_router(feedback.router, prefix="/api/v1", tags=["wear-feedback"])
 
+app.include_router(care.router, prefix="/api/v1")
 app.include_router(usage.router, prefix="/api/v1", tags=["wardrobe-usage"])

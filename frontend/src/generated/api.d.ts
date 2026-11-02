@@ -1197,6 +1197,40 @@ export interface paths {
         patch: operations["save_feedback_api_v1_wear_records__record_id__feedback_patch"];
         trace?: never;
     };
+    "/api/v1/wardrobe/care": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listing */
+        get: operations["listing_api_v1_wardrobe_care_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/wardrobe/care/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Execute */
+        post: operations["execute_api_v1_wardrobe_care_actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/wardrobe/usage": {
         parameters: {
             query?: never;
@@ -1406,6 +1440,65 @@ export interface components {
              */
             data_epoch: string;
         };
+        /** CareBatch */
+        CareBatch: {
+            /** Items */
+            items: components["schemas"]["CareItem"][];
+        };
+        /** CareItem */
+        CareItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /** Expected Version */
+            expected_version: number;
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "mark_washing" | "wash_done" | "tags_add" | "tags_remove" | "location_set" | "location_clear";
+            /** Tag Ids */
+            tag_ids?: string[];
+            /** Location */
+            location?: string | null;
+        };
+        /** CareOutcome */
+        CareOutcome: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Garment Id
+             * Format: uuid
+             */
+            garment_id: string;
+            /** Success */
+            success: boolean;
+            /**
+             * Changed
+             * @default false
+             */
+            changed: boolean;
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            garment?: components["schemas"]["GarmentView"] | null;
+        };
+        /** CareResult */
+        CareResult: {
+            /** Items */
+            items: components["schemas"]["CareOutcome"][];
+        };
         /** City */
         City: {
             /** Id */
@@ -1613,6 +1706,15 @@ export interface components {
         /** Envelope[Capabilities] */
         Envelope_Capabilities_: {
             data: components["schemas"]["Capabilities"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[CareResult] */
+        Envelope_CareResult_: {
+            data: components["schemas"]["CareResult"];
             /**
              * Request Id
              * Format: uuid
@@ -9884,6 +9986,148 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_FeedbackView_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listing_api_v1_wardrobe_care_get: {
+        parameters: {
+            query?: {
+                group?: "washing" | "available" | "all";
+                q?: string;
+                category?: string | null;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_GarmentList_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    execute_api_v1_wardrobe_care_actions_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CareBatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_CareResult_"];
                 };
             };
             /** @description Not Found */

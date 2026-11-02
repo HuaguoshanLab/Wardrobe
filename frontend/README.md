@@ -159,3 +159,7 @@ P7.3 界面已优化为感受选择、保存状态和两种用途预览；切换
 P7.4：衣橱「利用情况」进入 `/wardrobe/usage`，范围/分组/页码存于 URL；从单品进入条件页先核对当前状态，点击生成才锁定。隔离完整流程使用 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8104 npx playwright test -c playwright.p7-4.config.ts`；部署后仅运行 `playwright.usage-ui.config.ts`（统计页四尺寸与指定单品条件页、写请求全部拦截、默认城市模拟为空以免天气缓存写入）。行为与证据见 [P7.4](../docs/P7-4.md)。
 
 P7.4 交互验证覆盖统计卡片筛选、慢网焦点、分页回到列表、指定单品禁用与移除保留草稿，见 [界面优化记录](../docs/history/2026-10-30-p7-4-ui.md)。
+
+P7.5：衣橱「洗衣与批量管理」进入 `/wardrobe/care`；跨页明确选择、提交前核对、逐项结果、原键恢复及失败项重新确认。行为见 [P7.5](../docs/P7-5.md)。独立 Fake 栈 `scripts/compose.p7-5.json` 使用 8105；前端目录执行 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8105 npx playwright test -c playwright.p7-5.config.ts`。界面与真实清单只读检查执行 `E2E_BASE_URL=http://localhost:8105 npx playwright test -c playwright.care-ui.config.ts`；部署只读改为 8088，写请求全部拦截。Chromium/Pixel 7 视口不等同真机 Safari 验收。
+
+P7.5 界面优化：设置前置、滚动核对栏、图片与目标变化预览、失败优先结果、只选失败项重新核对及焦点恢复。`playwright.care-ui.config.ts` 共 14 项，包含正常动画结束后焦点断言。业务回归与界面验收应顺序运行，避免备份维护屏障干扰读取；实现和部署证据见 [UI/UX 记录](../docs/history/2026-10-30-p7-5-ui.md)。

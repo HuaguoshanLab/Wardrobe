@@ -74,28 +74,34 @@ def find_garment(db: Session, garment_id: UUID, *, lock: bool = False) -> Garmen
 
 def patch_garment(garment_id: UUID, version: int, changes: dict[str, object]) -> GarmentView:
     with session_factory().begin() as db:
-        garment = find_garment(db, garment_id, lock=True)
-        if garment.version != version:
-            raise AppError("VERSION_CONFLICT", "衣服已更新，请重新读取后编辑")
-        attrs = Attributes.model_validate({**garment.attributes, **changes})
-        errors = validate_attributes(db, attrs, asset(db, garment.image_asset_id))
-        if errors:
-            raise AppError("VALIDATION_ERROR", "；".join(errors), 422)
-        check_subtype(db, garment.subtype_id, attrs.category, retained=True)
-        before = state(garment)
-        if "availability" in changes:
-            garment.lifecycle = {**garment.lifecycle, "unavailable_reason": None}
-        garment.attributes, garment.version = attrs.model_dump(mode="json"), garment.version + 1
-        if "availability" in changes:
-            record(
-                db,
-                garment,
-                "availability",
-                before,
-                utcnow().astimezone(ZoneInfo("Asia/Shanghai")).date(),
-            )
-        db.flush()
-        return garment_view(db, garment)
+        return patch_garment_in(db, garment_id, version, changes)
+
+
+def patch_garment_in(
+    db: Session, garment_id: UUID, version: int, changes: dict[str, object]
+) -> GarmentView:
+    garment = find_garment(db, garment_id, lock=True)
+    if garment.version != version:
+        raise AppError("VERSION_CONFLICT", "衣服已更新，请重新读取后编辑")
+    attrs = Attributes.model_validate({**garment.attributes, **changes})
+    errors = validate_attributes(db, attrs, asset(db, garment.image_asset_id))
+    if errors:
+        raise AppError("VALIDATION_ERROR", "；".join(errors), 422)
+    check_subtype(db, garment.subtype_id, attrs.category, retained=True)
+    before = state(garment)
+    if "availability" in changes:
+        garment.lifecycle = {**garment.lifecycle, "unavailable_reason": None}
+    garment.attributes, garment.version = attrs.model_dump(mode="json"), garment.version + 1
+    if "availability" in changes:
+        record(
+            db,
+            garment,
+            "availability",
+            before,
+            utcnow().astimezone(ZoneInfo("Asia/Shanghai")).date(),
+        )
+    db.flush()
+    return garment_view(db, garment)
 
 
 def delete_garment(garment_id: UUID, version: int) -> None:

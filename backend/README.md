@@ -109,3 +109,5 @@ P7.2 穿搭轮换已实现：模式、实际记录统计、任务冻结、结果
 P7.3：穿后反馈、父记录锁/幂等、迁移 `0012_wear_feedback` 及备份兼容见 [P7.3](../docs/P7-3.md)。独立验证配置为 `scripts/compose.p7-3.json`（项目 wardrobe-p7-3，8103），测试数据库与浏览器及正式数据库分离；实际证据见 [阶段记录](../docs/history/2026-10-30-p7-3.md)。
 
 P7.4：`GET /wardrobe/usage` 只读完整聚合与分页，W1 共用去重逻辑；指定单品在显式生成时创建初始锁定，旧回执保持兼容。无新增迁移，协议和验证见 [P7.4](../docs/P7-4.md)。独立栈 `scripts/compose.p7-4.json` 使用 8104 与 Fake Provider，业务浏览器和 pytest 数据库相互隔离。
+
+P7.5：`GET /wardrobe/care` 提供洗衣/可穿/全部清单；`POST /wardrobe/care/actions` 组合 W1 和基础属性校验，最多 20 件、逐项结果及整批/单项幂等回执，无新增迁移。契约与保留数据发布证据见 [P7.5](../docs/P7-5.md)。隔离测试使用 `docker compose -f scripts/compose.p7-5.json run --rm test pytest -q`（在根目录运行；先启动独立 db 并建立 `regression_suite_test`）。
