@@ -40,7 +40,7 @@ uv run alembic check
 
 initialize 顺序执行 Alembic upgrade head、Checkpointer setup 和一次性示例播种，可重复执行。业务迁移位于 migrations/，检查点使用独立 checkpoints schema。不要在 API/worker 普通启动时执行 setup 或 create_all。
 
-新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0012_wear_feedback；穿后反馈及备份约定见 [P7.3](../docs/P7-3.md)；手动来源及原子穿着提交、旧版本兼容和恢复限制见 [P7.1](../docs/P7-1.md)；W4 追加整理会话、核对与动作回执，恢复和总结约定见 [W4](../docs/W4.md)；W3 追加补充计划、来源、核销关联和整理决定，跨季退出确认及备份约定见 [W3](../docs/W3.md)；W2 追加季节目标、需求行与子类启用状态，统计/影响/备份约定见 [W2](../docs/W2.md)；W1 生命周期见 [W1](../docs/W1.md)；P6 识别账本和不确定性提示保留；既有迁移、快照和调用记录保留。
+新增业务迁移时同步就绪检查的 revision 判定；已执行迁移不能直接改写。当前 head 为 0013_condition_templates；模板及当前备份兼容约定见 [P7.7](../docs/P7-7.md)；穿后反馈及备份约定见 [P7.3](../docs/P7-3.md)；手动来源及原子穿着提交、旧版本兼容和恢复限制见 [P7.1](../docs/P7-1.md)；W4 追加整理会话、核对与动作回执，恢复和总结约定见 [W4](../docs/W4.md)；W3 追加补充计划、来源、核销关联和整理决定，跨季退出确认及备份约定见 [W3](../docs/W3.md)；W2 追加季节目标、需求行与子类启用状态，统计/影响/备份约定见 [W2](../docs/W2.md)；W1 生命周期见 [W1](../docs/W1.md)；P6 识别账本和不确定性提示保留；既有迁移、快照和调用记录保留。
 
 ## 验证
 
@@ -113,3 +113,5 @@ P7.4：`GET /wardrobe/usage` 只读完整聚合与分页，W1 共用去重逻辑
 P7.5：`GET /wardrobe/care` 提供洗衣/可穿/全部清单；`POST /wardrobe/care/actions` 组合 W1 和基础属性校验，最多 20 件、逐项结果及整批/单项幂等回执，无新增迁移。契约与保留数据发布证据见 [P7.5](../docs/P7-5.md)。隔离测试使用 `docker compose -f scripts/compose.p7-5.json run --rm test pytest -q`（在根目录运行；先启动独立 db 并建立 `regression_suite_test`）。
 
 P7.6：`GET /wardrobe/locations` 提供完整位置聚合、字面搜索及分页；`GET /garments` 支持位置精确/未填写/全部真实范围。W1 显式保存位置才去首尾空白，无新表或迁移。契约见 [P7.6](../docs/P7-6.md)。独立 Fake 栈 `scripts/compose.p7-6.json` 使用 8106，pytest 使用 `regression_suite_test`；与 P7.5 相同的启动步骤替换 Compose 文件即可。
+
+P7.7：常用条件模板独立持久化，提供版本和幂等增删改、失效引用提示及完整备份恢复。行为见 [P7.7](../docs/P7-7.md)。独立 Fake 栈 `scripts/compose.p7-7.json` 使用 8107，pytest 使用 `regression_suite_test`；沿用 P7.5 启动步骤并替换 Compose 文件。新迁移仅新增模板表，旧版备份须由匹配的旧应用恢复。

@@ -1,4 +1,5 @@
 import './conditions.css'
+import { TemplateControl } from './templates/control'
 import { FeedbackSuggestion } from './feedback-suggestion'
 import { Sparkles } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
@@ -50,8 +51,10 @@ export function ConditionsPanel({
   submitted,
   weather,
   weatherSummary,
+  templateContext = '城市、天气、日期、季节与单品锁定',
 }: {
   storageKey: string
+  templateContext?: string
   onGenerate?: (requirements: Requirements) => void
   busy?: boolean
   generateBlocked?: boolean
@@ -91,6 +94,10 @@ export function ConditionsPanel({
     : []
   function save(data: Requirements, generate = false) {
     if (generate && generateBlocked) return
+    if (missingTags.length) {
+      setValidation('请先移除已删除标签。')
+      return
+    }
     const candidate = {
       ...data,
       weather_override: manual
@@ -116,6 +123,19 @@ export function ConditionsPanel({
     <section className="panel profile-panel conditions-panel">
       <h2>今天想怎么穿？</h2>
       <p>选个场合，或直接按你的偏好生成。</p>
+      <TemplateControl
+        values={values}
+        disabled={busy || preview.isPending || !taxonomy.isSuccess || !tags.isSuccess}
+        taxonomy={taxonomy.data?.fields ?? {}}
+        tags={tags.data ?? []}
+        context={templateContext}
+        onApply={(next) => {
+          form.reset(next)
+          preview.reset()
+          setValidation('')
+          if (weatherRef.current) weatherRef.current.open = true
+        }}
+      />
       <form
         noValidate
         className="attribute-form"

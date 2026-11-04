@@ -77,6 +77,7 @@ export function ConditionsPage() {
             <ConditionsPanel
               key={`${key}.${outfits.session?.id ?? 'none'}`}
               storageKey={`${key}.${outfits.session?.id ?? 'none'}`}
+              templateContext={`城市（${city?.name ?? '未设置'}）、日期（${date}）、天气、季节及 ${requestedAnchor ? 1 : (outfits.session?.locked_garment_ids.length ?? 0)} 件单品锁定`}
               onGenerate={(requirements) => {
                 if (!anchor.blocked) outfits.generate(requirements, requestedAnchor ?? undefined)
               }}

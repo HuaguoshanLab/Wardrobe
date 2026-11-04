@@ -19,6 +19,7 @@ from app.api import (
     profile,
     seasonal,
     system,
+    templates,
     usage,
     wardrobe,
 )
@@ -79,3 +80,5 @@ app.include_router(care.router, prefix="/api/v1")
 app.include_router(usage.router, prefix="/api/v1", tags=["wardrobe-usage"])
 
 app.include_router(locations.router, prefix="/api/v1")
+
+app.include_router(templates.router, prefix="/api/v1")

@@ -1,0 +1,229 @@
+.template-entry {
+  margin-block: 16px;
+}
+.template-panel,
+.template-list,
+.template-detail {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.template-panel p,
+.template-view-heading h3,
+.template-list-heading h3 {
+  margin: 0;
+}
+.template-view-heading h3 {
+  font-size: 20px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.template-eyebrow {
+  color: var(--muted);
+  font-size: 13px;
+}
+.template-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.template-list-heading h3 {
+  font-size: 18px;
+}
+.template-list-heading > span {
+  color: var(--muted);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.template-search {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+}
+.template-search label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+.template-search input {
+  width: 100%;
+  min-width: 0;
+}
+.template-search > .button {
+  flex-shrink: 0;
+}
+.template-list > .template-card {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  text-align: left;
+  height: auto;
+  min-width: 0;
+  white-space: normal;
+}
+.template-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.template-card-summary {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.template-card-action {
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.template-draft,
+.template-context,
+.template-empty,
+.template-warning {
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--soft);
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+.template-draft {
+  display: grid;
+  gap: 10px;
+}
+.template-draft h3,
+.template-context h4 {
+  margin: 0;
+  font-size: 16px;
+}
+.template-context p,
+.template-empty span {
+  font-size: 14px;
+  color: var(--muted);
+}
+.template-preview {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px;
+  margin: 0;
+}
+.template-preview dt {
+  color: var(--muted);
+}
+.template-preview dd {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.template-detail summary {
+  min-height: 44px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.template-detail summary::before {
+  content: '+';
+  flex-shrink: 0;
+}
+.template-detail details[open] > summary::before {
+  content: '−';
+}
+.template-comparison {
+  padding-block: 8px;
+  border-block: 1px solid var(--border);
+}
+.template-comparison > .template-preview {
+  margin-top: 12px;
+}
+.template-notes summary {
+  font-size: 14px;
+}
+.template-notes p {
+  margin-top: 8px;
+}
+.template-management {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.template-management > .button {
+  flex: 1 1 auto;
+}
+.template-recovery-actions {
+  display: grid;
+  gap: 10px;
+}
+.template-recovery-actions .button {
+  white-space: normal;
+  height: auto;
+  padding-block: 12px;
+}
+.template-actions {
+  display: grid;
+  gap: 8px;
+}
+.template-actions .form-hint {
+  margin: 0;
+  font-size: 13px;
+}
+.template-action-buttons {
+  display: flex;
+  gap: 10px;
+}
+.template-action-buttons > .button {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  height: auto;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+.template-editor .template-counter {
+  text-align: right;
+  margin-top: -10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.template-editor .plain-fieldset {
+  min-width: 0;
+}
+.template-applied {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--soft);
+  overflow-wrap: anywhere;
+}
+.template-busy {
+  color: var(--muted);
+  font-size: 14px;
+}
+[data-template-heading]:focus,
+.template-applied:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+@media (max-height: 500px) {
+  .sheet-popup:has(.template-panel) {
+    max-height: 98dvh;
+  }
+  .sheet-popup:has(.template-panel) .sheet-heading {
+    padding-block: 4px;
+  }
+  .sheet-popup:has(.template-panel) .sheet-footer {
+    padding-block: 8px;
+  }
+  .sheet-popup:has(.template-panel) .template-actions .form-hint {
+    display: none;
+  }
+}
+
+.template-quiet {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}

@@ -23,7 +23,7 @@ def ready(request: Request) -> Envelope[Health]:
             revision = db.scalar(text("SELECT version_num FROM alembic_version"))
             checkpoints = db.scalar(text("SELECT to_regclass('checkpoints.checkpoints')"))
             state = db.get(SystemState, 1)
-            if revision != "0012_wear_feedback" or checkpoints is None or state is None:
+            if revision != "0013_condition_templates" or checkpoints is None or state is None:
                 raise ValueError("initialization incomplete")
     except Exception as exc:
         raise AppError("NOT_READY", "数据库或迁移尚未就绪", 503) from exc

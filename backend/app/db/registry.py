@@ -19,6 +19,7 @@ def business_metadata() -> MetaData:
         "recognition",
         "seasonal",
         "wardrobe",
+        "templates",
     ):
         import_module(f"app.db.{module}")
     return Base.metadata

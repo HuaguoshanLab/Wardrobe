@@ -167,3 +167,7 @@ P7.5 界面优化：设置前置、滚动核对栏、图片与目标变化预览
 P7.6：衣橱「位置」支持搜索和组合筛选，单件生命周期与批量位置共用草稿选择器。行为见 [P7.6](../docs/P7-6.md)。8106 独立 Fake 栈运行 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8106 npx playwright test -c playwright.p7-6.config.ts`；位置只读/模拟界面运行 `E2E_BASE_URL=http://localhost:8106 npx playwright test -c playwright.locations-ui.config.ts`，部署后只读改为 8088。业务与界面验收顺序运行，避免备份维护屏障干扰。
 
 P7.6 界面优化及验证见 [交互记录](../docs/history/2026-11-04-p7-6-ui.md)。`playwright.locations-ui.config.ts` 增加慢网、分页失败重试、手工草稿返回、长文本与减少动画场景；保持真实 API 写入拦截，可用于部署后只读验收。
+
+P7.7：搭配条件页「条件模板」提供搜索、另存、编辑、删除、明确替换预览和浏览器草稿/原请求恢复。行为见 [P7.7](../docs/P7-7.md)。8107 独立 Fake 栈运行 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8107 npx playwright test -c playwright.p7-7.config.ts`；模板只读/模拟界面运行 `E2E_BASE_URL=http://localhost:8107 npx playwright test -c playwright.templates-ui.config.ts`，部署后只读改为 8088。两类回归顺序运行。
+
+P7.7 交互优化：模板摘要卡片、完整补充要求展开、公共固定操作栏、删除取消、草稿保护和稳定焦点交接。`playwright.templates-ui.config.ts` 增加慢网及正常/减少动画验证；使用真实写请求拦截，可用于部署后只读验收。详见 [界面优化记录](../docs/history/2026-11-04-p7-7-ui.md)。
