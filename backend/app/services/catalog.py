@@ -5,7 +5,10 @@ from sqlalchemy import or_, select
 from app.core.errors import AppError
 from app.db.session import session_factory
 from app.db.wardrobe import Garment
+from app.schemas.locations import LocationMode
 from app.schemas.wardrobe import GarmentList
+from app.services.catalog_filters import catalog_filters
+from app.services.locations import location_filter
 from app.services.wardrobe import garment_view
 
 
@@ -22,29 +25,27 @@ def list_garments(
     *,
     unavailable_reason: str | None = None,
     exclude_demo: bool = False,
+    location_mode: LocationMode | None = None,
+    location: str | None = None,
 ) -> GarmentList:
     with session_factory()() as db:
-        query = select(Garment).where(Garment.deleted_at.is_(None))
-        if exclude_demo:
-            query = query.where(Garment.is_demo.is_(False))
+        query = select(Garment).where(
+            *catalog_filters(
+                q,
+                category,
+                season,
+                occasion,
+                availability,
+                tag_id,
+                ownership,
+                exclude_demo=exclude_demo,
+            ),
+            *location_filter(location_mode, location),
+        )
         if unavailable_reason:
             query = query.where(
                 Garment.lifecycle["unavailable_reason"].astext == unavailable_reason
             )
-        if ownership != "all":
-            query = query.where(Garment.ownership == ownership)
-        for key, value in [("category", category), ("availability", availability)]:
-            if value:
-                query = query.where(Garment.attributes[key].astext == value)
-        for key, value in [
-            ("seasons", season),
-            ("occasion_codes", occasion),
-            ("custom_tag_ids", str(tag_id) if tag_id else None),
-        ]:
-            if value:
-                query = query.where(Garment.attributes[key].contains([value]))
-        if q:
-            query = query.where(Garment.attributes["name"].astext.ilike(f"%{q[:100]}%"))
         if cursor:
             previous = db.get(Garment, cursor)
             if previous is None:

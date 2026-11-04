@@ -3,6 +3,8 @@ import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { Sheet } from '../../components/ui/sheet'
 import { Button } from '../../components/ui/button'
 import { Choices } from './choices'
+import { LocationFilter } from './locations/filter'
+import type { LocationSelection } from './locations/api'
 
 type Props = {
   filters: Record<string, string>
@@ -32,8 +34,10 @@ export function WardrobeFilters({
   filter,
   tags,
   resetExtra,
+  selectLocation,
 }: Props & {
   tags: { id: string; name: string }[]
+  selectLocation: (value: LocationSelection | null) => void
   resetExtra: () => void
 }) {
   const [open, setOpen] = useState(false)
@@ -51,6 +55,12 @@ export function WardrobeFilters({
     (key) => filters[key],
   ).length
   const names: Record<string, string> = {
+    location_mode:
+      filters.location_mode === 'named'
+        ? `位置：${filters.location}`
+        : filters.location_mode === 'unassigned'
+          ? '未填写位置'
+          : '全部位置（不含示例）',
     ownership: filters.ownership === 'retired' ? '已退出档案' : '全部档案',
     q: filters.q,
     category: fields.category?.[filters.category] ?? filters.category,
@@ -77,14 +87,19 @@ export function WardrobeFilters({
             }}
           />
         </label>
+        <LocationFilter filters={filters} onSelect={selectLocation} />
         <Sheet
           title="更多筛选"
           open={open}
           onOpenChange={setOpen}
           trigger={
-            <button className="wardrobe-more">
+            <button
+              className="wardrobe-more"
+              aria-label={`筛选${extraCount > 0 ? ` ${extraCount} 项已选` : ''}`}
+            >
               <SlidersHorizontal size={18} aria-hidden="true" />
-              筛选{extraCount > 0 && <span>{extraCount}</span>}
+              <span className="wardrobe-more-label">筛选</span>
+              {extraCount > 0 && <span className="wardrobe-more-count">{extraCount}</span>}
             </button>
           }
         >
@@ -155,8 +170,13 @@ export function WardrobeFilters({
           {Object.entries(names)
             .filter(([key]) => filters[key])
             .map(([key, name]) => (
-              <button key={key} aria-label={`移除筛选：${name}`} onClick={() => filter(key, '')}>
-                {name}
+              <button
+                key={key}
+                data-location={key === 'location_mode'}
+                aria-label={`移除筛选：${name}`}
+                onClick={() => (key === 'location_mode' ? selectLocation(null) : filter(key, ''))}
+              >
+                <span title={name}>{name}</span>
                 <X size={14} aria-hidden="true" />
               </button>
             ))}

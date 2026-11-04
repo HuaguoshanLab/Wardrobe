@@ -12,6 +12,7 @@ from app.api import (
     inventory,
     jobs,
     lifecycle,
+    locations,
     manual_outfits,
     organization,
     outfits,
@@ -76,3 +77,5 @@ app.include_router(feedback.router, prefix="/api/v1", tags=["wear-feedback"])
 
 app.include_router(care.router, prefix="/api/v1")
 app.include_router(usage.router, prefix="/api/v1", tags=["wardrobe-usage"])
+
+app.include_router(locations.router, prefix="/api/v1")

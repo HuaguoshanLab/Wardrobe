@@ -103,7 +103,7 @@
   color: var(--primary);
   background: white;
 }
-.wardrobe-more span {
+.wardrobe-more-count {
   border-radius: 50%;
   background: var(--primary);
   color: white;
@@ -316,5 +316,35 @@
   .wardrobe-browser {
     flex: none;
     height: 360px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wardrobe-search-row {
+    gap: 8px;
+  }
+  .wardrobe-search {
+    padding-left: 10px;
+    gap: 4px;
+  }
+  .wardrobe-search > svg {
+    flex-shrink: 0;
+  }
+  .wardrobe-search input {
+    padding-inline: 6px;
+  }
+  .wardrobe-more {
+    position: relative;
+    width: 46px;
+    flex-shrink: 0;
+    padding: 8px;
+  }
+  .wardrobe-more-label {
+    display: none;
+  }
+  .wardrobe-more-count {
+    position: absolute;
+    top: -6px;
+    right: -3px;
   }
 }

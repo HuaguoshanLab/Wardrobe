@@ -1,4 +1,5 @@
 import './lifecycle-form.css'
+import { LocationInput } from './locations/input'
 import { Button } from '../../components/ui/button'
 import { SheetFooter } from '../../components/ui/sheet'
 import type { Garment } from './api'
@@ -200,7 +201,12 @@ export function LifecycleForm({
             <Button variant="outline" className="lifecycle-add-subtype" onClick={onAddSubtype}>
               新增子类
             </Button>
-            {text('location', '收纳位置', 120)}
+            <LocationInput
+              label="收纳位置"
+              value={draft.changes.location ?? ''}
+              disabled={busy}
+              onChange={(value) => set('location', value || null)}
+            />
             <label>
               单品备注
               <textarea
@@ -221,7 +227,12 @@ export function LifecycleForm({
         {draft.action === 'storage' && (
           <>
             {choices('storage', '存放状态')}
-            {text('location', '收纳位置', 120)}
+            <LocationInput
+              label="收纳位置"
+              value={draft.changes.location ?? ''}
+              disabled={busy}
+              onChange={(value) => set('location', value || null)}
+            />
             <p className="muted">收纳或取出不会清除待洗、维修等不可用原因。</p>
           </>
         )}

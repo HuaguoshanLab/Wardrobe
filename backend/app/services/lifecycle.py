@@ -62,6 +62,8 @@ def apply_in(
     if garment.version != payload.expected_version:
         raise AppError("VERSION_CONFLICT", "单品已更新，请保留草稿并读取最新版本")
     changes = dict(payload.changes)
+    if isinstance(changes.get("location"), str):
+        changes["location"] = str(changes["location"]).strip() or None
     action = payload.action
     if changes.keys() - FIELDS[action]:
         raise AppError("INVALID_ACTION", "此动作包含不允许修改的字段", 422)

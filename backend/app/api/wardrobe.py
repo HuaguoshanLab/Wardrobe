@@ -11,6 +11,7 @@ from app.db.wardrobe import Tag
 from app.domain.taxonomy import TAXONOMY
 from app.media.storage import path_for
 from app.schemas.common import Envelope
+from app.schemas.locations import LocationMode
 from app.schemas.wardrobe import (
     AttributePatch,
     GarmentList,
@@ -57,10 +58,22 @@ def garments(
     availability: str | None = None,
     tag_id: UUID | None = None,
     ownership: Literal["owned", "retired", "all"] = "owned",
+    location_mode: LocationMode | None = None,
+    location: Annotated[str | None, Query(max_length=120)] = None,
 ) -> Envelope[GarmentList]:
     return Envelope(
         data=list_garments(
-            limit, cursor, q, category, season, occasion, availability, tag_id, ownership
+            limit,
+            cursor,
+            q,
+            category,
+            season,
+            occasion,
+            availability,
+            tag_id,
+            ownership,
+            location_mode=location_mode,
+            location=location,
         ),
         request_id=request_id(request),
     )

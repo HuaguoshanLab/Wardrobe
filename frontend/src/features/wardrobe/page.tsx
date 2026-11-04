@@ -35,6 +35,7 @@ export function WardrobePage() {
     'availability',
     'tag_id',
     'ownership',
+    'location_mode',
   ].some((key) => !!filters[key])
   const taxonomy = useQuery({ queryKey: ['taxonomies'], queryFn: getTaxonomy })
   const tags = useQuery({ queryKey: ['tags'], queryFn: getTags })
@@ -122,6 +123,16 @@ export function WardrobePage() {
         fields={taxonomy.data?.fields ?? {}}
         filter={filter}
         tags={tags.data ?? []}
+        selectLocation={(value) => {
+          const next = new URLSearchParams(searchParams)
+          next.delete('location')
+          next.delete('location_mode')
+          if (value) {
+            next.set('location_mode', value.mode)
+            if (value.mode === 'named' && value.location) next.set('location', value.location)
+          }
+          applyFilters(next)
+        }}
         resetExtra={() => {
           const next = new URLSearchParams(searchParams)
           for (const key of ['occasion', 'availability', 'tag_id', 'ownership', 'cursor'])
@@ -155,6 +166,7 @@ export function WardrobePage() {
           aria-label="衣橱列表"
           tabIndex={0}
         >
+          {filters.location_mode && <p className="location-help">按位置查看真实单品，不含示例。</p>}
           <div className="wardrobe-summary">
             <span role="status">
               {query.isPending

@@ -1248,6 +1248,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/wardrobe/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listing */
+        get: operations["listing_api_v1_wardrobe_locations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1868,6 +1885,15 @@ export interface components {
         /** Envelope[LifecycleHistory] */
         Envelope_LifecycleHistory_: {
             data: components["schemas"]["LifecycleHistory"];
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /** Envelope[LocationList] */
+        Envelope_LocationList_: {
+            data: components["schemas"]["LocationList"];
             /**
              * Request Id
              * Format: uuid
@@ -2830,6 +2856,26 @@ export interface components {
             name: string;
             /** Archived */
             archived: boolean;
+        };
+        /** LocationCount */
+        LocationCount: {
+            /** Location */
+            location: string;
+            /** Count */
+            count: number;
+        };
+        /** LocationList */
+        LocationList: {
+            /** Items */
+            items: components["schemas"]["LocationCount"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+            /** Total Garments */
+            total_garments: number;
+            /** Unassigned Count */
+            unassigned_count: number;
+            /** Matching Locations */
+            matching_locations: number;
         };
         /** LocationPatch */
         LocationPatch: {
@@ -4484,6 +4530,8 @@ export interface operations {
                 availability?: string | null;
                 tag_id?: string | null;
                 ownership?: "owned" | "retired" | "all";
+                location_mode?: ("all" | "named" | "unassigned") | null;
+                location?: string | null;
             };
             header?: never;
             path?: never;
@@ -10198,6 +10246,82 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Envelope_UsageReport_"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Gone */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listing_api_v1_wardrobe_locations_get: {
+        parameters: {
+            query?: {
+                location_q?: string;
+                cursor?: string | null;
+                limit?: number;
+                q?: string;
+                category?: string | null;
+                season?: string | null;
+                occasion?: string | null;
+                availability?: string | null;
+                tag_id?: string | null;
+                ownership?: "owned" | "retired" | "all";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope_LocationList_"];
                 };
             };
             /** @description Not Found */

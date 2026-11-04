@@ -1,3 +1,4 @@
+import { LocationInput } from '../locations/input'
 import { Button } from '../../../components/ui/button'
 import { actions, type CareAction } from './api'
 import type { CareDraft } from './state'
@@ -80,15 +81,12 @@ export function CareControls({
         </>
       )}
       {draft.action === 'location_set' && (
-        <label>
-          新收纳位置
-          <input
-            maxLength={120}
-            value={draft.location}
-            onChange={(e) => onChange({ ...draft, location: e.target.value })}
-            placeholder="例如：衣柜第二层"
-          />
-        </label>
+        <LocationInput
+          label="新收纳位置"
+          value={draft.location}
+          disabled={busy}
+          onChange={(value) => onChange({ ...draft, location: value })}
+        />
       )}
       {draft.action === 'location_clear' && (
         <p className="notice">将清空所选单品的位置；可穿状态和日常/换季收纳状态保持。</p>

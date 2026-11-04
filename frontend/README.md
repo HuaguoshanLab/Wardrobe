@@ -163,3 +163,7 @@ P7.4 交互验证覆盖统计卡片筛选、慢网焦点、分页回到列表、
 P7.5：衣橱「洗衣与批量管理」进入 `/wardrobe/care`；跨页明确选择、提交前核对、逐项结果、原键恢复及失败项重新确认。行为见 [P7.5](../docs/P7-5.md)。独立 Fake 栈 `scripts/compose.p7-5.json` 使用 8105；前端目录执行 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8105 npx playwright test -c playwright.p7-5.config.ts`。界面与真实清单只读检查执行 `E2E_BASE_URL=http://localhost:8105 npx playwright test -c playwright.care-ui.config.ts`；部署只读改为 8088，写请求全部拦截。Chromium/Pixel 7 视口不等同真机 Safari 验收。
 
 P7.5 界面优化：设置前置、滚动核对栏、图片与目标变化预览、失败优先结果、只选失败项重新核对及焦点恢复。`playwright.care-ui.config.ts` 共 14 项，包含正常动画结束后焦点断言。业务回归与界面验收应顺序运行，避免备份维护屏障干扰读取；实现和部署证据见 [UI/UX 记录](../docs/history/2026-10-30-p7-5-ui.md)。
+
+P7.6：衣橱「位置」支持搜索和组合筛选，单件生命周期与批量位置共用草稿选择器。行为见 [P7.6](../docs/P7-6.md)。8106 独立 Fake 栈运行 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8106 npx playwright test -c playwright.p7-6.config.ts`；位置只读/模拟界面运行 `E2E_BASE_URL=http://localhost:8106 npx playwright test -c playwright.locations-ui.config.ts`，部署后只读改为 8088。业务与界面验收顺序运行，避免备份维护屏障干扰。
+
+P7.6 界面优化及验证见 [交互记录](../docs/history/2026-11-04-p7-6-ui.md)。`playwright.locations-ui.config.ts` 增加慢网、分页失败重试、手工草稿返回、长文本与减少动画场景；保持真实 API 写入拦截，可用于部署后只读验收。

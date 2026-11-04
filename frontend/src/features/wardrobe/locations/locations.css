@@ -1,0 +1,228 @@
+.location-choices,
+.location-input,
+.location-input label,
+.location-choices > label {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.location-input > .button {
+  justify-self: start;
+}
+.location-options {
+  display: grid;
+  gap: 8px;
+}
+.location-options .button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  text-align: left;
+  gap: 12px;
+  min-height: 48px;
+}
+.location-options .button > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.location-options .button > span:last-child {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+.location-options .button[aria-pressed='true'] {
+  border-color: var(--primary);
+  background: var(--soft);
+  color: var(--primary);
+}
+.location-help {
+  margin: 2px 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+.location-suggestions {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.wardrobe-location-trigger {
+  flex-shrink: 0;
+  padding-inline: 12px;
+}
+.wardrobe-location-trigger[aria-pressed='true'] {
+  background: var(--soft);
+  border-color: var(--primary);
+}
+.wardrobe-active-filters button[data-location='true'] {
+  max-width: 100%;
+  flex-shrink: 1;
+  text-align: left;
+}
+.wardrobe-active-filters button[data-location='true'] svg {
+  flex-shrink: 0;
+}
+
+.wardrobe-active-filters button[data-location='true'] > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-search-label {
+  font-weight: 600;
+}
+.location-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: white;
+  padding-left: 12px;
+  color: var(--muted);
+}
+.location-search-box > svg {
+  flex-shrink: 0;
+}
+.location-search-box input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding-inline: 0;
+}
+.location-search-box input::-webkit-search-cancel-button {
+  display: none;
+}
+.location-search-clear.button {
+  flex-shrink: 0;
+  width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+}
+.location-scope {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-block: 4px;
+}
+.location-scope .button {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+}
+.location-scope .location-option-name > svg {
+  display: none;
+}
+.location-option-name {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.location-option-name > svg {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+.location-option-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.location-list-heading {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.location-names .button {
+  padding: 12px;
+  border-color: var(--border);
+  border-radius: 12px;
+}
+.location-current {
+  background: var(--soft);
+  border-radius: 10px;
+  padding: 0 10px;
+}
+.location-current summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.location-current summary > svg {
+  flex-shrink: 0;
+}
+.location-current summary > span:first-of-type {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.location-current-hint {
+  flex-shrink: 0;
+  margin-left: auto;
+  text-decoration: underline;
+}
+.location-current p {
+  margin: 0 0 10px;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.location-message {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: white;
+}
+.location-message p {
+  margin-block: 6px 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.location-count-help {
+  color: var(--muted);
+  font-size: 14px;
+}
+.location-count-help summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.location-count-help p {
+  margin-block: 0 8px;
+}
+.location-choices .button:active {
+  background: var(--soft);
+}
+.location-choices input,
+.location-choices button,
+.location-current summary {
+  scroll-margin-block: 16px;
+}
+@media (max-width: 480px) {
+  .wardrobe-location-trigger {
+    gap: 4px;
+    padding-inline: 8px;
+  }
+}
+
+.location-choices,
+.location-input,
+.location-suggestions {
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+}
+.location-current,
+.location-options {
+  min-width: 0;
+}
