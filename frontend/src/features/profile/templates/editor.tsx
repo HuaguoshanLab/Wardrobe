@@ -1,9 +1,16 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { z } from 'zod'
 import { SheetFooter } from '../../../components/ui/sheet'
 import { Button } from '../../../components/ui/button'
 import { fieldsSchema, getTemplate, type Fields, type Template } from './api'
-import { TemplateFields, invalidFields, repairFields, type Tag, type Vocabulary } from './fields'
+import {
+  FieldsPreview,
+  TemplateFields,
+  invalidFields,
+  repairFields,
+  type Tag,
+  type Vocabulary,
+} from './fields'
 export const editorSchema = z.object({
   id: z.uuid().nullable(),
   version: z.int().nullable(),
@@ -56,6 +63,16 @@ export function TemplateEditor({
 }) {
   const formId = useId()
   const [reading, setReading] = useState(false)
+  const [readMessage, setReadMessage] = useState('')
+  const [latest, setLatest] = useState<Template | null>(null)
+  const comparison = useRef<HTMLHeadingElement>(null)
+  const readButton = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (latest) {
+      comparison.current?.focus()
+      comparison.current?.scrollIntoView?.({ block: 'start', behavior: 'instant' })
+    }
+  }, [latest])
   const invalid = value.unsupported || invalidFields(value.fields, taxonomy, tags)
   return (
     <form
@@ -63,7 +80,7 @@ export function TemplateEditor({
       className="attribute-form template-editor"
       onSubmit={(e) => {
         e.preventDefault()
-        if (!busy && !reading && !invalid && value.name.trim()) onSave()
+        if (!busy && !reading && !latest && !invalid && value.name.trim()) onSave()
       }}
     >
       <header className="template-view-heading">
@@ -117,42 +134,114 @@ export function TemplateEditor({
         </p>
         {value.id && (
           <Button
+            ref={readButton}
             type="button"
             variant="outline"
             onClick={async () => {
               setReading(true)
+              setReadMessage('')
+              onError('')
               try {
-                const latest = await getTemplate(value.id!)
-                onChange({ ...value, version: latest.version })
-                onError('已读取最新版本并保留输入；请核对后再次保存，将覆盖该版本。')
+                const row = await getTemplate(value.id!)
+                if (row.version === value.version) {
+                  setLatest(null)
+                  setReadMessage('已是最新版本，你的编辑保持。')
+                } else {
+                  setLatest(row)
+                }
               } catch (e) {
-                onError(e instanceof Error ? e.message : '读取失败')
+                setReadMessage(e instanceof Error ? e.message : '读取失败')
               } finally {
                 setReading(false)
               }
             }}
           >
-            读取最新版本，保留输入
+            {reading ? '正在读取最新版本…' : '读取最新版本，保留输入'}
           </Button>
         )}
+        {readMessage && (
+          <p className="notice" role="status">
+            {readMessage}
+          </p>
+        )}
       </fieldset>
+      {latest && (
+        <section className="template-version-review">
+          <h4 ref={comparison} tabIndex={-1}>
+            核对其他地方保存的修改
+          </h4>
+          <p>你的编辑保持在上方。继续保存会覆盖下面的最新内容。</p>
+          <p className="template-latest-name">最新名称：{latest.name}</p>
+          {fieldsSchema.safeParse(latest.conditions).success ? (
+            <FieldsPreview
+              value={fieldsSchema.parse(latest.conditions)}
+              taxonomy={taxonomy}
+              tags={tags}
+            />
+          ) : (
+            <p role="alert">最新模板包含不支持的字段。选择覆盖后将用上方条件完整替换。</p>
+          )}
+          {latest.issues.map((issue) => (
+            <p role="alert" key={issue}>
+              {issue}
+            </p>
+          ))}
+          <div className="template-management">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={busy || reading}
+              onClick={() => {
+                setLatest(null)
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() => readButton.current?.focus()),
+                )
+              }}
+            >
+              暂不覆盖
+            </Button>
+            <Button
+              type="button"
+              disabled={busy || reading}
+              onClick={() => {
+                onChange({ ...value, version: latest.version })
+                setLatest(null)
+                setReadMessage('已核对最新内容；点击保存模板后才会覆盖。')
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() => readButton.current?.focus()),
+                )
+              }}
+            >
+              保留我的输入，继续保存
+            </Button>
+          </div>
+        </section>
+      )}
       <SheetFooter>
         <div className="template-actions">
           <p className="form-hint">
-            {invalid
-              ? '请先修正失效条件。'
-              : !value.name.trim()
-                ? '填写名称后即可保存。'
-                : '仅保存模板，本次搭配条件保持。'}
+            {latest
+              ? '先核对最新内容，再决定是否覆盖。'
+              : invalid
+                ? '请先修正失效条件。'
+                : !value.name.trim()
+                  ? '填写名称后即可保存。'
+                  : '仅保存模板，本次搭配条件保持。'}
           </p>
           <div className="template-action-buttons">
-            <Button type="button" variant="outline" disabled={busy || reading} onClick={onBack}>
-              返回列表，保留草稿
+            <Button
+              type="button"
+              variant="outline"
+              aria-label="返回列表，保留草稿"
+              disabled={busy || reading}
+              onClick={onBack}
+            >
+              返回列表
             </Button>
             <Button
               type="submit"
               form={formId}
-              disabled={busy || reading || !!invalid || !value.name.trim()}
+              disabled={busy || reading || !!latest || !!invalid || !value.name.trim()}
             >
               {busy ? '正在保存…' : '保存模板'}
             </Button>

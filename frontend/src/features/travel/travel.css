@@ -1,0 +1,376 @@
+.travel-page {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+.travel-page .page-heading {
+  margin-bottom: 0;
+}
+.travel-page h1,
+.travel-page h2,
+.travel-page p,
+.travel-page strong {
+  overflow-wrap: anywhere;
+}
+.travel-page .panel {
+  padding: clamp(1rem, 3vw, 1.75rem);
+}
+.travel-fields,
+.travel-list,
+.travel-days,
+.travel-packing {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.travel-fields label {
+  display: grid;
+  gap: 0.5rem;
+}
+.travel-fields fieldset {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1rem;
+  min-width: 0;
+}
+.travel-fields legend {
+  font-weight: 650;
+  padding-inline: 0.5rem;
+}
+.travel-fields input,
+.travel-fields select,
+.travel-fields textarea {
+  width: 100%;
+  min-width: 0;
+  font-size: 1rem;
+}
+.travel-fields input[type='checkbox'],
+.travel-pick input,
+.travel-pack-row input {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+}
+.travel-fields .travel-check {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 48px;
+}
+.travel-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.travel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.travel-day-input {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.travel-page summary {
+  cursor: pointer;
+  min-height: 48px;
+  padding-block: 0.75rem;
+  font-weight: 600;
+}
+.travel-page details > div {
+  padding-top: 0.75rem;
+}
+.travel-intro {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+}
+.travel-list-card {
+  display: grid;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+.travel-list-card:hover {
+  border-color: var(--primary);
+}
+.travel-outfit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+.travel-outfit > div {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  min-width: 0;
+}
+.travel-outfit img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+.travel-outfit span {
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+.travel-picker {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 24rem;
+  overflow-y: auto;
+  margin-block: 1rem;
+}
+.travel-fields .travel-pick,
+.travel-pack-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 64px;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  cursor: pointer;
+}
+.travel-pick img,
+.travel-pack-row img {
+  width: 56px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+.travel-pack-row > span {
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.travel-pack-row small {
+  overflow-wrap: anywhere;
+}
+.travel-day-heading h2 {
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+.travel-summary small,
+.travel-day small {
+  display: block;
+}
+@media (min-width: 780px) {
+  .travel-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 360px) {
+  .travel-two {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .travel-list-card {
+    transition: none;
+  }
+}
+
+/* Readable trip overview, quick access and durable packing feedback. */
+.travel-brief,
+.travel-summary {
+  display: grid;
+  gap: 0.75rem;
+}
+.travel-brief-heading,
+.travel-section-heading,
+.travel-dates,
+.travel-facts,
+.travel-facts > span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.travel-brief-heading,
+.travel-facts {
+  flex-wrap: wrap;
+}
+.travel-brief h2,
+.travel-section-heading h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.travel-badge {
+  font-size: 0.75rem;
+  color: var(--primary);
+  background: var(--soft);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.6rem;
+  border-radius: 2rem;
+}
+.travel-facts {
+  gap: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+.travel-notes {
+  white-space: pre-wrap;
+}
+.travel-jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.travel-jumps button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 48px;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  color: var(--primary);
+  background: var(--surface);
+  font-weight: 650;
+  text-decoration: none;
+}
+.travel-jumps button:hover {
+  border-color: var(--primary);
+}
+.travel-days,
+.travel-packing {
+  scroll-margin-top: 1rem;
+}
+.travel-day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.travel-day > .actions {
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+.travel-day > details {
+  border-top: 1px solid var(--border);
+}
+.travel-packing progress {
+  width: 100%;
+  height: 0.6rem;
+  accent-color: var(--primary);
+}
+.travel-packing-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+.travel-packing-toolbar [aria-pressed='true'] {
+  background: var(--primary);
+  color: white;
+}
+.travel-packing-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+.travel-pack-row[data-packed='true'] {
+  background: var(--soft);
+  border-color: var(--primary);
+}
+.travel-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 1rem;
+  color: var(--muted);
+}
+.travel-empty svg {
+  flex-shrink: 0;
+}
+.travel-selected {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+.travel-selected > span:not(.garment-image-fallback) {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.travel-selected img {
+  width: 44px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.travel-selected small {
+  color: var(--muted);
+}
+.travel-pick > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.travel-form-section {
+  background: var(--surface);
+}
+.travel-editor-footer {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 4;
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 4px 18px #0000000f;
+}
+.travel-editor-footer small {
+  color: var(--muted);
+}
+.travel-fields :is(input, select, textarea, summary, button) {
+  scroll-margin-block: 1rem 13rem;
+}
+.travel-outfit .garment-image-fallback {
+  aspect-ratio: 1;
+}
+.travel-pack-row .garment-image-fallback,
+.travel-pick .garment-image-fallback,
+.travel-selected .garment-image-fallback {
+  width: 56px;
+  height: 64px;
+  min-width: 56px;
+  font-size: 0.75rem;
+}
+@media (min-width: 1000px) {
+  .travel-days,
+  .travel-packing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .travel-editor-footer {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+  .travel-editor-footer .travel-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .travel-editor-footer button:first-child {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-height: 500px) {
+  .travel-editor-footer {
+    position: static;
+  }
+}

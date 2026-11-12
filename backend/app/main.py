@@ -17,9 +17,11 @@ from app.api import (
     organization,
     outfits,
     profile,
+    reference,
     seasonal,
     system,
     templates,
+    travel,
     usage,
     wardrobe,
 )
@@ -82,3 +84,7 @@ app.include_router(usage.router, prefix="/api/v1", tags=["wardrobe-usage"])
 app.include_router(locations.router, prefix="/api/v1")
 
 app.include_router(templates.router, prefix="/api/v1")
+
+app.include_router(travel.router, prefix="/api/v1")
+
+app.include_router(reference.router, prefix="/api/v1")

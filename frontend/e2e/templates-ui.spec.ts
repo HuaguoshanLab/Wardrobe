@@ -82,6 +82,11 @@ for (const [width, height] of [
     await page.screenshot({ path: info.outputPath('template-editor.png'), animations: 'disabled' })
     await page.getByRole('button', { name: '返回列表，保留草稿' }).click()
     await page.getByRole('button', { name: '放弃模板编辑草稿' }).click()
+    await expect(page.getByRole('button', { name: '保留草稿', exact: true })).toBeFocused()
+    await page.getByRole('button', { name: '保留草稿', exact: true }).click()
+    await expect(page.getByRole('button', { name: '放弃模板编辑草稿' })).toBeFocused()
+    await page.getByRole('button', { name: '放弃模板编辑草稿' }).click()
+    await page.getByRole('button', { name: '确认放弃草稿' }).click()
     await expect(page.getByLabel('搜索模板')).toBeFocused()
     fail = true
     await page.getByRole('button', { name: '关闭面板' }).click()

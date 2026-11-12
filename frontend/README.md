@@ -171,3 +171,11 @@ P7.6 界面优化及验证见 [交互记录](../docs/history/2026-11-04-p7-6-ui.
 P7.7：搭配条件页「条件模板」提供搜索、另存、编辑、删除、明确替换预览和浏览器草稿/原请求恢复。行为见 [P7.7](../docs/P7-7.md)。8107 独立 Fake 栈运行 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8107 npx playwright test -c playwright.p7-7.config.ts`；模板只读/模拟界面运行 `E2E_BASE_URL=http://localhost:8107 npx playwright test -c playwright.templates-ui.config.ts`，部署后只读改为 8088。两类回归顺序运行。
 
 P7.7 交互优化：模板摘要卡片、完整补充要求展开、公共固定操作栏、删除取消、草稿保护和稳定焦点交接。`playwright.templates-ui.config.ts` 增加慢网及正常/减少动画验证；使用真实写请求拦截，可用于部署后只读验收。详见 [界面优化记录](../docs/history/2026-11-04-p7-7-ui.md)。
+
+P7.8：穿搭记录的「旅行胶囊衣橱」进入 `/collections/travel`；逐日方案、打包清单、条件草稿和原操作恢复见 [P7.8](../docs/P7-8.md)。隔离 Fake 栈运行 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8108 npx playwright test -c playwright.p7-8.config.ts`；`playwright.travel-ui.config.ts` 拦截全部 API 写请求，用于四尺寸只读/模拟验收；部署后只读地址改为 8088。
+
+P7.8 界面优化增加行程摘要、收拾筛选/进度、固定保存栏和草稿保护。`playwright.travel-ui.config.ts` 包含四尺寸、慢网反馈/失败回滚、弹层失败恢复及七日表单检查；所有写请求拦截或模拟，适用于部署后只读验收。业务与界面测试顺序执行，避免备份维护干扰。证据见 [UI/UX 记录](../docs/history/2026-11-11-p7-8-ui.md)。
+
+P7.9：`/collections/reference` 与 `/:refId` 提供参考图上传、分析、线索编辑确认与生成，草稿保留和原请求恢复；行为见 [P7.9](../docs/P7-9.md)。完整隔离回归用 `P7_ISOLATED_REGRESSION=1 E2E_BASE_URL=http://localhost:8109 npx playwright test -c playwright.p7-9.config.ts`；四尺寸界面与部署只读检查用 `playwright.reference-ui.config.ts`，所有写请求拦截。
+
+P7.7后续优化：模板草稿放弃确认、较新版本完整内容对照及编辑分组已部署；模板界面用 `E2E_BASE_URL=http://localhost:8088 npx playwright test -c playwright.templates-ui.config.ts` 做只读/模拟检查，真实写请求拦截。业务写入回归继续使用上方P7.9隔离栈。证据见 [后续优化记录](../docs/history/2026-11-12-p7-7-ui-followup.md)。

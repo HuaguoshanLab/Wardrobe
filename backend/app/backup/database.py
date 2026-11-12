@@ -23,7 +23,7 @@ from app.schemas.outfits import ItemSnapshot
 
 DataSet = dict[str, list[dict[str, JsonValue]]]
 
-REVISION = "0013_condition_templates"
+REVISION = "0015_reference"
 CHECKPOINT_TABLES = [
     "checkpoint_migrations",
     "checkpoints",
@@ -35,7 +35,7 @@ CHECKPOINT_TABLES = [
 def compatibility() -> dict[str, str | int]:
     return {
         "format_version": 1,
-        "app_version": "0.7.7-templates",
+        "app_version": "0.7.9-reference",
         "alembic_revision": REVISION,
         "checkpoint_adapter": version("langgraph-checkpoint-postgres"),
     }
@@ -124,6 +124,11 @@ def media_keys(data: DataSet) -> set[str]:
         if row[k]
     }
     keys.update(
+        str(row[k])
+        for row in data["public.outfit_references"]
+        for k in ("original_key", "display_key")
+    )
+    keys.update(
         str(row["source_key"]) for row in data["public.import_batches"] if row["source_key"]
     )
     keys.update(str(row["storage_key"]) for row in data["public.outfit_images"])
@@ -141,6 +146,38 @@ def media_keys(data: DataSet) -> set[str]:
             item = ItemSnapshot.model_validate(value)
             if item.source == "wardrobe" and str(item.display_asset_id) not in images:
                 raise AppError("INVALID_BACKUP", "历史图片引用缺失")
+    from app.schemas.travel import TravelDay
+
+    for revision in data["public.travel_revisions"]:
+        days = revision["days"]
+        if not isinstance(days, list):
+            raise AppError("INVALID_BACKUP", "旅行快照格式无效")
+        for value in days:
+            day = TravelDay.model_validate(value)
+            if any(str(item.display_asset_id) not in images for item in day.items):
+                raise AppError("INVALID_BACKUP", "旅行图片引用缺失")
+    revisions = {str(r["id"]): str(r["plan_id"]) for r in data["public.travel_revisions"]}
+    for plan in data["public.travel_plans"]:
+        current = plan["current_revision_id"]
+        if current and revisions.get(str(current)) != str(plan["id"]):
+            raise AppError("INVALID_BACKUP", "旅行当前版本引用无效")
+    from app.schemas.reference import ReferenceAnalysis, ReferenceClue
+
+    references = {str(r["id"]): r for r in data["public.outfit_references"]}
+    outfit_ids = {str(r["id"]) for r in data["public.outfit_revisions"]}
+    for ref in references.values():
+        if ref["analysis"] is not None:
+            ReferenceAnalysis.model_validate(ref["analysis"])
+        TypeAdapter(list[ReferenceClue]).validate_python(ref["clues"])
+        ids = TypeAdapter(list[str]).validate_python(ref["revision_ids"])
+        if not set(ids) <= outfit_ids:
+            raise AppError("INVALID_BACKUP", "参考搭配版本引用缺失")
+    for revision in data["public.outfit_revisions"]:
+        request = revision["request_snapshot"]
+        if isinstance(request, dict) and request.get("reference_id") is not None:
+            if str(request["reference_id"]) not in references:
+                raise AppError("INVALID_BACKUP", "参考来源记录缺失")
+            TypeAdapter(list[ReferenceClue]).validate_python(request.get("reference_clues"))
     return keys
 
 

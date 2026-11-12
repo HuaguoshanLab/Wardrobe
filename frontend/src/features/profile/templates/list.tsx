@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../../components/ui/button'
 import { fieldsSchema, type Template } from './api'
 import { type Vocabulary } from './fields'
@@ -34,6 +34,12 @@ export function TemplateList({
   taxonomy: Vocabulary
 }) {
   const searchInput = useRef<HTMLInputElement>(null)
+  const discardButton = useRef<HTMLButtonElement>(null)
+  const cancelDiscard = useRef<HTMLButtonElement>(null)
+  const [discarding, setDiscarding] = useState(false)
+  useEffect(() => {
+    if (discarding) cancelDiscard.current?.focus()
+  }, [discarding])
   const matches = rows?.filter((t) =>
     t.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
   )
@@ -52,22 +58,53 @@ export function TemplateList({
         <section className="template-draft">
           <strong>有未保存的模板编辑草稿</strong>
           <p>{draft.name || '未命名模板'} · 已保留在本浏览器</p>
-          <div className="template-management">
-            <Button variant="outline" disabled={busy} onClick={onResume}>
-              继续编辑草稿
-            </Button>
-            <Button
-              variant="outline"
-              className="template-quiet"
-              disabled={busy}
-              onClick={() => {
-                onDiscard()
-                searchInput.current?.focus()
-              }}
-            >
-              放弃模板编辑草稿
-            </Button>
-          </div>
+          {discarding ? (
+            <div className="template-discard" role="group" aria-label="放弃草稿确认">
+              <p>放弃后无法找回这些编辑；已保存的模板保持。</p>
+              <div className="template-management">
+                <Button
+                  ref={cancelDiscard}
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => {
+                    setDiscarding(false)
+                    requestAnimationFrame(() =>
+                      requestAnimationFrame(() => discardButton.current?.focus()),
+                    )
+                  }}
+                >
+                  保留草稿
+                </Button>
+                <Button
+                  disabled={busy}
+                  onClick={() => {
+                    setDiscarding(false)
+                    onDiscard()
+                    requestAnimationFrame(() =>
+                      requestAnimationFrame(() => searchInput.current?.focus()),
+                    )
+                  }}
+                >
+                  确认放弃草稿
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="template-management">
+              <Button variant="outline" disabled={busy} onClick={onResume}>
+                继续编辑草稿
+              </Button>
+              <Button
+                ref={discardButton}
+                variant="outline"
+                className="template-quiet"
+                disabled={busy}
+                onClick={() => setDiscarding(true)}
+              >
+                放弃模板编辑草稿
+              </Button>
+            </div>
+          )}
         </section>
       )}
       <div className="template-search">

@@ -26,7 +26,8 @@ def clean_db(database: None) -> Iterator[None]:
     with get_engine().begin() as connection:
         connection.execute(
             text(
-                "TRUNCATE condition_templates, seasonal_sessions, supply_plans, "
+                "TRUNCATE outfit_references, travel_plans, condition_templates, "
+                "seasonal_sessions, supply_plans, "
                 "organization_decisions, "
                 "inventory_demands, "
                 "inventory_plans, garment_subtypes, "

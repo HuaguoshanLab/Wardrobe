@@ -36,6 +36,16 @@ def run_job(job_id: UUID, token: UUID) -> None:
     thread = threading.Thread(target=keep_alive, daemon=True)
     thread.start()
     try:
+        if read_job(job_id).kind in {"reference_analyze", "reference_generate"}:
+            from app.services.reference.workflow import run as run_reference
+
+            run_reference(job_id, token)
+            return
+        if read_job(job_id).kind == "travel_generate":
+            from app.services.travel.workflow import run
+
+            run(job_id, token)
+            return
         if read_job(job_id).kind in {"outfit_generate", "outfit_adjust"}:
             from app.db.session import session_factory
             from app.services.jobs import get_job

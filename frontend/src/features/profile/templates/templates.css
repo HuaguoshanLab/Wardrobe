@@ -227,3 +227,61 @@
   background: transparent;
   box-shadow: none;
 }
+
+.template-field-groups {
+  display: grid;
+  gap: 20px;
+  margin-block: 20px;
+}
+.template-editor .form-hint {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.template-field-group {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  min-width: 0;
+}
+.template-field-group h4 {
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+.template-field-group .rotation-choice {
+  margin: 0;
+}
+.template-field-group .rotation-choice-intro,
+.template-field-group .rotation-choice-help > small {
+  display: none;
+}
+.template-version-review {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  background: var(--soft);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.template-version-review h4 {
+  margin: 0;
+  scroll-margin-block: 16px;
+}
+.template-version-review .template-management,
+.template-discard .template-management {
+  margin-top: 12px;
+}
+.template-version-review .button,
+.template-discard .button {
+  white-space: normal;
+  height: auto;
+  min-height: 44px;
+  padding-block: 10px;
+}
+.template-latest-name {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+.template-version-review h4:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}

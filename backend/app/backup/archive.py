@@ -30,7 +30,14 @@ def safe_key(key: str) -> None:
         or len(path.parts) != 2
     ):
         raise AppError("INVALID_BACKUP", "备份媒体路径无效")
-    if path.parts[0] not in {"original", "display", "cutout", "excel"}:
+    if path.parts[0] not in {
+        "original",
+        "display",
+        "cutout",
+        "excel",
+        "reference-original",
+        "reference-display",
+    }:
         raise AppError("INVALID_BACKUP", "备份媒体目录无效")
     if len(path.parts[1]) != 32 or any(c not in "0123456789abcdef" for c in path.parts[1]):
         raise AppError("INVALID_BACKUP", "备份媒体文件名无效")

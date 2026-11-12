@@ -196,3 +196,62 @@ it('cancelling deletion sends nothing and deleting another template preserves th
   await userEvent.click(screen.getByRole('button', { name: '继续编辑草稿' }))
   expect(screen.getByLabelText('模板名称')).toHaveValue('需要保留')
 })
+
+it('discarding an editor draft requires confirmation and cancellation preserves it', async () => {
+  const draft = { id: null, version: null, name: '不要误删', fields, unsupported: false }
+  localStorage.setItem('wardrobe.template.editor', JSON.stringify(draft))
+  mount()
+  await open()
+  await userEvent.click(screen.getByRole('button', { name: '放弃模板编辑草稿' }))
+  expect(JSON.parse(localStorage.getItem('wardrobe.template.editor')!)).toEqual(draft)
+  expect(screen.getByRole('button', { name: '保留草稿' })).toHaveFocus()
+  await userEvent.click(screen.getByRole('button', { name: '保留草稿' }))
+  expect(screen.getByRole('button', { name: '继续编辑草稿' })).toBeEnabled()
+  await userEvent.click(screen.getByRole('button', { name: '放弃模板编辑草稿' }))
+  await userEvent.click(screen.getByRole('button', { name: '确认放弃草稿' }))
+  expect(localStorage.getItem('wardrobe.template.editor')).toBeNull()
+  await waitFor(() => expect(screen.getByLabelText('搜索模板')).toHaveFocus())
+})
+
+it('reading a newer version shows its contents and requires explicit review before overwrite', async () => {
+  const writes: unknown[] = []
+  server.use(
+    http.patch('/api/v1/condition-templates/:id', async ({ request }) => {
+      writes.push(await request.json())
+      return HttpResponse.json(envelope({ ...template, version: 3 }))
+    }),
+  )
+  const view = mount()
+  await open()
+  await userEvent.click(await screen.findByRole('button', { name: '通勤 查看与选用' }))
+  await userEvent.click(screen.getByRole('button', { name: '编辑模板' }))
+  await userEvent.clear(screen.getByLabelText('模板名称'))
+  await userEvent.type(screen.getByLabelText('模板名称'), '我的修改')
+  server.use(
+    http.get('/api/v1/condition-templates/:id', () =>
+      HttpResponse.json(
+        envelope({
+          ...template,
+          name: '另一处保存的名称',
+          version: 2,
+          conditions: { ...fields, notes: '另一处保存的说明' },
+        }),
+      ),
+    ),
+  )
+  await userEvent.click(screen.getByRole('button', { name: '读取最新版本，保留输入' }))
+  expect(await screen.findByText('另一处保存的说明')).toBeVisible()
+  expect(screen.getByLabelText('模板名称')).toHaveValue('我的修改')
+  expect(screen.getByRole('button', { name: '保存模板' })).toBeDisabled()
+  expect(JSON.parse(localStorage.getItem('wardrobe.template.editor')!).version).toBe(1)
+  await userEvent.click(screen.getByRole('button', { name: '暂不覆盖' }))
+  expect(JSON.parse(localStorage.getItem('wardrobe.template.editor')!).version).toBe(1)
+  await userEvent.click(screen.getByRole('button', { name: '读取最新版本，保留输入' }))
+  await userEvent.click(await screen.findByRole('button', { name: '保留我的输入，继续保存' }))
+  expect(writes).toEqual([])
+  expect(JSON.parse(localStorage.getItem('wardrobe.template.editor')!).version).toBe(2)
+  await userEvent.click(screen.getByRole('button', { name: '保存模板' }))
+  await screen.findByText('模板已保存。')
+  expect(writes).toEqual([{ name: '我的修改', conditions: fields, expected_version: 2 }])
+  expect(view.onGenerate).not.toHaveBeenCalled()
+})

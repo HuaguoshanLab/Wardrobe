@@ -7,6 +7,8 @@ from pydantic import Field, JsonValue
 from app.schemas.backups import BackupResult
 from app.schemas.common import ErrorDetail, Schema
 from app.schemas.outfits import OutfitResult
+from app.schemas.reference import ReferenceResult
+from app.schemas.travel import TravelResult
 
 JobStatus = Literal[
     "queued", "running", "cancel_requested", "succeeded", "failed", "interrupted", "cancelled"
@@ -42,6 +44,9 @@ class MediaResult(Schema):
 class JobView(Schema):
     id: UUID
     kind: Literal[
+        "reference_analyze",
+        "reference_generate",
+        "travel_generate",
         "diagnostic",
         "backup_export",
         "backup_restore",
@@ -54,7 +59,16 @@ class JobView(Schema):
         "garment_recognize",
     ]
     status: JobStatus
-    result: DiagnosticResult | ImportResult | MediaResult | OutfitResult | BackupResult | None
+    result: (
+        DiagnosticResult
+        | ImportResult
+        | MediaResult
+        | OutfitResult
+        | BackupResult
+        | ReferenceResult
+        | TravelResult
+        | None
+    )
     error: ErrorDetail | None
     retry_of_job_id: UUID | None
     last_seq: int

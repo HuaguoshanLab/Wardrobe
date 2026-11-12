@@ -146,6 +146,20 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        path: 'collections/reference/:refId?',
+        lazy: async () => ({
+          Component: (await import('../features/reference/page')).ReferencePage,
+        }),
+      },
+      {
+        path: 'collections/travel',
+        lazy: async () => ({ Component: (await import('../features/travel/page')).TravelPage }),
+      },
+      {
+        path: 'collections/travel/:planId',
+        lazy: async () => ({ Component: (await import('../features/travel/page')).TravelPage }),
+      },
+      {
         path: 'wardrobe/care',
         lazy: async () => ({
           Component: (await import('../features/wardrobe/care/page')).CarePage,

@@ -1,0 +1,141 @@
+.reference-page {
+  max-width: 850px;
+  margin-inline: auto;
+  display: grid;
+  gap: 20px;
+  padding-bottom: 28px;
+  overflow-wrap: anywhere;
+}
+.reference-page .page-heading {
+  margin-bottom: 0;
+}
+.reference-page .panel {
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.reference-page p {
+  line-height: 1.6;
+}
+.reference-photo {
+  width: 100%;
+  max-height: 440px;
+  object-fit: contain;
+  border-radius: 18px;
+  background: var(--surface);
+}
+.reference-page label {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.reference-page input,
+.reference-page select {
+  width: 100%;
+  min-width: 0;
+}
+.reference-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.reference-list img {
+  width: 100%;
+  height: 190px;
+  object-fit: contain;
+}
+.reference-clue {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.reference-clue legend {
+  padding-inline: 8px;
+}
+.reference-results {
+  display: grid;
+  gap: 16px;
+}
+.reference-pieces {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.reference-pieces img {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+}
+.reference-pieces > div {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+.reference-evidence {
+  white-space: pre-line;
+}
+.reference-page .actions {
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .reference-page .panel {
+    padding: 16px;
+  }
+  .reference-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .reference-pieces {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .reference-clue {
+    padding: 12px;
+  }
+}
+.reference-page p,
+.reference-page h2,
+.reference-page h3,
+.reference-page .notice {
+  margin: 0;
+}
+.reference-page .notice {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+.reference-clue .wardrobe-choice-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.reference-clue .wardrobe-choice-group legend {
+  padding: 0;
+  margin-bottom: 8px;
+}
+.reference-clue .wardrobe-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.reference-clue .wardrobe-chips button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 8px 12px;
+  min-height: 44px;
+  min-width: 48px;
+  cursor: pointer;
+  color: inherit;
+}
+.reference-clue .wardrobe-chips button[aria-pressed='true'] {
+  background: var(--primary);
+  color: var(--surface);
+  border-color: var(--primary);
+}
+.reference-clue .wardrobe-chips button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

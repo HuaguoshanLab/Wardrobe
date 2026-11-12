@@ -15,52 +15,63 @@ export function TemplateFields({
   tags: Tag[]
 }) {
   return (
-    <>
-      <Choices
-        label="模板场合"
-        options={taxonomy.occasion_codes ?? {}}
-        value={value.occasion_codes}
-        onChange={(v) => onChange({ ...value, occasion_codes: v })}
-      />
-      <label>
-        模板风格来源
-        <select
-          value={value.style_codes === null ? 'inherit' : 'override'}
-          onChange={(e) =>
-            onChange({ ...value, style_codes: e.target.value === 'inherit' ? null : [] })
-          }
-        >
-          <option value="inherit">生成时使用最新长期偏好</option>
-          <option value="override">模板单独指定（不选表示不限）</option>
-        </select>
-      </label>
-      {value.style_codes !== null && (
+    <div className="template-field-groups">
+      <section className="template-field-group">
+        <h4>穿着场景</h4>
         <Choices
-          label="模板风格"
-          options={taxonomy.style_codes ?? {}}
-          value={value.style_codes}
-          onChange={(v) => onChange({ ...value, style_codes: v })}
+          label="模板场合"
+          options={taxonomy.occasion_codes ?? {}}
+          value={value.occasion_codes}
+          onChange={(v) => onChange({ ...value, occasion_codes: v })}
         />
-      )}
-      <Choices
-        label="模板标签"
-        options={Object.fromEntries(tags.map((t) => [t.id, t.name]))}
-        value={value.custom_tag_ids}
-        onChange={(v) => onChange({ ...value, custom_tag_ids: v })}
-      />
-      <RotationChoice
-        value={value.rotation_mode}
-        onChange={(v) => onChange({ ...value, rotation_mode: v })}
-      />
-      <label>
-        模板补充要求
-        <textarea
-          maxLength={1000}
-          value={value.notes ?? ''}
-          onChange={(e) => onChange({ ...value, notes: e.target.value || null })}
+        <label>
+          模板风格来源
+          <select
+            value={value.style_codes === null ? 'inherit' : 'override'}
+            onChange={(e) =>
+              onChange({ ...value, style_codes: e.target.value === 'inherit' ? null : [] })
+            }
+          >
+            <option value="inherit">生成时使用最新长期偏好</option>
+            <option value="override">模板单独指定（不选表示不限）</option>
+          </select>
+        </label>
+        {value.style_codes !== null && (
+          <Choices
+            label="模板风格"
+            options={taxonomy.style_codes ?? {}}
+            value={value.style_codes}
+            onChange={(v) => onChange({ ...value, style_codes: v })}
+          />
+        )}
+      </section>
+      <section className="template-field-group">
+        <h4>补充条件</h4>
+        {tags.length > 0 && (
+          <Choices
+            label="模板标签"
+            options={Object.fromEntries(tags.map((t) => [t.id, t.name]))}
+            value={value.custom_tag_ids}
+            onChange={(v) => onChange({ ...value, custom_tag_ids: v })}
+          />
+        )}
+        <label>
+          模板补充要求
+          <textarea
+            maxLength={1000}
+            value={value.notes ?? ''}
+            onChange={(e) => onChange({ ...value, notes: e.target.value || null })}
+          />
+        </label>
+        <p className="template-counter">{value.notes?.length ?? 0} / 1000 字</p>
+      </section>
+      <section className="template-field-group">
+        <RotationChoice
+          value={value.rotation_mode}
+          onChange={(v) => onChange({ ...value, rotation_mode: v })}
         />
-      </label>
-    </>
+      </section>
+    </div>
   )
 }
 export function FieldsPreview({

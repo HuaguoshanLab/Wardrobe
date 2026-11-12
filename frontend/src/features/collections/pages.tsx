@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { Link, Navigate, useSearchParams } from 'react-router'
+import { Luggage, Plus } from 'lucide-react'
 import { Button } from '../../components/ui/button'
 import { getAllFavorites, getHistory, getMonthWears, recordDay, today, isPastDay } from './api'
 import { useRecordActions } from './actions'
@@ -113,19 +114,29 @@ export function CollectionsPage() {
   const returnTo = `/collections?${params}`
   return (
     <section className="records-page">
-      <div className="page-heading">
-        <div>
+      <header className="page-heading records-heading">
+        <div className="records-title">
           <h1>穿搭记录</h1>
           <p>留住喜欢的搭配，记下穿过的日常。</p>
+        </div>
+        <div className="records-create-actions" role="group" aria-label="创建搭配或旅行计划">
           <Link
-            className="button button-outline"
+            className="button button-primary"
             to={`/collections/manual${view === 'calendar' ? `?date=${date}` : ''}`}
             state={{ manualReturn: returnTo }}
           >
-            手动搭配 / 记穿着
+            <Plus size={18} aria-hidden="true" />
+            <span>手动搭配 / 记穿着</span>
+          </Link>
+          <Link className="button button-outline" to="/collections/travel">
+            <Luggage size={18} aria-hidden="true" />
+            <span>旅行胶囊衣橱</span>
           </Link>
         </div>
-      </div>
+      </header>
+      <Link className="text-link" to="/collections/reference">
+        参考图搭配 →
+      </Link>
       <div className="records-tabs" role="group" aria-label="记录类型">
         {[
           ['history', '历史'],

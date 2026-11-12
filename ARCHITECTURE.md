@@ -1,6 +1,6 @@
 # 架构设计
 
-版本：0.7.7。更新日期：2026-11-04。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实搭配、照片识别与和风账号已有小样本验收；当前证据见 [DEVELOPMENT](docs/DEVELOPMENT.md)。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
+版本：0.7.9。更新日期：2026-11-12。P1–P5 已实现，P5 运行和备份限制见 [P5](docs/P5.md)；真实搭配、照片识别与和风账号已有小样本验收；当前证据见 [DEVELOPMENT](docs/DEVELOPMENT.md)。实际交付见 [P1](docs/P1.md)、[P2](docs/P2.md)、[P3](docs/P3.md)，P4 实现见 [P4](docs/P4.md)，文档审查记录见 [REVIEW](docs/REVIEW.md)。
 
 产品行为见 [PRODUCT](docs/PRODUCT.md)，字段和协议见 [CONTRACTS](docs/CONTRACTS.md)，实施状态见 [DEVELOPMENT](docs/DEVELOPMENT.md)。本文是技术栈和模块边界的主要维护位置。
 
@@ -251,3 +251,7 @@ P7.5：`services/care.py` 组合现有单品列表、W1 生命周期和基础属
 P7.6：`services/catalog_filters.py` 共享衣橱筛选条件，`services/locations.py` 在一致快照中派生位置数量及分页；`catalog.py` 复用规范化位置筛选，不保存独立统计。前端 `features/wardrobe/locations/` 提供筛选面板和 W1/P7.5 共用文本选择。契约见 [P7.6](docs/P7-6.md)。
 
 P7.7：`db/templates.py` 保存条件模板，`services/templates.py` 负责版本、回执、限额及失效检查；前端 `profile/templates/` 组合列表、预览、编辑与本地恢复，选用仅复制到原 ConditionsPanel。新增表及备份边界见 [P7.7](docs/P7-7.md)。
+
+P7.8：`travel_plans` 保存行程草稿/版本与打包状态，`travel_revisions` 保存独立每日不可变快照；`services/travel` 通过持久 Job 与模型调用账本完成有界规划、逐日调整和原子发布，复用既有图片与实际穿着系统。前端 `features/travel` 提供独立子页；数据与兼容契约见 [P7.8](docs/P7-8.md)。
+
+P7.9 新增 `db/reference`、`schemas/reference`、`services/reference`（记录/提交/调用/发布）、`domain/reference`（受控分析与匹配校验）、`providers/reference` 和独立前端 feature。新增 `outfit_references`，复用 Jobs/ModelCall/OutfitSession/OutfitRevision/OutfitImage，不改变今日会话指针。原件、来源、删除及精确备份兼容见 [P7.9](docs/P7-9.md)。

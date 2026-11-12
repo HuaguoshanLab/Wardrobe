@@ -1,6 +1,7 @@
 @import './calendar.css';
 @import './record-detail.css';
 @import './record-card.css';
+@import './records-heading.css';
 .records-page {
   display: flex;
   flex-direction: column;
@@ -8,7 +9,7 @@
   min-height: 380px;
 }
 .records-page > .page-heading {
-  margin-bottom: 12px;
+  margin-bottom: 20px;
   flex-shrink: 0;
 }
 .records-page h1 {

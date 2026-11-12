@@ -14,7 +14,11 @@ const operationSchema = z.object({
 type Operation = z.infer<typeof operationSchema>
 export function useOperation(
   namespace: string,
-  onSuccess?: (value: z.infer<ReturnType<typeof z.json>>, path: string) => void,
+  onSuccess?: (
+    value: z.infer<ReturnType<typeof z.json>>,
+    path: string,
+    method: Operation['method'],
+  ) => void,
 ) {
   const storageKey = `wardrobe.${namespace}.pending`
   const client = useQueryClient()
@@ -42,7 +46,7 @@ export function useOperation(
       setPending(null)
       setNotice('操作已保存。')
       await client.invalidateQueries()
-      onSuccess?.(value, op.path)
+      onSuccess?.(value, op.path, op.method)
       return value
     },
   })
