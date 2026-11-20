@@ -76,7 +76,7 @@ test('导入资料：审核、保留草稿、入库、生命周期和盘点', as
   await page.goto(`/wardrobe/${gid}/lifecycle`)
   await expect(page.getByText('¥0.00', { exact: true })).toBeVisible()
   await expect(page.getByText('人工核对资料', { exact: true })).toBeVisible()
-  // A dedicated subtype keeps sequential desktop/mobile runs independent.
+  // A dedicated subtype identifies this garment among earlier regression fixtures.
   const current = (await (await request.get('/api/v1/inventory/spring')).json()).data
   const demandId = randomUUID()
   const inventory = await request.post('/api/v1/inventory/spring', {
@@ -98,14 +98,19 @@ test('导入资料：审核、保留草稿、入库、生命周期和盘点', as
   })
   expect(inventory.ok()).toBeTruthy()
   const result = (await (await request.get('/api/v1/inventory/spring')).json()).data
-  expect(result.counts.find((row: { row_id: string }) => row.row_id === demandId)).toMatchObject({
+  const count = result.counts.find((row: { row_id: string }) => row.row_id === demandId)
+  expect(count).toMatchObject({
     confirmed: 1,
-    pending: 0,
+    members: expect.arrayContaining([
+      expect.objectContaining({ garment_id: gid, bucket: 'confirmed' }),
+    ]),
   })
   await page.goto(`/wardrobe/inventory?season=spring&focus=${demandId}&group=confirmed`)
   await expect(page.getByRole('dialog', { name: `${subtype} · 单品明细` })).toBeVisible()
   await expect(page.getByRole('button', { name: '已确认 1', exact: true })).toBeVisible()
-  await expect(page.getByRole('button', { name: '待核对 0', exact: true })).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: `待核对 ${count.pending}`, exact: true }),
+  ).toBeVisible()
   expect(calls).toBe(0)
   expect(errors).toEqual([])
 })

@@ -5,8 +5,12 @@ test('isolated browser restore confirms replacement, resumes control progress an
   page,
   request,
 }, testInfo) => {
-  // This scenario runs only against the separate stack configured on port 8099.
-  expect(testInfo.project.use.baseURL).toBe('http://localhost:8099')
+  // Each supported configuration checks its isolated target in global setup.
+  if (testInfo.config.configFile?.endsWith('/playwright.verify.config.ts')) {
+    expect(testInfo.project.use.baseURL).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/)
+  } else {
+    expect(testInfo.project.use.baseURL).toBe('http://localhost:8099')
+  }
   const original = (await (await request.get('/api/v1/profile/preferences')).json()).data
   const epoch = (await (await request.get('/api/v1/capabilities')).json()).data.data_epoch
   await page.goto('/settings/backups')

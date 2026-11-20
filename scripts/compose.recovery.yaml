@@ -1,0 +1,62 @@
+x-app: &app
+  image: ${RECOVERY_BACKEND:?}
+  pull_policy: never
+  environment:
+    WARDROBE_DATABASE_URL: postgresql+psycopg://wardrobe:recovery_only@db:5432/recovery_test
+    WARDROBE_PROVIDER_MODE: fake
+    WARDROBE_RECOGNITION_MODE: fake
+    WARDROBE_MEDIA_ROOT: /data/media
+    WARDROBE_CONTROL_ROOT: /data/control
+  volumes:
+    - media:/data/media
+    - control:/data/control
+
+services:
+  db:
+    image: ${RECOVERY_POSTGRES:?}
+    pull_policy: never
+    environment:
+      POSTGRES_USER: wardrobe
+      POSTGRES_PASSWORD: recovery_only
+      POSTGRES_DB: recovery_test
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U wardrobe -d recovery_test']
+      interval: 2s
+      retries: 30
+    volumes:
+      - postgres:/var/lib/postgresql
+  migrate:
+    <<: *app
+    command: [python, -m, app.initialize]
+    depends_on:
+      db: {condition: service_healthy}
+  api:
+    <<: *app
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
+      interval: 2s
+      retries: 30
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+  controller:
+    <<: *app
+    command: [python, -m, app.backup.worker]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+  web:
+    image: ${RECOVERY_WEB:?}
+    pull_policy: never
+    depends_on:
+      api: {condition: service_healthy}
+
+volumes:
+  postgres:
+  media:
+  control:
+
+networks:
+  default:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${RECOVERY_SUBNET:?}

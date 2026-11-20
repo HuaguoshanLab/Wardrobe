@@ -42,6 +42,8 @@ tools/openapi/            # 隔离类型生成器依赖的 npm workspace
 
 ## 验证命令
 
+完整回归从仓库根目录执行 [`make verify`](../README.md)，它会启动专用 Fake 栈并运行桌面与移动视口主流程。以下命令用于局部验证。
+
 ```sh
 npm run typecheck
 npm run format:check

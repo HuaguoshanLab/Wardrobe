@@ -1,0 +1,116 @@
+name: wardrobe-verify
+
+x-app: &app
+  image: ${COMPOSE_PROJECT_NAME}-migrate
+  pull_policy: never
+  init: true
+  environment: &app-env
+    WARDROBE_DATABASE_URL: postgresql+psycopg://wardrobe:verify_only@db:5432/browser_test
+    WARDROBE_PROVIDER_MODE: fake
+    WARDROBE_RECOGNITION_MODE: fake
+    WARDROBE_MEDIA_ROOT: /data/media
+    WARDROBE_CONTROL_ROOT: /data/control
+  volumes:
+    - media:/data/media
+    - control:/data/control
+
+services:
+  db: &postgres
+    image: postgres:18.4-alpine
+    environment:
+      POSTGRES_USER: wardrobe
+      POSTGRES_PASSWORD: verify_only
+      POSTGRES_DB: browser_test
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U wardrobe -d "$$POSTGRES_DB"']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  test-db:
+    <<: *postgres
+    profiles: [test]
+    environment:
+      POSTGRES_USER: wardrobe
+      POSTGRES_PASSWORD: verify_only
+      POSTGRES_DB: verify_suite_test
+    volumes:
+      - test-postgres:/var/lib/postgresql
+
+  test:
+    profiles: [test]
+    build:
+      context: ../backend
+      target: test
+    init: true
+    environment:
+      <<: *app-env
+      WARDROBE_DATABASE_URL: postgresql+psycopg://wardrobe:verify_only@test-db:5432/verify_suite_test
+      WARDROBE_TEST_DATABASE: "1"
+      WARDROBE_MEDIA_ROOT: /tmp/verify-media
+      WARDROBE_CONTROL_ROOT: /tmp/verify-control
+    depends_on:
+      test-db: {condition: service_healthy}
+
+  migrate:
+    <<: *app
+    build:
+      context: ../backend
+      target: base
+    command: [python, -m, app.initialize]
+    depends_on:
+      db: {condition: service_healthy}
+
+  api:
+    <<: *app
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  worker:
+    <<: *app
+    command: [python, -m, app.jobs.worker]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+
+  controller:
+    <<: *app
+    command: [python, -m, app.backup.worker]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+
+  web:
+    build: ../frontend
+    ports:
+      - "127.0.0.1::80"
+    networks: [default, ingress]
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, wget, -q, --spider, 'http://127.0.0.1/api/v1/health/ready']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  postgres:
+  test-postgres:
+  media:
+  control:
+
+networks:
+  default:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${WARDROBE_VERIFY_INTERNAL_SUBNET:?Use make verify}
+  ingress:
+    ipam:
+      config:
+        - subnet: ${WARDROBE_VERIFY_INGRESS_SUBNET:?Use make verify}

@@ -98,13 +98,15 @@ docker compose stop
 
 `stop` 保留数据，重新执行启动命令即可恢复。`docker compose down` 删除容器但保留命名卷；不要加 `-v`，那会删除数据库和图片。设置页提供完整备份下载和上传验证/确认恢复；先阅读 [P5](docs/P5.md) 的限额、维护态和版本兼容说明。
 
-验证命令：
+在仓库根目录运行完整回归。
 
 ```sh
-docker compose --profile test run --build --rm test
+make verify
 ```
 
-该命令只访问独立的 `wardrobe_test` 数据库，使用临时内存盘，不清理应用数据。前端测试及本地热更新命令见 [前端 README](frontend/README.md)，后端开发命令见 [后端 README](backend/README.md)。
+首次准备需启动 Docker（支持 Compose v2），在 Node 24 环境执行 `cd frontend && npm ci && npx playwright install chromium --no-shell`，并在后端目录执行 `uv sync --locked`（Python 3.13）。完整回归依次运行结构与文档检查、前后端静态检查、前端构建及单测、PostgreSQL 测试、桌面及移动视口主流程。每次启动独立 Compose 项目，数据库测试和浏览器各用专用数据库，浏览器 Web 只监听随机本机端口。应用使用 Fake Provider，结束后清理本次容器与卷，pytest 日志、浏览器产物和失败时的 Compose 日志保留在 `data/acceptance/verify.*`。隔离网络默认从 `172.31.240.0/20` 中选两个未被 Docker 使用的 /28。若本机网络与该网段冲突，可设置 `WARDROBE_VERIFY_NETWORK_POOL` 指定另一个可用的 IPv4 网段。
+
+单跑后端测试可用 `make test`。局部开发命令见 [前端 README](frontend/README.md) 和 [后端 README](backend/README.md)。
 
 和风天气配置见 [P3](docs/P3.md)：在后端设置 QWEATHER_HOST 和 API Key 或 Bearer JWT；留空可使用手动城市/天气。真实账号联调证据见 [和风验收](docs/history/2026-10-27-qweather.md)。真实千问搭配配置见 [P4](docs/P4.md)，须提供账户地域对应地址和凭据。设置 `PROVIDER_MODE=disabled` 后诊断提交返回未配置错误，照片仍可转换并手工审核，不自动切回 Fake。`CUTOUT_ENABLED=false` 可禁用去背景，原图仍可使用。
 

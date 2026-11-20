@@ -52,7 +52,7 @@ uv run pytest -q -m 'not integration'
 uv run python -m app.export_openapi
 ```
 
-数据库集成测试从项目根目录执行：
+完整回归从仓库根目录执行 [`make verify`](../README.md)。只运行后端测试时，从仓库根目录执行下面的命令。
 
 ```sh
 docker compose --profile test run --build --rm test

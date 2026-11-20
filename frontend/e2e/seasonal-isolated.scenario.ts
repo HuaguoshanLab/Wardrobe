@@ -34,23 +34,20 @@ test('W4 resume, cross-page stale review, partial results, lost response and fro
         { timeout: 60000 },
       )
       .toBe('ready')
-    const result = await request.post(`/api/v1/imports/${bid}/confirm`, {
-      headers: key(),
-      data: { rows: [{ row_id: row!.id, expected_version: row!.version }] },
+    const edited = await request.patch(`/api/v1/imports/${bid}/rows/${row!.id}`, {
+      data: {
+        expected_version: row!.version,
+        changes: { name, category: 'other_accessory', subtype_name: null, seasons: ['winter'] },
+      },
     })
-    const id = (await result.json()).data.rows[0].garment_id
-    ids.push(id)
-    const g = (await (await request.get(`/api/v1/garments/${id}`)).json()).data
-    expect(
-      (
-        await request.patch(`/api/v1/garments/${id}`, {
-          data: {
-            expected_version: g.version,
-            changes: { name, category: 'other_accessory', seasons: ['winter'] },
-          },
-        })
-      ).ok(),
-    ).toBeTruthy()
+    await expect(edited).toBeOK()
+    const item = (await edited.json()).data
+    const confirmed = await request.post(`/api/v1/imports/${bid}/confirm`, {
+      headers: key(),
+      data: { rows: [{ row_id: item.id, expected_version: item.version }] },
+    })
+    await expect(confirmed).toBeOK()
+    ids.push((await confirmed.json()).data.rows[0].garment_id)
   }
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))

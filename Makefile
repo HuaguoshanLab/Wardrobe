@@ -1,4 +1,4 @@
-.PHONY: up stop logs test structure
+.PHONY: up stop logs test structure verify
 up:
 	docker compose up -d --build --wait
 stop:
@@ -10,3 +10,5 @@ test:
 structure:
 	backend/.venv/bin/python scripts/check_structure.py
 	backend/.venv/bin/python scripts/check_docs.py
+verify:
+	bash scripts/verify.sh
